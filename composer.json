@@ -1,0 +1,16 @@
+{
+    "name": "getresponse/share-code-plugin",
+    "license": "",
+    "type": "project",
+    "authors": [
+        {
+            "name": "GetResponse",
+            "email": "team@getresponse.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ShareCode\\": "src/"
+        }
+    }
+}
