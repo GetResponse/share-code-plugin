@@ -1,6 +1,7 @@
 <?php
 namespace ShareCode\Cart;
 
+use ShareCode\DbRepositoryInterface;
 use ShareCode\GetresponseApi;
 use ShareCode\GetresponseApiException;
 

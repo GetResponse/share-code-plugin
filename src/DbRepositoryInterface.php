@@ -1,5 +1,5 @@
 <?php
-namespace ShareCode\Cart;
+namespace ShareCode;
 
 /**
  * Class DbRepositoryInterface
