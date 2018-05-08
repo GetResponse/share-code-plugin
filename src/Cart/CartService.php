@@ -1,13 +1,14 @@
 <?php
-namespace ShareCode\Cart;
+namespace GrShareCode\Cart;
 
-use ShareCode\DbRepositoryInterface;
-use ShareCode\GetresponseApi;
-use ShareCode\GetresponseApiException;
+use GrShareCode\DbRepositoryInterface;
+use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiException;
+use GrShareCode\Product\ProductsCollection;
 
 /**
  * Class CartService
- * @package ShareCode\Cart
+ * @package GrShareCode\Cart
  */
 class CartService
 {
@@ -19,31 +20,26 @@ class CartService
 
     /**
      * @param string $apiKey
+     * @param GetresponseApi $getresponseApi
      * @param DbRepositoryInterface $dbRepository
      */
-    public function __construct($apiKey, DbRepositoryInterface $dbRepository)
+    public function __construct(GetresponseApi $getresponseApi, DbRepositoryInterface $dbRepository)
     {
         // stworzenie obiektu API w oparciu o Api Key
-        $this->getresponseApi = new GetresponseApi($apiKey);
+        $this->getresponseApi = $getresponseApi;
         $this->dbRepository = $dbRepository;
     }
 
     /**
-     * @param CartCommand $command
-     * @return string
-     * @throws SubscriberNotFoundException
+     * @param AddCartCommand $command
+     * @throws ContactNotFoundException
      * @throws GetresponseApiException
      */
-    public function sendCart(CartCommand $command)
+    public function sendCart(AddCartCommand $command)
     {
-        $subscriber = $this->getresponseApi->getSubscriberByEmail($command->getEmail(), $command->getCampaignId());
-
-        if (empty($subscriber)) {
-            throw new SubscriberNotFoundException();
-        }
+        $contact = $this->getresponseApi->getContactByEmail($command->getEmail(), $command->getListId());
 
         $variants = [];
-        /** @var Product $product */
         foreach ($command->getProducts() as $product) {
             $variantId = $this->dbRepository->getProductVariantById($product->getId());
 
@@ -61,21 +57,21 @@ class CartService
         }
 
         $grCart = [
-            'contactId' => $subscriber['contactId'],
-            'currency' => $command->getCurrency(),
-            'totalPrice' => $command->getTotalPrice(),
+            'contactId'        => $contact['contactId'],
+            'currency'         => $command->getCurrency(),
+            'totalPrice'       => $command->getTotalPrice(),
             'selectedVariants' => $variants,
-            'externalId' => $command->getCartId(),
-            'totalTaxPrice' => $command->getTotalTaxPrice()
+            'externalId'       => $command->getCartId(),
+            'totalTaxPrice'    => $command->getTotalTaxPrice(),
         ];
 
         if (empty($command->getGrCartId())) {
             $cartId = $this->getresponseApi->createCart($grCart);
             $command->setGrCartId($cartId);
+
+            $this->dbRepository->saveCartMapping($cartId, $cartId);
+        } else {
+            $this->getresponseApi->updateCart($grCart);
         }
-
-        $this->getresponseApi->updateCart($grCart);
-
-        return $command->getGrCartId();
     }
 }

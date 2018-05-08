@@ -8,9 +8,17 @@
             "email": "team@getresponse.com"
         }
     ],
+    "require-dev": {
+        "phpunit/phpunit": "^5"
+    },
     "autoload": {
         "psr-4": {
-            "ShareCode\\": "src/"
+            "GrShareCode\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GrShareCode\\Tests\\": "tests/"
         }
     }
 }

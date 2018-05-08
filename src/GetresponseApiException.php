@@ -1,9 +1,9 @@
 <?php
-namespace ShareCode;
+namespace GrShareCode;
 
 /**
  * Class GetresponseApiException
- * @package ShareCode
+ * @package GrShareCode
  */
 class GetresponseApiException extends \Exception
 {

@@ -1,7 +1,8 @@
 <?php
-namespace ShareCode;
+namespace GrShareCode;
 
-use ShareCode\Cart\Product;
+use GrShareCode\Cart\ContactNotFoundException;
+use GrShareCode\Product\Product;
 
 /**
  * Class GetresponseApi
@@ -22,11 +23,11 @@ class GetresponseApi
 
     /**
      * @param string $email
-     * @param string $campaignId
+     * @param string $listId
      * @return array
-     * @throws GetresponseApiException
+     * @throws ContactNotFoundException
      */
-    public function getSubscriberByEmail($email, $campaignId)
+    public function getContactByEmail($email, $listId)
     {
         return [];
     }

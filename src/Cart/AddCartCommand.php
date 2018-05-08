@@ -1,20 +1,22 @@
 <?php
-namespace ShareCode\Cart;
+namespace GrShareCode\Cart;
+
+use GrShareCode\Product\ProductsCollection;
 
 /**
- * Class CartCommand
- * @package ShareCode\Cart
+ * Class AddCartCommand
+ * @package GrShareCode\Cart
  */
-class CartCommand
+class AddCartCommand
 {
     /** @var string */
     private $email;
 
     /** @var string */
-    private $campaignId;
+    private $listId;
 
-    /** @var array */
-    private $products;
+    /** @var ProductsCollection */
+    private $productsCollection;
 
     private $cartId;
 
@@ -32,19 +34,19 @@ class CartCommand
 
     /**
      * @param string $email
-     * @param string $campaignId
-     * @param array $products
+     * @param string $listId
+     * @param ProductsCollection $products
      * @param string $cartId
      * @param string $grCartId
      * @param string $currency
      * @param float $totalPrice
      * @param float $totalTaxPrice
      */
-    public function __construct($email, $campaignId, $products, $cartId, $grCartId, $currency, $totalPrice, $totalTaxPrice)
+    public function __construct($email, $listId, ProductsCollection $products, $cartId, $grCartId, $currency, $totalPrice, $totalTaxPrice)
     {
         $this->email = $email;
-        $this->campaignId = $campaignId;
-        $this->products = $products;
+        $this->listId = $listId;
+        $this->productsCollection = $products;
         $this->grCartId = $grCartId;
         $this->currency = $currency;
         $this->totalPrice = $totalPrice;
@@ -62,17 +64,17 @@ class CartCommand
     /**
      * @return string
      */
-    public function getCampaignId()
+    public function getListId()
     {
-        return $this->campaignId;
+        return $this->listId;
     }
 
     /**
-     * @return array
+     * @return ProductsCollection
      */
     public function getProducts()
     {
-        return $this->products;
+        return $this->productsCollection;
     }
 
     /**

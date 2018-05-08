@@ -1,9 +1,9 @@
 <?php
-namespace ShareCode;
+namespace GrShareCode;
 
 /**
  * Class DbRepositoryInterface
- * @package ShareCode\Cart
+ * @package GrShareCode\Cart
  */
 interface DbRepositoryInterface
 {
@@ -18,4 +18,10 @@ interface DbRepositoryInterface
      * @param string $grVariantId
      */
     public function saveProductVariant($productId, $grVariantId);
+
+    /**
+     * @param int $cartId
+     * @param string $grCartId
+     */
+    public function saveCartMapping($cartId, $grCartId);
 }

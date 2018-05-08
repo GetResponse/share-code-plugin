@@ -1,9 +1,9 @@
 <?php
-namespace ShareCode\Cart;
+namespace GrShareCode\Product;
 
 /**
  * Class Product
- * @package ShareCode\Cart
+ * @package GrShareCode\Cart
  */
 class Product
 {
