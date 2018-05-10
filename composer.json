@@ -1,7 +1,8 @@
 {
     "name": "getresponse/share-code-plugin",
     "license": "",
-    "type": "project",
+    "description": "Share code plugin",
+    "type": "library",
     "authors": [
         {
             "name": "GetResponse",
