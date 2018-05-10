@@ -180,7 +180,7 @@ class GetresponseApi
         ];
 
         // for GetResponse 360
-        if (isset($this->domain)) {
+        if (!empty($this->domain)) {
             $headers[] = 'X-Domain: '.$this->domain;
         }
 
