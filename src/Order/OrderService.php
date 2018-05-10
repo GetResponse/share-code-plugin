@@ -3,6 +3,9 @@ namespace GrShareCode\Order;
 
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiException;
+use GrShareCode\Product\Product;
+use GrShareCode\Product\ProductVariant;
 
 /**
  * Class OrderService
@@ -28,45 +31,85 @@ class OrderService
 
     /**
      * @param AddOrderCommand $command
-     * @throws \GrShareCode\Cart\ContactNotFoundException
+     * @throws GetresponseApiException
      */
     public function sendOrder(AddOrderCommand $command)
     {
         $contact = $this->getresponseApi->getContactByEmail($command->getEmail(), $command->getListId());
 
         $variants = [];
+        /** @var Product $product */
         foreach ($command->getProducts() as $product) {
-            $variantId = $this->dbRepository->getProductVariantById($command->getShopId(), $product->getId());
 
-            if (empty($variantId)) {
-                $this->getresponseApi->createProduct($command->getShopId(), $product);
-                $this->dbRepository->saveProductVariant($command->getShopId(), $product->getId(), $product->getGrVariantId());
+            /** @var ProductVariant $productVariant */
+            foreach ($product->getProductVariants() as $productVariant) {
 
-                $variants[] = [
-                    'variantId' => $product->getGrVariantId(),
-                    'quantity'  => $product->getQuantity(),
-                    'price'     => $product->getPrice(),
-                    'priceTax'  => $product->getPriceTax(),
-                ];
+                $grVariant = $this->dbRepository->getProductVariantById($command->getShopId(),
+                    $productVariant->getId(), $product->getId());
+
+                if (empty($grVariant)) {
+
+                    $variant = [
+                        'name'     => $productVariant->getName(),
+                        'price'    => $productVariant->getPrice(),
+                        'priceTax' => $productVariant->getPriceTax(),
+                        'sku'      => $productVariant->getSku(),
+                    ];
+
+                    $grProduct = $this->dbRepository->getProductById($command->getShopId(), $product->getId());
+
+                    if (empty($grProduct)) {
+
+                        $grProductParams = [
+                            'name'     => $product->getName(),
+                            'variants' => [$variant],
+                        ];
+
+                        $grProduct = $this->getresponseApi->createProduct($command->getShopId(), $grProductParams);
+                        $this->dbRepository->saveProductMapping(
+                            $command->getShopId(),
+                            $product->getId(),
+                            $productVariant->getId(),
+                            $grProduct['productId'],
+                            $grProduct['variants'][0]['variantId']
+                        );
+
+                    } else {
+
+                        $grVariant = $this->getresponseApi->createProductVariant($command->getShopId(),
+                            $grProduct['productId'], $variant);
+
+                        $this->dbRepository->saveProductMapping(
+                            $command->getShopId(),
+                            $product->getId(),
+                            $productVariant->getId(),
+                            $grProduct['productId'],
+                            $grVariant['variantId']
+                        );
+                    }
+
+                    $variants[] = $variant;
+                }
+
             }
         }
 
         $grOrder = [
-            'contactId' => $contact['contactId'],
-            'totalPrice' => $command->getTotalPrice(),
-            'totalPriceTax' => $command->getTotalPriceTax(),
-            'orderUrl' => $command->getOrderUrl(),
-            'externalId' => $command->getOrderId(),
-            'currency' => $command->getCurrency(),
-            'status' => $command->getStatus(),
-            'cartId' => $command->getCartId(),
-            'description' => $command->getDescription(),
-            'shippingPrice' => $command->getShippingPrice(),
-            'billingPrice' => $command->getBillingPrice(),
-            'processedAt' => $command->getProcessedAt(),
-            'shippingAddress' => $command->getShippingAddress(),
-            'billingAddress' => $command->getBillingAddress(),
-            'selectedVariants' => $variants
+            'contactId'        => $contact['contactId'],
+            'totalPrice'       => $command->getTotalPrice(),
+            'totalPriceTax'    => $command->getTotalPriceTax(),
+            'orderUrl'         => $command->getOrderUrl(),
+            'externalId'       => $command->getOrderId(),
+            'currency'         => $command->getCurrency(),
+            'status'           => $command->getStatus(),
+            'cartId'           => $command->getCartId(),
+            'description'      => $command->getDescription(),
+            'shippingPrice'    => $command->getShippingPrice(),
+            'billingPrice'     => $command->getBillingPrice(),
+            'processedAt'      => $command->getProcessedAt(),
+            'shippingAddress'  => $command->getShippingAddress(),
+            'billingAddress'   => $command->getBillingAddress(),
+            'selectedVariants' => $variants,
         ];
 
         $grOrderId = $this->dbRepository->getGrOrderIdFromMapping($command->getShopId(), $command->getOrderId());
