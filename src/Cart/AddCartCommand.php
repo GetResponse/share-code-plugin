@@ -16,12 +16,9 @@ class AddCartCommand
     private $listId;
 
     /** @var ProductsCollection */
-    private $productsCollection;
+    private $products;
 
     private $cartId;
-
-    /** @var string */
-    private $grCartId;
 
     /** @var string */
     private $currency;
@@ -32,22 +29,25 @@ class AddCartCommand
     /** @var float */
     private $totalTaxPrice;
 
+    /** @var string */
+    private $shopId;
+
     /**
      * @param string $email
+     * @param string $shopId
      * @param string $listId
      * @param ProductsCollection $products
      * @param string $cartId
-     * @param string $grCartId
      * @param string $currency
      * @param float $totalPrice
      * @param float $totalTaxPrice
      */
-    public function __construct($email, $listId, ProductsCollection $products, $cartId, $grCartId, $currency, $totalPrice, $totalTaxPrice)
+    public function __construct($email, $shopId, $listId, ProductsCollection $products, $cartId, $currency, $totalPrice, $totalTaxPrice)
     {
         $this->email = $email;
+        $this->shopId = $shopId;
         $this->listId = $listId;
-        $this->productsCollection = $products;
-        $this->grCartId = $grCartId;
+        $this->products = $products;
         $this->currency = $currency;
         $this->totalPrice = $totalPrice;
         $this->totalTaxPrice = $totalTaxPrice;
@@ -74,23 +74,7 @@ class AddCartCommand
      */
     public function getProducts()
     {
-        return $this->productsCollection;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGrCartId()
-    {
-        return $this->grCartId;
-    }
-
-    /**
-     * @param string $grCartId
-     */
-    public function setGrCartId($grCartId)
-    {
-        $this->grCartId = $grCartId;
+        return $this->products;
     }
 
     /**
@@ -123,5 +107,13 @@ class AddCartCommand
     public function getTotalTaxPrice()
     {
         return $this->totalTaxPrice;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShopId()
+    {
+        return $this->shopId;
     }
 }

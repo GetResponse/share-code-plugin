@@ -4,13 +4,13 @@ namespace GrShareCode\Product;
 use GrShareCode\TypedCollection;
 
 /**
- * Class ProductsCollection
+ * Class ProductVariantsCollection
  * @package GrShareCode\Product
  */
-class ProductsCollection extends TypedCollection
+class ProductVariantsCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\Product\Product');
+        $this->setItemType('\GrShareCode\Product\ProductVariant');
     }
 }

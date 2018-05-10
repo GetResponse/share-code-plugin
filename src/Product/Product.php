@@ -13,32 +13,19 @@ class Product
     /** @var string */
     private $name;
 
-    /** @var string */
-    private $grVariantId;
-
-    /** @var int */
-    private $quantity;
-
-    /** @var float */
-    private $price;
-
-    /** @var float */
-    private $priceTax;
+    /** @var ProductVariantsCollection */
+    private $productVariants;
 
     /**
      * @param int $id
      * @param string $name
-     * @param int $quantity
-     * @param float $price
-     * @param float $priceTax
+     * @param ProductVariantsCollection $productVariants
      */
-    public function __construct($id, $name, $quantity, $price, $priceTax)
+    public function __construct($id, $name, ProductVariantsCollection $productVariants)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->quantity = $quantity;
-        $this->price = $price;
-        $this->priceTax = $priceTax;
+        $this->productVariants = $productVariants;
     }
 
     /**
@@ -58,42 +45,10 @@ class Product
     }
 
     /**
-     * @return string
+     * @return ProductVariantsCollection
      */
-    public function getGrVariantId()
+    public function getProductVariants()
     {
-        return $this->grVariantId;
-    }
-
-    /**
-     * @param string $grVariantId
-     */
-    public function setGrVariantId($grVariantId)
-    {
-        $this->grVariantId = $grVariantId;
-    }
-
-    /**
-     * @return int
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPrice()
-    {
-        return $this->price;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPriceTax()
-    {
-        return $this->priceTax;
+        return $this->productVariants;
     }
 }
