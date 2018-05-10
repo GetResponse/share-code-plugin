@@ -54,6 +54,16 @@ class GetresponseApi
     }
 
     /**
+     * @param $params
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function createContact($params)
+    {
+        return $this->sendRequest('contacts', 'POST', $params);
+    }
+
+    /**
      * @param string $shopId
      * @param array $product
      * @return array

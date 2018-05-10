@@ -42,4 +42,32 @@ class ContactService
             $response['email']
         );
     }
+
+    /**
+     * @param AddContactCommand $subscriber
+     * @throws GetresponseApiException
+     */
+    public function sendContact(AddContactCommand $subscriber)
+    {
+        $customFields = [];
+
+        /** @var CustomField $customField */
+        foreach ($subscriber->getCustomFieldsCollection() as $customField) {
+            $customFields[] = [
+                'customFieldId' => $customField->getId(),
+                'value' => [$customField->getValue()]
+            ];
+        }
+
+        $params = [
+            'name' => $subscriber->getName(),
+            'dayOfCycle' => $subscriber->getDayOfCycle(),
+            'campaign' => [
+                'campaignId' => $subscriber->getListId(),
+            ],
+            'customFieldValues' => $customFields,
+        ];
+
+        $this->getresponseApi->createContact($params);
+    }
 }
