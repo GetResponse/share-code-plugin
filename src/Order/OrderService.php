@@ -38,16 +38,19 @@ class OrderService
         $contact = $this->getresponseApi->getContactByEmail($command->getEmail(), $command->getListId());
 
         $variants = [];
+
         /** @var Product $product */
         foreach ($command->getProducts() as $product) {
 
-            /** @var ProductVariant $productVariant */
-            foreach ($product->getProductVariants() as $productVariant) {
+            $productVariant = $product->getVariant();
 
-                $grVariant = $this->dbRepository->getProductVariantById($command->getShopId(),
-                    $productVariant->getId(), $product->getId());
+            $grVariant = $this->dbRepository->getProductVariantById(
+                $command->getShopId(),
+                $productVariant->getId(),
+                $product->getId()
+            );
 
-                if (empty($grVariant)) {
+            if (empty($grVariant)) {
 
                     $variant = [
                         'name'     => $productVariant->getName(),
@@ -56,42 +59,43 @@ class OrderService
                         'sku'      => $productVariant->getSku(),
                     ];
 
-                    $grProduct = $this->dbRepository->getProductById($command->getShopId(), $product->getId());
+                $grProduct = $this->dbRepository->getProductById($command->getShopId(), $product->getId());
 
-                    if (empty($grProduct)) {
+                if (empty($grProduct)) {
 
-                        $grProductParams = [
-                            'name'     => $product->getName(),
-                            'variants' => [$variant],
-                        ];
+                    $grProductParams = [
+                        'name' => $product->getName(),
+                        'variants' => [$variant],
+                    ];
 
-                        $grProduct = $this->getresponseApi->createProduct($command->getShopId(), $grProductParams);
-                        $this->dbRepository->saveProductMapping(
-                            $command->getShopId(),
-                            $product->getId(),
-                            $productVariant->getId(),
-                            $grProduct['productId'],
-                            $grProduct['variants'][0]['variantId']
-                        );
+                    $grProduct = $this->getresponseApi->createProduct($command->getShopId(), $grProductParams);
+                    $this->dbRepository->saveProductMapping(
+                        $command->getShopId(),
+                        $product->getId(),
+                        $productVariant->getId(),
+                        $grProduct['productId'],
+                        $grProduct['variants'][0]['variantId']
+                    );
 
-                    } else {
+                } else {
 
-                        $grVariant = $this->getresponseApi->createProductVariant($command->getShopId(),
-                            $grProduct['productId'], $variant);
+                    $grVariant = $this->getresponseApi->createProductVariant(
+                        $command->getShopId(),
+                        $grProduct['productId'], $variant
+                    );
 
-                        $this->dbRepository->saveProductMapping(
-                            $command->getShopId(),
-                            $product->getId(),
-                            $productVariant->getId(),
-                            $grProduct['productId'],
-                            $grVariant['variantId']
-                        );
-                    }
-
-                    $variants[] = $variant;
+                    $this->dbRepository->saveProductMapping(
+                        $command->getShopId(),
+                        $product->getId(),
+                        $productVariant->getId(),
+                        $grProduct['productId'],
+                        $grVariant['variantId']
+                    );
                 }
 
+                $variants[] = $variant;
             }
+
         }
 
         $grOrder = [

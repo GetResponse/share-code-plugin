@@ -5,7 +5,7 @@ use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
-use GrShareCode\Tests\Faker;
+use GrShareCode\Tests\Generator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -33,7 +33,7 @@ class CartServiceTest extends TestCase
      */
     public function shouldCreateCartWithProductInGetResponse()
     {
-        $command = Faker::createAddCartCommand();
+        $command = Generator::createAddCartCommand();
 
         $contact = ['contactId' => 1];
 
@@ -57,7 +57,7 @@ class CartServiceTest extends TestCase
      */
     public function shouldUpdateCartInGetResponse()
     {
-        $command = Faker::createAddCartCommand();
+        $command = Generator::createAddCartCommand();
 
         $contact = ['contactId' => 1];
 
@@ -78,7 +78,7 @@ class CartServiceTest extends TestCase
     {
         $this->expectException(ContactNotFoundException::class);
 
-        $command = Faker::createAddCartCommand();
+        $command = Generator::createAddCartCommand();
 
         $this->grApiMock->method('getContactByEmail')->willThrowException(new ContactNotFoundException());
 
