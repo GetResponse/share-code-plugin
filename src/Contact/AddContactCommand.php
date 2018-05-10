@@ -11,6 +11,9 @@ class AddContactCommand
     private $name;
 
     /** @var string */
+    private $email;
+
+    /** @var string */
     private $listId;
 
     /** @var int */
@@ -21,13 +24,15 @@ class AddContactCommand
 
     /**
      * @param string $name
+     * @param string $email
      * @param string $listId
      * @param int $dayOfCycle
      * @param CustomFieldsCollection $customFieldsCollection
      */
-    public function __construct($name, $listId, $dayOfCycle, $customFieldsCollection)
+    public function __construct($name, $email, $listId, $dayOfCycle, $customFieldsCollection)
     {
         $this->name = $name;
+        $this->email = $email;
         $this->listId = $listId;
         $this->dayOfCycle = $dayOfCycle;
         $this->customFieldsCollection = $customFieldsCollection;
@@ -63,5 +68,13 @@ class AddContactCommand
     public function getCustomFieldsCollection()
     {
         return $this->customFieldsCollection;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }

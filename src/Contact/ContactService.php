@@ -61,6 +61,7 @@ class ContactService
 
         $params = [
             'name' => $subscriber->getName(),
+            'email' => $subscriber->getEmail(),
             'dayOfCycle' => $subscriber->getDayOfCycle(),
             'campaign' => [
                 'campaignId' => $subscriber->getListId(),
