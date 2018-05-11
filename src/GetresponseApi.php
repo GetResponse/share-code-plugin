@@ -23,6 +23,9 @@ class GetresponseApi
     /** @var ApiType */
     private $apiType;
 
+    /** @var array */
+    private $headers;
+
     /**
      * @param string $apiKey
      * @param ApiType $apiType
@@ -33,6 +36,22 @@ class GetresponseApi
         $this->apiKey = $apiKey;
         $this->apiType = $apiType;
         $this->xAppId = $xAppId;
+    }
+
+    /**
+     * @throws GetresponseApiException
+     */
+    public function checkConnection()
+    {
+        try {
+            $account = $this->sendRequest('accounts');
+
+            if (!isset($account['accountId'])) {
+                throw GetresponseApiException::createForInvalidApiKey();
+            }
+        } catch (\Exception $e) {
+            throw GetresponseApiException::createForInvalidApiKey();
+        }
     }
 
     /**
@@ -139,6 +158,54 @@ class GetresponseApi
     }
 
     /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getCustomFields($page, $perPage)
+    {
+        return $this->sendRequest('custom-fields?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getCampaigns($page, $perPage)
+    {
+        return $this->sendRequest('campaigns?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
+     * @param string $campaignId
+     * @param int $page
+     * @param int $perPage
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getAutoresponders($campaignId, $page, $perPage)
+    {
+        return $this->sendRequest('autoresponders?' . $this->setParams(['campaignId' => $campaignId, 'page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getShops($page, $perPage)
+    {
+        return $this->sendRequest('shops?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
      * @param string $shopId
      * @param string $productId
      * @param array $params
@@ -155,10 +222,11 @@ class GetresponseApi
      * @param string $apiMethod
      * @param string $method
      * @param array $params
+     * @param bool $withHeaders
      * @return array|mixed
      * @throws GetresponseApiException
      */
-    private function sendRequest($apiMethod, $method = 'GET', $params = [])
+    private function sendRequest($apiMethod, $method = 'GET', $params = [], $withHeaders = false)
     {
         if (empty($apiMethod)) {
             return [
@@ -191,7 +259,7 @@ class GetresponseApi
             CURLOPT_FRESH_CONNECT  => 1,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT        => self::TIMEOUT,
-            CURLOPT_HEADER         => false,
+            CURLOPT_HEADER         => $withHeaders,
             CURLOPT_HTTPHEADER     => $headers,
         ];
 
@@ -206,15 +274,22 @@ class GetresponseApi
 
         $curl = curl_init();
         curl_setopt_array($curl, $options);
-        $curlExec = curl_exec($curl);
+        $response = curl_exec($curl);
 
-        if (false === $curlExec) {
+        if (false === $response) {
             $error_message = curl_error($curl);
             curl_close($curl);
             throw GetresponseApiException::createForInvalidCurlResponse($error_message);
         }
 
-        $response = json_decode($curlExec, true);
+
+        if ($withHeaders) {
+            list($headers, $response) = explode("\r\n\r\n", $response, 2);
+            $this->headers = $this->prepareHeaders($headers);
+        }
+
+        $response = json_decode($response, true);
+
         curl_close($curl);
         if (isset($response['httpStatus']) && 400 <= $response['httpStatus']) {
             throw GetresponseApiException::createForInvalidApiResponseCode($response['message'],
@@ -238,5 +313,28 @@ class GetresponseApi
         }
 
         return http_build_query($result);
+    }
+
+    /**
+     * @param string $headers
+     * @return array
+     */
+    private function prepareHeaders( $headers ) {
+        $headers = explode("\n", $headers);
+        foreach ($headers as $header) {
+            $params = explode(':', $header, 2);
+            $key = isset($params[0]) ? $params[0] : null;
+            $value = isset($params[1]) ? $params[1] : null;
+            $headers[trim($key)] = trim($value);
+        }
+        return $headers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 }
