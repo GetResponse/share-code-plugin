@@ -170,6 +170,25 @@ class GetresponseApi
     }
 
     /**
+     * @param $name
+     *
+     * @return mixed|null
+     * @throws GetresponseApiException
+     */
+    public function getCustomFieldByName($name)
+    {
+        $result = (array) $this->sendRequest('custom-fields?' . $this->setParams(['query' => ['name' => $name]]));
+
+        foreach ($result as $custom) {
+            if ($custom['name'] === $name) {
+                return $custom;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param int $page
      * @param int $perPage
      *
