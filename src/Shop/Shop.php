@@ -1,11 +1,11 @@
 <?php
-namespace GrShareCode\Contact;
+namespace GrShareCode\Shop;
 
 /**
- * Class CustomField
- * @package GrShareCode\Contact
+ * Class Shop
+ * @package GrShareCode\Shop
  */
-class CustomField
+class Shop
 {
     /** @var string */
     private $id;
@@ -13,19 +13,14 @@ class CustomField
     /** @var string */
     private $name;
 
-    /** @var string */
-    private $value;
-
     /**
      * @param string $id
-     * @param $name
-     * @param string $value
+     * @param string $name
      */
-    public function __construct($id, $name, $value = null)
+    public function __construct($id, $name)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->value = $value;
     }
 
     /**
@@ -34,14 +29,6 @@ class CustomField
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getValue()
-    {
-        return $this->value;
     }
 
     /**

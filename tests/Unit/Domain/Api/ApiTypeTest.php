@@ -23,6 +23,16 @@ class ApiTypeTest extends TestCase
     }
 
     /**
+     * @test
+     * @dataProvider ApiUrlProvider
+     */
+    public function shouldReturnValidApiUrl($type, $url)
+    {
+        $apiType = new ApiType($type);
+        self::assertEquals($url, $apiType->getApiUrl());
+    }
+
+    /**
      * @return array
      */
     public function GetInvalidApiTypeProvider()
@@ -54,6 +64,15 @@ class ApiTypeTest extends TestCase
             [ApiType::createForMxPl()],
             [ApiType::createForMxUs()],
             [ApiType::createForSMB()]
+        ];
+    }
+
+    public function ApiUrlProvider()
+    {
+        return [
+            [ApiType::SMB, ApiType::API_URL_SMB],
+            [ApiType::MX_US, ApiType::API_URL_MX_US],
+            [ApiType::MX_PL, ApiType::API_URL_MX_PL],
         ];
     }
 }

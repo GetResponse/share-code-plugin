@@ -72,7 +72,7 @@ class ApiType
                 break;
 
             default:
-                $url = self::API_URL_MX_PL;
+                $url = self::API_URL_SMB;
         }
 
         return $url;

@@ -10,6 +10,8 @@ use GrShareCode\GetresponseApiException;
  */
 class ContactService
 {
+    const PER_PAGE = 100;
+
     /** @var GetresponseApi */
     private $getresponseApi;
 
@@ -49,26 +51,49 @@ class ContactService
      */
     public function sendContact(AddContactCommand $subscriber)
     {
-        $customFields = [];
-
-        /** @var CustomField $customField */
-        foreach ($subscriber->getCustomFieldsCollection() as $customField) {
-            $customFields[] = [
-                'customFieldId' => $customField->getId(),
-                'value' => [$customField->getValue()]
-            ];
-        }
-
         $params = [
             'name' => $subscriber->getName(),
             'email' => $subscriber->getEmail(),
             'dayOfCycle' => $subscriber->getDayOfCycle(),
             'campaign' => [
                 'campaignId' => $subscriber->getListId(),
-            ],
-            'customFieldValues' => $customFields,
+            ]
         ];
 
+        /** @var CustomField $customField */
+        foreach ($subscriber->getCustomFieldsCollection() as $customField) {
+            $params['customFieldValues'][] = [
+                'customFieldId' => $customField->getId(),
+                'value' => [$customField->getValue()]
+            ];
+        }
+
         $this->getresponseApi->createContact($params);
+    }
+
+    /**
+     * @return array|CustomFieldsCollection
+     * @throws GetresponseApiException
+     */
+    public function getAllCustomFields()
+    {
+        $customFields = $this->getresponseApi->getCustomFields(1, self::PER_PAGE);
+
+        $headers = $this->getresponseApi->getHeaders();
+
+        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
+            $customFields = array_merge($customFields,  $this->getresponseApi->getCustomFields($page, self::PER_PAGE));
+        }
+
+        $collection = new CustomFieldsCollection();
+
+        foreach ($customFields as $field) {
+            $collection[] = new CustomField(
+                $field['customFieldId'],
+                $field['name']
+            );
+        }
+
+        return $collection;
     }
 }
