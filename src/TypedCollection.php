@@ -11,7 +11,7 @@ use IteratorAggregate;
 class TypedCollection implements IteratorAggregate
 {
     /** @var array */
-    private $items;
+    private $items = [];
 
     /** @var string */
     private $itemType;
