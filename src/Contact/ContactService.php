@@ -49,25 +49,22 @@ class ContactService
      */
     public function sendContact(AddContactCommand $subscriber)
     {
-        $customFields = [];
-
-        /** @var CustomField $customField */
-        foreach ($subscriber->getCustomFieldsCollection() as $customField) {
-            $customFields[] = [
-                'customFieldId' => $customField->getId(),
-                'value' => [$customField->getValue()]
-            ];
-        }
-
         $params = [
             'name' => $subscriber->getName(),
             'email' => $subscriber->getEmail(),
             'dayOfCycle' => $subscriber->getDayOfCycle(),
             'campaign' => [
                 'campaignId' => $subscriber->getListId(),
-            ],
-            'customFieldValues' => $customFields,
+            ]
         ];
+
+        /** @var CustomField $customField */
+        foreach ($subscriber->getCustomFieldsCollection() as $customField) {
+            $params['customFieldValues'][] = [
+                'customFieldId' => $customField->getId(),
+                'value' => [$customField->getValue()]
+            ];
+        }
 
         $this->getresponseApi->createContact($params);
     }
