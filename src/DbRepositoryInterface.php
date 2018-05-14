@@ -63,9 +63,4 @@ interface DbRepositoryInterface
      * @param string $grVariantId
      */
     public function saveProductMapping($shopId, $productId, $variantId, $grProductId, $grVariantId);
-
-    /**
-     * @return CustomFieldsCollection
-     */
-    public function getSubscriberCustomFields();
 }
