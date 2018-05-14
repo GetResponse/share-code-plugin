@@ -88,10 +88,10 @@ class ContactService
         $collection = new CustomFieldsCollection();
 
         foreach ($customFields as $field) {
-            $collection[] = new CustomField(
+            $collection->add(new CustomField(
                 $field['customFieldId'],
                 $field['name']
-            );
+            ));
         }
 
         return $collection;
