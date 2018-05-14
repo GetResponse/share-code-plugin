@@ -69,7 +69,8 @@ class GetresponseApi
             ],
         ];
 
-        return $this->sendRequest('contacts?'.$this->setParams($params));
+        $result = is_array($this->sendRequest('contacts?'.$this->setParams($params))) ? reset($result) : [];
+        return $result;
     }
 
     /**
