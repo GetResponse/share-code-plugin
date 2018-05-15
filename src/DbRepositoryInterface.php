@@ -19,13 +19,6 @@ interface DbRepositoryInterface
 
     /**
      * @param string $shopId
-     * @param int $productId
-     * @param string $grVariantId
-     */
-    public function saveProductVariant($shopId, $productId, $grVariantId);
-
-    /**
-     * @param string $shopId
      * @param int $cartId
      * @param string $grCartId
      */

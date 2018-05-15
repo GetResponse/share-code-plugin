@@ -38,10 +38,10 @@ class ShopService
         $collection = new ShopsCollection();
 
         foreach ($shops as $field) {
-            $collection[] = new Shop(
+            $collection->add(new Shop(
                 $field['shopId'],
                 $field['name']
-            );
+            ));
         }
 
         return $collection;

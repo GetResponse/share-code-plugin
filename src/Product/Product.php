@@ -1,17 +1,14 @@
 <?php
 namespace GrShareCode\Product;
 
-use GrShareCode\Product\Category\CategoryCollection;
-use GrShareCode\Product\Variant\Variant;
-
 /**
  * Class Product
  * @package GrShareCode\Cart
  */
 class Product
 {
-    /** @var int */
-    private $id;
+    /** @var string */
+    private $externalId;
 
     /** @var string */
     private $name;
@@ -19,7 +16,16 @@ class Product
     /** @var Variant */
     private $productVariant;
 
-    /** @var CategoryCollection */
+    /** @var string */
+    private $url;
+
+    /** @var string */
+    private $type;
+
+    /** @var string */
+    private $vendor;
+
+    /** @var CategoriesCollection */
     private $categories;
 
     /**
@@ -29,6 +35,7 @@ class Product
      * @param CategoryCollection $categories
      * @throws ProductException
      */
+    public function __construct($name, ProductVariantsCollection $productVariants, $externalId = '', $url = '', $type = '', $vendor = '', CategoriesCollection $categories = null)
     public function __construct($id, $name, Variant $productVariant, CategoryCollection $categories)
     {
         $this->assertValidName($name);
