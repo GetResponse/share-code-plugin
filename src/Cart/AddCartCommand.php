@@ -33,6 +33,9 @@ class AddCartCommand
     /** @var string */
     private $shopId;
 
+    /** @var string */
+    private $cartUrl;
+
     /**
      * @param string $email
      * @param string $shopId
@@ -42,8 +45,9 @@ class AddCartCommand
      * @param string $currency
      * @param float $totalPrice
      * @param float $totalTaxPrice
+     * @param string $cartUrl
      */
-    public function __construct($email, $shopId, $listId, ProductsCollection $products, $cartId, $currency, $totalPrice, $totalTaxPrice)
+    public function __construct($email, $shopId, $listId, ProductsCollection $products, $cartId, $currency, $totalPrice, $totalTaxPrice, $cartUrl = '')
     {
         $this->email = $email;
         $this->shopId = $shopId;
@@ -53,6 +57,7 @@ class AddCartCommand
         $this->currency = $currency;
         $this->totalPrice = $totalPrice;
         $this->totalTaxPrice = $totalTaxPrice;
+        $this->cartUrl = $cartUrl;
     }
 
     /**
@@ -117,5 +122,13 @@ class AddCartCommand
     public function getShopId()
     {
         return $this->shopId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCartUrl()
+    {
+        return $this->cartUrl;
     }
 }

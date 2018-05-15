@@ -48,17 +48,17 @@ class CartService
             /** @var ProductVariant $productVariant */
             foreach ($product->getProductVariants() as $productVariant) {
 
+                $variant = [
+                    'name' => $productVariant->getName(),
+                    'price' => $productVariant->getPrice(),
+                    'priceTax' => $productVariant->getPriceTax(),
+                    'quantity' => $productVariant->getQuantity(),
+                    'sku' => $productVariant->getSku()
+                ];
+
                 $grVariant = $this->dbRepository->getProductVariantById($command->getShopId(), $productVariant->getId(), $product->getId());
 
                 if (empty($grVariant)) {
-
-                    $variant = [
-                        'name' => $productVariant->getName(),
-                        'price' => $productVariant->getPrice(),
-                        'priceTax' => $productVariant->getPriceTax(),
-                        'quantity' => $productVariant->getQuantity(),
-                        'sku' => $productVariant->getSku()
-                    ];
 
                     $grProduct = $this->dbRepository->getProductById($command->getShopId(), $product->getId());
 
@@ -78,7 +78,7 @@ class CartService
                             $grProduct['variants'][0]['variantId']
                         );
 
-                        $variant['variantId'] = $grProduct['variants'][0]['variantId'];
+                        $grVariant = $grProduct['variants'][0]['variantId'];
                     } else {
 
                         $grVariant = $this->getresponseApi->createProductVariant($command->getShopId(), $grProduct['productId'], $variant);
@@ -91,31 +91,25 @@ class CartService
                             $grVariant['variantId']
                         );
 
-                        $variant['variantId'] = $grVariant['variantId'];
+                        $grVariant = $grVariant['variantId'];
 
                     }
-                } else {
-                    $variant = [
-                        'variantId' => $grVariant,
-                        'name' => $productVariant->getName(),
-                        'price' => $productVariant->getPrice(),
-                        'priceTax' => $productVariant->getPriceTax(),
-                        'sku' => $productVariant->getSku(),
-                        'quantity' => 1
-                    ];
                 }
 
+                $variant['variantId'] = $grVariant;
                 $variants[] = $variant;
             }
         }
 
         $grCart = [
             'contactId'        => $contact['contactId'],
-            'currency'         => $command->getCurrency(),
             'totalPrice'       => $command->getTotalPrice(),
+            'totalTaxPrice'    => $command->getTotalTaxPrice(),
+            'currency'         => $command->getCurrency(),
             'selectedVariants' => $variants,
             'externalId'       => $command->getCartId(),
-            'totalTaxPrice'    => $command->getTotalTaxPrice(),
+            'cartUrl'          => $command->getCartUrl()
+
         ];
 
         $grCartId = $this->dbRepository->getGrCartIdFromMapping($command->getShopId(), $command->getCartId());
