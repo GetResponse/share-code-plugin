@@ -53,7 +53,6 @@ class Order
     private $billingAddress;
 
     /**
-     * Order constructor.
      * @param int $orderId
      * @param ProductsCollection $products
      * @param float $totalPrice

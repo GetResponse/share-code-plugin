@@ -62,6 +62,7 @@ class CustomFieldMapping
     {
         $this->assertCustomFieldNameValid($externalCustomFieldName);
         $this->assertStatusValid($status);
+
         $this->externalCustomFieldName = $externalCustomFieldName;
         $this->externalCustomFieldValue = $externalCustomFieldValue;
         $this->grCustomFieldId = $grCustomFieldId;

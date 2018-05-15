@@ -53,12 +53,9 @@ class OrderService
             return;
         }
 
-        $variants = $this->productService->getProductVariants(
-            $addOrderCommand->getProducts(),
-            $addOrderCommand->getShopId()
-        );
-
         $order = $addOrderCommand->getOrder();
+
+        $variants = $this->productService->getProductVariants($order->getProducts(), $addOrderCommand->getShopId());
 
         $grOrder = [
             'contactId' => $contact['contactId'],

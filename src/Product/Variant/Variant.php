@@ -1,6 +1,8 @@
 <?php
 namespace GrShareCode\Product\Variant;
 
+use GrShareCode\Product\Variant\Images\ImagesCollection;
+
 /**
  * Class Variant
  * @package GrShareCode\Product\Variant
@@ -25,6 +27,16 @@ class Variant
     /** @var integer */
     private $quantity;
 
+    /** @var string */
+    private $url;
+
+    /** @var string */
+    private $description;
+    /**
+     * @var ImagesCollection
+     */
+    private $images;
+
     /**
      * @param string $id
      * @param string $name
@@ -32,10 +44,22 @@ class Variant
      * @param float $priceTax
      * @param string $sku
      * @param int $quantity
+     * @param string $url
+     * @param string $description
+     * @param ImagesCollection $images
      * @throws VariantException
      */
-    public function __construct($id, $name, $price, $priceTax, $sku, $quantity)
-    {
+    public function __construct(
+        $id,
+        $name,
+        $price,
+        $priceTax,
+        $sku,
+        $quantity,
+        $url,
+        $description,
+        ImagesCollection $images
+    ) {
         $this->assertValidName($name);
         $this->assertValidPrice($price);
         $this->assertValidPriceTax($priceTax);
@@ -47,6 +71,9 @@ class Variant
         $this->priceTax = $priceTax;
         $this->sku = $sku;
         $this->quantity = $quantity;
+        $this->url = $url;
+        $this->description = $description;
+        $this->images = $images;
     }
 
     /**
@@ -91,6 +118,30 @@ class Variant
         if (empty($sku)) {
             throw VariantException::createForInvalidSku();
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return ImagesCollection
+     */
+    public function getImages()
+    {
+        return $this->images;
     }
 
     /**

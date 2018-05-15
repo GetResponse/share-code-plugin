@@ -1,9 +1,9 @@
 <?php
-namespace GrShareCode\Product;
+namespace GrShareCode\Product\Variant\Images;
 
 /**
  * Class Image
- * @package GrShareCode\Product
+ * @package GrShareCode\Product\Variant\Images
  */
 class Image
 {

@@ -69,14 +69,19 @@ class ExportCustomersService
             $shopId = $this->config->getEcommerceConfig()->getShopId();
 
             $addCartCommand = new AddCartCommand(
+                $exportContactCommand->getCart(),
                 $exportContactCommand->getEmail(),
-                $shopId,
                 $this->config->getContactListId(),
-                $exportContactCommand->getCart()
+                $shopId
             );
             $this->cartService->sendCart($addCartCommand);
 
-            $addOrderCommand = new AddOrderCommand();
+            $addOrderCommand = new AddOrderCommand(
+                $exportContactCommand->getOrder(),
+                $exportContactCommand->getEmail(),
+                $this->config->getContactListId(),
+                $shopId
+            );
             $this->orderService->sendOrder($addOrderCommand);
 
         }

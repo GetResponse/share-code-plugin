@@ -1,6 +1,9 @@
 <?php
 namespace GrShareCode\Product;
 
+use GrShareCode\Product\Category\CategoryCollection;
+use GrShareCode\Product\Variant\Variant;
+
 /**
  * Class Product
  * @package GrShareCode\Cart
@@ -25,21 +28,30 @@ class Product
     /** @var string */
     private $vendor;
 
-    /** @var CategoriesCollection */
+    /** @var CategoryCollection */
     private $categories;
 
     /**
-     * @param int $id
+     * @param int $externalId
      * @param string $name
      * @param Variant $productVariant
      * @param CategoryCollection $categories
+     * @param string $url
+     * @param string $type
+     * @param string $vendor
      * @throws ProductException
      */
-    public function __construct($name, ProductVariantsCollection $productVariants, $externalId = '', $url = '', $type = '', $vendor = '', CategoriesCollection $categories = null)
-    public function __construct($id, $name, Variant $productVariant, CategoryCollection $categories)
-    {
+    public function __construct(
+        $externalId,
+        $name,
+        Variant $productVariant,
+        CategoryCollection $categories,
+        $url = '',
+        $type = '',
+        $vendor = ''
+    ) {
         $this->assertValidName($name);
-        $this->id = $id;
+        $this->externalId = $externalId;
         $this->name = $name;
         $this->productVariant = $productVariant;
         $this->categories = $categories;
@@ -57,19 +69,51 @@ class Product
     }
 
     /**
+     * @return string
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }
+
+    /**
+     * @return Variant
+     */
+    public function getProductVariant()
+    {
+        return $this->productVariant;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVendor()
+    {
+        return $this->vendor;
+    }
+
+    /**
      * @return CategoryCollection
      */
     public function getCategories()
     {
         return $this->categories;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

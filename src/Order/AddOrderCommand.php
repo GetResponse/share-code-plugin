@@ -21,11 +21,11 @@ class AddOrderCommand
 
     /**
      * @param Order $order
-     * @param string $contactListId
      * @param string $email
+     * @param string $contactListId
      * @param string $shopId
      */
-    public function __construct(Order $order, $contactListId, $email, $shopId)
+    public function __construct(Order $order, $email, $contactListId, $shopId)
     {
         $this->order = $order;
         $this->contactListId = $contactListId;

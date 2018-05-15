@@ -20,17 +20,17 @@ class AddCartCommand
     private $cart;
 
     /**
-     * @param string $email
-     * @param string $shopId
-     * @param string $contactListId
      * @param Cart $cart
+     * @param string $email
+     * @param string $contactListId
+     * @param string $shopId
      */
-    public function __construct($email, $shopId, $contactListId, Cart $cart)
+    public function __construct(Cart $cart, $email, $contactListId, $shopId)
     {
-        $this->email = $email;
-        $this->shopId = $shopId;
-        $this->contactListId = $contactListId;
         $this->cart = $cart;
+        $this->email = $email;
+        $this->contactListId = $contactListId;
+        $this->shopId = $shopId;
     }
 
     /**

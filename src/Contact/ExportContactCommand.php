@@ -2,6 +2,7 @@
 namespace GrShareCode\Contact;
 
 use GrShareCode\Cart\Cart;
+use GrShareCode\Order\Order;
 
 /**
  * Class ExportContactCommand
@@ -21,18 +22,23 @@ class ExportContactCommand
     /** @var Cart */
     private $cart;
 
+    /** @var Order */
+    private $order;
+
     /**
      * @param string $email
      * @param string $name
      * @param CustomFieldsCollection $customFieldsCollection
      * @param Cart $cart
+     * @param Order $order
      */
-    public function __construct($email, $name, $customFieldsCollection, Cart $cart)
+    public function __construct($email, $name, CustomFieldsCollection $customFieldsCollection, Cart $cart, Order $order)
     {
         $this->email = $email;
         $this->name = $name;
         $this->customFieldsCollection = $customFieldsCollection;
         $this->cart = $cart;
+        $this->order = $order;
     }
 
     /**
@@ -65,6 +71,14 @@ class ExportContactCommand
     public function getCustomFieldsCollection()
     {
         return $this->customFieldsCollection;
+    }
+
+    /**
+     * @return Order
+     */
+    public function getOrder()
+    {
+        return $this->order;
     }
 
 }
