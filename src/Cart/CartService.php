@@ -56,7 +56,7 @@ class CartService
                     'sku' => $productVariant->getSku()
                 ];
 
-                $grVariant = $this->dbRepository->getProductVariantById($command->getShopId(), $productVariant->getId(), $product->getId());
+                $grVariant = $this->dbRepository->getProductVariantById($command->getShopId(), $productVariant->getExternalId(), $product->getId());
 
                 if (empty($grVariant)) {
 
@@ -80,7 +80,7 @@ class CartService
                         $this->dbRepository->saveProductMapping(
                             $command->getShopId(),
                             $product->getId(),
-                            $productVariant->getId(),
+                            $productVariant->getExternalId(),
                             $grProduct['productId'],
                             $grProduct['variants'][0]['variantId']
                         );
@@ -93,7 +93,7 @@ class CartService
                         $this->dbRepository->saveProductMapping(
                             $command->getShopId(),
                             $product->getId(),
-                            $productVariant->getId(),
+                            $productVariant->getExternalId(),
                             $grProduct['productId'],
                             $grVariant['variantId']
                         );
