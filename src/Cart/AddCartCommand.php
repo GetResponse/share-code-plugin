@@ -18,6 +18,7 @@ class AddCartCommand
     /** @var ProductsCollection */
     private $products;
 
+    /** @var string|int */
     private $cartId;
 
     /** @var string */
@@ -48,6 +49,7 @@ class AddCartCommand
         $this->shopId = $shopId;
         $this->listId = $listId;
         $this->products = $products;
+        $this->cartId = $cartId;
         $this->currency = $currency;
         $this->totalPrice = $totalPrice;
         $this->totalTaxPrice = $totalTaxPrice;
@@ -94,7 +96,7 @@ class AddCartCommand
     }
 
     /**
-     * @return mixed
+     * @return string|int
      */
     public function getCartId()
     {
