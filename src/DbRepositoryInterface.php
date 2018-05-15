@@ -1,6 +1,8 @@
 <?php
 namespace GrShareCode;
 
+use GrShareCode\Contact\CustomFieldsCollection;
+
 /**
  * Class DbRepositoryInterface
  * @package GrShareCode\Cart
@@ -61,5 +63,4 @@ interface DbRepositoryInterface
      * @param string $grVariantId
      */
     public function saveProductMapping($shopId, $productId, $variantId, $grProductId, $grVariantId);
-
 }
