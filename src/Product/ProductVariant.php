@@ -17,6 +17,8 @@ class ProductVariant
 
     private $quantity;
 
+    private $sku;
+
     /**
      * @param $id
      * @param $name
@@ -24,13 +26,14 @@ class ProductVariant
      * @param $priceTax
      * @param $quantity
      */
-    public function __construct($id, $name, $price, $priceTax, $quantity)
+    public function __construct($id, $name, $price, $priceTax, $quantity, $sku)
     {
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
         $this->priceTax = $priceTax;
         $this->quantity = $quantity;
+        $this->sku = $sku;
     }
 
     /**
@@ -71,5 +74,13 @@ class ProductVariant
     public function getQuantity()
     {
         return $this->quantity;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSku()
+    {
+        return $this->sku;
     }
 }
