@@ -56,11 +56,11 @@ class CartService
                     'sku' => $productVariant->getSku()
                 ];
 
-                $grVariant = $this->dbRepository->getProductVariantById($command->getShopId(), $productVariant->getExternalId(), $product->getId());
+                $grVariant = $this->dbRepository->getProductVariantById($command->getShopId(), $productVariant->getExternalId(), $product->getExternalId());
 
                 if (empty($grVariant)) {
 
-                    $grProduct = $this->dbRepository->getProductById($command->getShopId(), $product->getId());
+                    $grProduct = $this->dbRepository->getProductById($command->getShopId(), $product->getExternalId());
 
                     if (empty($grProduct)) {
 
@@ -71,7 +71,7 @@ class CartService
                             'url' => $product->getUrl(),
                             'type' => $product->getType(),
                             'vendor' => $product->getVendor(),
-                            'externalId' => $product->getId(),
+                            'externalId' => $product->getExternalId(),
                             'categories' => $productCategories,
                             'variants' => [$variant],
                         ];
@@ -79,7 +79,7 @@ class CartService
                         $grProduct = $this->getresponseApi->createProduct($command->getShopId(), $grProductParams);
                         $this->dbRepository->saveProductMapping(
                             $command->getShopId(),
-                            $product->getId(),
+                            $product->getExternalId(),
                             $productVariant->getExternalId(),
                             $grProduct['productId'],
                             $grProduct['variants'][0]['variantId']
@@ -92,7 +92,7 @@ class CartService
 
                         $this->dbRepository->saveProductMapping(
                             $command->getShopId(),
-                            $product->getId(),
+                            $product->getExternalId(),
                             $productVariant->getExternalId(),
                             $grProduct['productId'],
                             $grVariant['variantId']

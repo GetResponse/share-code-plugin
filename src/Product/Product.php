@@ -7,8 +7,8 @@ namespace GrShareCode\Product;
  */
 class Product
 {
-    /** @var int */
-    private $id;
+    /** @var string */
+    private $externalId;
 
     /** @var string */
     private $name;
@@ -29,19 +29,19 @@ class Product
     private $categories;
 
     /**
-     * @param int $id
      * @param string $name
      * @param ProductVariantsCollection $productVariants
+     * @param string $externalId
      * @param string $url
      * @param string $type
      * @param string $vendor
      * @param CategoriesCollection $categories
      */
-    public function __construct($id, $name, ProductVariantsCollection $productVariants, $url, $type, $vendor, CategoriesCollection $categories)
+    public function __construct($name, ProductVariantsCollection $productVariants, $externalId = '', $url = '', $type = '', $vendor = '', CategoriesCollection $categories = null)
     {
-        $this->id = $id;
         $this->name = $name;
         $this->productVariants = $productVariants;
+        $this->externalId = $externalId;
         $this->url = $url;
         $this->type = $type;
         $this->vendor = $vendor;
@@ -51,9 +51,9 @@ class Product
     /**
      * @return int
      */
-    public function getId()
+    public function getExternalId()
     {
-        return $this->id;
+        return $this->externalId;
     }
 
     /**

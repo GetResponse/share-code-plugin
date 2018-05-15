@@ -39,22 +39,22 @@ class ProductVariant
      * @param float $price
      * @param float $priceTax
      * @param string $sku
+     * @param string $externalId
      * @param int $quantity
      * @param string $url
      * @param string $description
      * @param ImagesCollection $images
-     * @param string $externalId
      */
     public function __construct(
         $name,
         $price,
         $priceTax,
         $sku,
-        $quantity,
-        $url,
-        $description,
-        ImagesCollection $images,
-        $externalId
+        $externalId = '',
+        $quantity = 0,
+        $url = '',
+        $description = '',
+        ImagesCollection $images = null
     ) {
         $this->name = $name;
         $this->price = $price;
