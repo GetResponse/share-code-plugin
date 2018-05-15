@@ -2,6 +2,9 @@
 namespace GrShareCode\Tests;
 
 use GrShareCode\Cart\AddCartCommand;
+use GrShareCode\Product\Category\Category;
+use GrShareCode\Product\Category\CategoryCollection;
+use GrShareCode\Product\Category\CategoryException;
 use GrShareCode\Product\Product;
 use GrShareCode\Product\ProductException;
 use GrShareCode\Product\ProductsCollection;
@@ -37,10 +40,13 @@ class Generator
      * @return ProductsCollection
      * @throws VariantException
      * @throws ProductException
+     * @throws CategoryException
      */
     public static function createProductsCollection()
     {
-        $product = new Product(1, 'simple product', self::createProductVariant());
+        $categoryCollection = new CategoryCollection();
+        $categoryCollection->add(new Category('t-shirts'));
+        $product = new Product(1, 'simple product', self::createProductVariant(), $categoryCollection);
         $products = new ProductsCollection();
         $products->add($product);
 
@@ -53,6 +59,6 @@ class Generator
      */
     public static function createProductVariant()
     {
-        return new Variant(1, 'simple product', 9.99, 12.00, 'simple-product');
+        return new Variant(1, 'simple product', 9.99, 12.00, 'simple-product', 1);
     }
 }

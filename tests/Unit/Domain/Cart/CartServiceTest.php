@@ -5,6 +5,7 @@ use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
+use GrShareCode\Product\ProductService;
 use GrShareCode\Tests\Generator;
 use PHPUnit\Framework\TestCase;
 
@@ -20,11 +21,22 @@ class CartServiceTest extends TestCase
     /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
     private $grApiMock;
 
+    /** @var ProductService|\PHPUnit_Framework_MockObject_MockObject */
+    private $productService;
+
     public function setUp()
     {
-        $this->dbRepositoryMock = $this->getMockBuilder(DbRepositoryInterface::class)->disableOriginalConstructor()
+        $this->dbRepositoryMock = $this->getMockBuilder(DbRepositoryInterface::class)
+            ->disableOriginalConstructor()
             ->getMock();
-        $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)->disableOriginalConstructor()->getMock();
+
+        $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->productService = $this->getMockBuilder(ProductService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -38,15 +50,14 @@ class CartServiceTest extends TestCase
         $contact = ['contactId' => 1];
 
         $this->grApiMock->method('getContactByEmail')->willReturn($contact);
-        $this->grApiMock->expects($this->once())->method('createProduct');
 
         $this->grApiMock->expects($this->once())->method('createCart');
         $this->dbRepositoryMock->expects($this->once())->method('saveCartMapping');
 
-        $this->dbRepositoryMock->method('getProductVariantById')->willReturn(null);
-        $this->dbRepositoryMock->expects($this->once())->method('saveProductMapping');
+        $this->dbRepositoryMock->method('getProductMappingByVariantId')->willReturn(null);
+        $this->dbRepositoryMock->expects($this->once())->method('saveCartMapping');
 
-        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock);
+        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productService);
 
         $cartService->sendCart($command);
     }
@@ -66,7 +77,7 @@ class CartServiceTest extends TestCase
 
         $this->dbRepositoryMock->method('getGrCartIdFromMapping')->willReturn(3);
 
-        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock);
+        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productService);
 
         $cartService->sendCart($command);
     }
@@ -82,7 +93,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiMock->method('getContactByEmail')->willThrowException(new ContactNotFoundException());
 
-        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock);
+        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productService);
 
         $cartService->sendCart($command);
     }

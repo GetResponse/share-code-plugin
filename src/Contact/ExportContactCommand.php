@@ -1,11 +1,13 @@
 <?php
 namespace GrShareCode\Contact;
 
+use GrShareCode\Cart\Cart;
+
 /**
- * Class AddContactCommand
+ * Class ExportContactCommand
  * @package GrShareCode\Contact
  */
-class AddContactCommand
+class ExportContactCommand
 {
     /** @var string */
     private $name;
@@ -13,29 +15,32 @@ class AddContactCommand
     /** @var string */
     private $email;
 
-    /** @var string */
-    private $contactListId;
-
-    /** @var int */
-    private $dayOfCycle;
-
     /** @var CustomFieldsCollection */
     private $customFieldsCollection;
+
+    /** @var Cart */
+    private $cart;
 
     /**
      * @param string $email
      * @param string $name
-     * @param string $contactListId
-     * @param int $dayOfCycle
      * @param CustomFieldsCollection $customFieldsCollection
+     * @param Cart $cart
      */
-    public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection)
+    public function __construct($email, $name, $customFieldsCollection, Cart $cart)
     {
         $this->email = $email;
         $this->name = $name;
-        $this->contactListId = $contactListId;
-        $this->dayOfCycle = $dayOfCycle;
         $this->customFieldsCollection = $customFieldsCollection;
+        $this->cart = $cart;
+    }
+
+    /**
+     * @return Cart
+     */
+    public function getCart()
+    {
+        return $this->cart;
     }
 
     /**
@@ -49,17 +54,9 @@ class AddContactCommand
     /**
      * @return string
      */
-    public function getContactListId()
+    public function getEmail()
     {
-        return $this->contactListId;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDayOfCycle()
-    {
-        return $this->dayOfCycle;
+        return $this->email;
     }
 
     /**
@@ -70,11 +67,4 @@ class AddContactCommand
         return $this->customFieldsCollection;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
 }

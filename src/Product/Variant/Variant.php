@@ -22,15 +22,19 @@ class Variant
     /** @var string */
     private $sku;
 
+    /** @var integer */
+    private $quantity;
+
     /**
      * @param string $id
      * @param string $name
      * @param float $price
      * @param float $priceTax
      * @param string $sku
+     * @param int $quantity
      * @throws VariantException
      */
-    public function __construct($id, $name, $price, $priceTax, $sku)
+    public function __construct($id, $name, $price, $priceTax, $sku, $quantity)
     {
         $this->assertValidName($name);
         $this->assertValidPrice($price);
@@ -42,6 +46,7 @@ class Variant
         $this->price = $price;
         $this->priceTax = $priceTax;
         $this->sku = $sku;
+        $this->quantity = $quantity;
     }
 
     /**
@@ -86,6 +91,14 @@ class Variant
         if (empty($sku)) {
             throw VariantException::createForInvalidSku();
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
     }
 
     /**

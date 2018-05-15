@@ -19,14 +19,18 @@ class Category
     /** @var string */
     private $url;
 
+    /** @var boolean */
+    private $isDefault;
+
     /**
      * @param string $name
      * @param string $parentId
      * @param string $externalId
      * @param string $url
+     * @param bool $isDefault
      * @throws CategoryException
      */
-    public function __construct($name, $parentId, $externalId, $url)
+    public function __construct($name, $parentId = null, $externalId = null, $url = null, $isDefault = null)
     {
         $this->assertValidName($name);
 
@@ -34,6 +38,7 @@ class Category
         $this->parentId = $parentId;
         $this->externalId = $externalId;
         $this->url = $url;
+        $this->isDefault = $isDefault;
     }
 
     /**
@@ -45,6 +50,14 @@ class Category
         if (empty($name)) {
             throw CategoryException::createForInvalidName();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDefault()
+    {
+        return $this->isDefault;
     }
 
     /**
