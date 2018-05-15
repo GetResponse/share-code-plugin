@@ -40,10 +40,10 @@ class CampaignService
         $collection = new CampaignsCollection();
 
         foreach ($campaigns as $field) {
-            $collection[] = new Campaign(
+            $collection->add(new Campaign(
                 $field['campaignId'],
                 $field['name']
-            );
+            ));
         }
 
         return $collection;
