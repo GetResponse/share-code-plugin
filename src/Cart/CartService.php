@@ -77,6 +77,7 @@ class CartService
                             $grProduct['variants'][0]['variantId']
                         );
 
+                        $variant['variantId'] = $grProduct['variants'][0]['variantId'];
                     } else {
 
                         $grVariant = $this->getresponseApi->createProductVariant($command->getShopId(), $grProduct['productId'], $variant);
@@ -88,10 +89,22 @@ class CartService
                             $grProduct['productId'],
                             $grVariant['variantId']
                         );
-                    }
 
-                    $variants[] = $variant;
+                        $variant['variantId'] = $grVariant['variantId'];
+
+                    }
+                } else {
+                    $variant = [
+                        'variantId' => $grVariant,
+                        'name' => $productVariant->getName(),
+                        'price' => $productVariant->getPrice(),
+                        'priceTax' => $productVariant->getPriceTax(),
+                        'sku' => $productVariant->getSku(),
+                        'quantity' => 1
+                    ];
                 }
+
+                $variants[] = $variant;
             }
         }
 
