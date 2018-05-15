@@ -56,6 +56,7 @@ class CartService
                         'name' => $productVariant->getName(),
                         'price' => $productVariant->getPrice(),
                         'priceTax' => $productVariant->getPriceTax(),
+                        'quantity' => $productVariant->getQuantity(),
                         'sku' => $productVariant->getSku()
                     ];
 
