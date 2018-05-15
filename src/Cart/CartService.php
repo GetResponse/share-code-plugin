@@ -64,8 +64,15 @@ class CartService
 
                     if (empty($grProduct)) {
 
+                        $productCategories = [];
+
                         $grProductParams = [
                             'name' => $product->getName(),
+                            'url' => $product->getUrl(),
+                            'type' => $product->getType(),
+                            'vendor' => $product->getVendor(),
+                            'externalId' => $product->getId(),
+                            'categories' => $productCategories,
                             'variants' => [$variant],
                         ];
 
