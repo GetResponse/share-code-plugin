@@ -1,6 +1,9 @@
 <?php
 namespace GrShareCode\Product;
 
+use GrShareCode\Product\Category\CategoryCollection;
+use GrShareCode\Product\Variant\Variant;
+
 /**
  * Class Product
  * @package GrShareCode\Cart
@@ -13,8 +16,8 @@ class Product
     /** @var string */
     private $name;
 
-    /** @var ProductVariantsCollection */
-    private $productVariants;
+    /** @var Variant */
+    private $productVariant;
 
     /** @var string */
     private $url;
@@ -25,31 +28,49 @@ class Product
     /** @var string */
     private $vendor;
 
-    /** @var CategoriesCollection */
+    /** @var CategoryCollection */
     private $categories;
 
     /**
+     * @param int $externalId
      * @param string $name
-     * @param ProductVariantsCollection $productVariants
-     * @param string $externalId
+     * @param Variant $productVariant
+     * @param CategoryCollection $categories
      * @param string $url
      * @param string $type
      * @param string $vendor
-     * @param CategoriesCollection $categories
+     * @throws ProductException
      */
-    public function __construct($name, ProductVariantsCollection $productVariants, $externalId = '', $url = '', $type = '', $vendor = '', CategoriesCollection $categories = null)
-    {
-        $this->name = $name;
-        $this->productVariants = $productVariants;
+    public function __construct(
+        $externalId,
+        $name,
+        Variant $productVariant,
+        CategoryCollection $categories,
+        $url = '',
+        $type = '',
+        $vendor = ''
+    ) {
+        $this->assertValidName($name);
         $this->externalId = $externalId;
-        $this->url = $url;
-        $this->type = $type;
-        $this->vendor = $vendor;
+        $this->name = $name;
+        $this->productVariant = $productVariant;
         $this->categories = $categories;
     }
 
+//    @todo: dodaj settery zamiast construktro
     /**
-     * @return int
+     * @param string $name
+     * @throws ProductException
+     */
+    private function assertValidName($name)
+    {
+        if (empty($name)) {
+            throw ProductException::createForInvalidName();
+        }
+    }
+
+    /**
+     * @return string
      */
     public function getExternalId()
     {
@@ -57,19 +78,11 @@ class Product
     }
 
     /**
-     * @return string
+     * @return Variant
      */
-    public function getName()
+    public function getProductVariant()
     {
-        return $this->name;
-    }
-
-    /**
-     * @return ProductVariantsCollection
-     */
-    public function getProductVariants()
-    {
-        return $this->productVariants;
+        return $this->productVariant;
     }
 
     /**
@@ -97,10 +110,27 @@ class Product
     }
 
     /**
-     * @return CategoriesCollection
+     * @return CategoryCollection
      */
     public function getCategories()
     {
         return $this->categories;
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return Variant
+     */
+    public function getVariant()
+    {
+        return $this->productVariant;
+    }
+
 }

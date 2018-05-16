@@ -49,7 +49,7 @@ class CampaignService
         return $collection;
     }
 
-    /**
+    /**√
      * @param string $campaignId
      * @return AutorespondersCollection
      * @throws GetresponseApiException

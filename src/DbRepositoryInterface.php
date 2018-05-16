@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode;
 
-use GrShareCode\Contact\CustomFieldsCollection;
+use GrShareCode\ProductMapping\ProductMapping;
 
 /**
  * Class DbRepositoryInterface
@@ -10,11 +10,12 @@ use GrShareCode\Contact\CustomFieldsCollection;
 interface DbRepositoryInterface
 {
     /**
-     * @param string $shopId
-     * @param int $variantId
-     * @param int $parentId
+     * @param string $grShopId
+     * @param int $shopProductId
+     * @param int $shopVariantId
+     * @return ProductMapping
      */
-    public function getProductVariantById($shopId, $variantId, $parentId);
+    public function getProductMappingByVariantId($grShopId, $shopProductId, $shopVariantId);
 
     /**
      * @param string $shopId
@@ -44,9 +45,10 @@ interface DbRepositoryInterface
 
     /**
      * @param string $shopId
-     * @param int $productId
+     * @param int $shopProductId
+     * @return ProductMapping
      */
-    public function getProductById($shopId, $productId);
+    public function getProductMappingByProductId($shopId, $shopProductId);
 
     /**
      * @param string $shopId
@@ -55,5 +57,9 @@ interface DbRepositoryInterface
      * @param string $grProductId
      * @param string $grVariantId
      */
-    public function saveProductMapping($shopId, $productId, $variantId, $grProductId, $grVariantId);
+    public function saveProductMapping(ProductMapping $shopId, $productId, $variantId, $grProductId, $grVariantId);
+
+
+    public function getCustomFieldMapping();
+
 }

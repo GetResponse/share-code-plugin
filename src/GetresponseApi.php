@@ -84,6 +84,17 @@ class GetresponseApi
     }
 
     /**
+     * @param int $contactId
+     * @param array $params
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function updateContact($contactId, $params)
+    {
+        return $this->sendRequest('contacts/' . $contactId, 'POST', $params);
+    }
+
+    /**
      * @param string $shopId
      * @param array $product
      * @return array

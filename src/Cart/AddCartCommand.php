@@ -1,8 +1,6 @@
 <?php
 namespace GrShareCode\Cart;
 
-use GrShareCode\Product\ProductsCollection;
-
 /**
  * Class AddCartCommand
  * @package GrShareCode\Cart
@@ -13,51 +11,26 @@ class AddCartCommand
     private $email;
 
     /** @var string */
-    private $listId;
-
-    /** @var ProductsCollection */
-    private $products;
-
-    /** @var string|int */
-    private $cartId;
-
-    /** @var string */
-    private $currency;
-
-    /** @var float */
-    private $totalPrice;
-
-    /** @var float */
-    private $totalTaxPrice;
+    private $contactListId;
 
     /** @var string */
     private $shopId;
 
-    /** @var string */
-    private $cartUrl;
+    /** @var Cart */
+    private $cart;
 
     /**
+     * @param Cart $cart
      * @param string $email
+     * @param string $contactListId
      * @param string $shopId
-     * @param string $listId
-     * @param ProductsCollection $products
-     * @param string $cartId
-     * @param string $currency
-     * @param float $totalPrice
-     * @param float $totalTaxPrice
-     * @param string $cartUrl
      */
-    public function __construct($email, $shopId, $listId, ProductsCollection $products, $cartId, $currency, $totalPrice, $totalTaxPrice, $cartUrl = '')
+    public function __construct(Cart $cart, $email, $contactListId, $shopId)
     {
+        $this->cart = $cart;
         $this->email = $email;
+        $this->contactListId = $contactListId;
         $this->shopId = $shopId;
-        $this->listId = $listId;
-        $this->products = $products;
-        $this->cartId = $cartId;
-        $this->currency = $currency;
-        $this->totalPrice = $totalPrice;
-        $this->totalTaxPrice = $totalTaxPrice;
-        $this->cartUrl = $cartUrl;
     }
 
     /**
@@ -71,49 +44,9 @@ class AddCartCommand
     /**
      * @return string
      */
-    public function getListId()
+    public function getContactListId()
     {
-        return $this->listId;
-    }
-
-    /**
-     * @return ProductsCollection
-     */
-    public function getProducts()
-    {
-        return $this->products;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrency()
-    {
-        return $this->currency;
-    }
-
-    /**
-     * @return float
-     */
-    public function getTotalPrice()
-    {
-        return $this->totalPrice;
-    }
-
-    /**
-     * @return string|int
-     */
-    public function getCartId()
-    {
-        return $this->cartId;
-    }
-
-    /**
-     * @return float
-     */
-    public function getTotalTaxPrice()
-    {
-        return $this->totalTaxPrice;
+        return $this->contactListId;
     }
 
     /**
@@ -125,10 +58,11 @@ class AddCartCommand
     }
 
     /**
-     * @return string
+     * @return Cart
      */
-    public function getCartUrl()
+    public function getCart()
     {
-        return $this->cartUrl;
+        return $this->cart;
     }
+
 }

@@ -4,8 +4,7 @@ namespace GrShareCode\Cart;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
-use GrShareCode\Product\Product;
-use GrShareCode\Product\ProductVariant;
+use GrShareCode\Product\ProductService;
 
 /**
  * Class CartService
@@ -19,114 +18,67 @@ class CartService
     /** @var DbRepositoryInterface */
     private $dbRepository;
 
+    /** @var ProductService */
+    private $productService;
+
     /**
      * @param GetresponseApi $getresponseApi
      * @param DbRepositoryInterface $dbRepository
+     * @param ProductService $productService
      */
-    public function __construct(GetresponseApi $getresponseApi, DbRepositoryInterface $dbRepository)
-    {
+    public function __construct(
+        GetresponseApi $getresponseApi,
+        DbRepositoryInterface $dbRepository,
+        ProductService $productService
+    ) {
         $this->getresponseApi = $getresponseApi;
         $this->dbRepository = $dbRepository;
+        $this->productService = $productService;
     }
 
     /**
-     * @param AddCartCommand $command
+     * @param AddCartCommand $addCartCommand
      * @throws GetresponseApiException
      */
-    public function sendCart(AddCartCommand $command)
+    public function sendCart(AddCartCommand $addCartCommand)
     {
-        $contact = $this->getresponseApi->getContactByEmail($command->getEmail(), $command->getListId());
+        $contact = $this->getresponseApi->getContactByEmail($addCartCommand->getEmail(), $addCartCommand->getContactListId());
 
         if (empty($contact)) {
             return;
         }
 
-        $variants = [];
-        /** @var Product $product */
-        foreach ($command->getProducts() as $product) {
+        $cart = $addCartCommand->getCart();
 
-            /** @var ProductVariant $productVariant */
-            foreach ($product->getProductVariants() as $productVariant) {
+        $variants = $this->productService->getProductVariants($cart->getProducts(), $addCartCommand->getShopId());
 
-                $variant = [
-                    'name' => $productVariant->getName(),
-                    'price' => $productVariant->getPrice(),
-                    'priceTax' => $productVariant->getPriceTax(),
-                    'quantity' => $productVariant->getQuantity(),
-                    'sku' => $productVariant->getSku()
-                ];
-
-                $grVariant = $this->dbRepository->getProductVariantById($command->getShopId(), $productVariant->getExternalId(), $product->getExternalId());
-
-                if (empty($grVariant)) {
-
-                    $grProduct = $this->dbRepository->getProductById($command->getShopId(), $product->getExternalId());
-
-                    if (empty($grProduct)) {
-
-                        $productCategories = [];
-
-                        $grProductParams = [
-                            'name' => $product->getName(),
-                            'url' => $product->getUrl(),
-                            'type' => $product->getType(),
-                            'vendor' => $product->getVendor(),
-                            'externalId' => $product->getExternalId(),
-                            'categories' => $productCategories,
-                            'variants' => [$variant],
-                        ];
-
-                        $grProduct = $this->getresponseApi->createProduct($command->getShopId(), $grProductParams);
-                        $this->dbRepository->saveProductMapping(
-                            $command->getShopId(),
-                            $product->getExternalId(),
-                            $productVariant->getExternalId(),
-                            $grProduct['productId'],
-                            $grProduct['variants'][0]['variantId']
-                        );
-
-                        $grVariant = $grProduct['variants'][0]['variantId'];
-                    } else {
-
-                        $grVariant = $this->getresponseApi->createProductVariant($command->getShopId(), $grProduct['productId'], $variant);
-
-                        $this->dbRepository->saveProductMapping(
-                            $command->getShopId(),
-                            $product->getExternalId(),
-                            $productVariant->getExternalId(),
-                            $grProduct['productId'],
-                            $grVariant['variantId']
-                        );
-
-                        $grVariant = $grVariant['variantId'];
-
-                    }
-                }
-
-                $variant['variantId'] = $grVariant;
-                $variants[] = $variant;
-            }
-        }
-
-        $grCart = [
-            'contactId'        => $contact['contactId'],
-            'totalPrice'       => $command->getTotalPrice(),
-            'totalTaxPrice'    => $command->getTotalTaxPrice(),
-            'currency'         => $command->getCurrency(),
+        $createCartPayload = [
+            'contactId' => $contact['contactId'],
+            'currency' => $cart->getCurrency(),
+            'totalPrice' => $cart->getTotalPrice(),
             'selectedVariants' => $variants,
-            'externalId'       => $command->getCartId(),
-            'cartUrl'          => $command->getCartUrl()
-
+            'externalId' => $cart->getCartId(),
+            'totalTaxPrice' => $cart->getTotalTaxPrice(),
         ];
 
-        $grCartId = $this->dbRepository->getGrCartIdFromMapping($command->getShopId(), $command->getCartId());
+        $this->upsertCartToGr($addCartCommand->getShopId(), $cart->getCartId(), $createCartPayload);
+    }
+
+    /**
+     * @param string $grShopId
+     * @param int $externalCartId
+     * @param array $createCartPayload
+     * @throws GetresponseApiException
+     */
+    private function upsertCartToGr($grShopId, $externalCartId, $createCartPayload)
+    {
+        $grCartId = $this->dbRepository->getGrCartIdFromMapping($grShopId, $externalCartId);
 
         if (empty($grCartId)) {
-            $grCart = $this->getresponseApi->createCart($command->getShopId(), $grCart);
-
-            $this->dbRepository->saveCartMapping($command->getShopId(), $command->getCartId(), $grCart['cartId']);
+            $grCart = $this->getresponseApi->createCart($grShopId, $createCartPayload);
+            $this->dbRepository->saveCartMapping($grShopId, $externalCartId, $grCart['cartId']);
         } else {
-            $this->getresponseApi->updateCart($command->getShopId(), $grCartId, $grCart);
+            $this->getresponseApi->updateCart($grShopId, $grCartId, $createCartPayload);
         }
     }
 }

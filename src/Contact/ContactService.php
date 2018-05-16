@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\Contact;
 
+use GrShareCode\Export\Config\Config;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
 
@@ -21,6 +22,36 @@ class ContactService
     public function __construct(GetresponseApi $getresponseApi)
     {
         $this->getresponseApi = $getresponseApi;
+    }
+
+    /**
+     * @param Config $config
+     * @param ExportContactCommand $exportContactCommand
+     * @throws GetresponseApiException
+     */
+    public function exportContact(Config $config, ExportContactCommand $exportContactCommand)
+    {
+
+        try {
+            $contact = $this->getContactByEmail(
+                $exportContactCommand->getEmail(),
+                $config->getContactListId()
+            );
+
+            $this->updateContact($config, $exportContactCommand, $contact->getContactId());
+
+        } catch (ContactNotFoundException $e) {
+
+            $addContactCommand = new AddContactCommand(
+                $exportContactCommand->getEmail(),
+                $exportContactCommand->getName(),
+                $config->getContactListId(),
+                $config->getDayOfCycle(),
+                $exportContactCommand->getCustomFieldsCollection()
+            );
+            $this->createContact($addContactCommand);
+        }
+
     }
 
     /**
@@ -46,22 +77,53 @@ class ContactService
     }
 
     /**
-     * @param AddContactCommand $subscriber
+     * @param Config $config
+     * @param ExportContactCommand $exportContactCommand
+     * @param string $contactId
      * @throws GetresponseApiException
      */
-    public function sendContact(AddContactCommand $subscriber)
+    private function updateContact(Config $config, ExportContactCommand $exportContactCommand, $contactId)
     {
+        if (!$config->isUpdateContactEnabled()) {
+            return;
+        }
+
         $params = [
-            'name' => $subscriber->getName(),
-            'email' => $subscriber->getEmail(),
-            'dayOfCycle' => $subscriber->getDayOfCycle(),
+            'name' => $exportContactCommand->getName(),
+            'dayOfCycle' => $config->getDayOfCycle(),
             'campaign' => [
-                'campaignId' => $subscriber->getListId(),
+                'campaignId' => $config->getContactListId(),
             ]
         ];
 
         /** @var CustomField $customField */
-        foreach ($subscriber->getCustomFieldsCollection() as $customField) {
+        foreach ($exportContactCommand->getCustomFieldsCollection() as $customField) {
+            $params['customFieldValues'][] = [
+                'customFieldId' => $customField->getId(),
+                'value' => [$customField->getValue()]
+            ];
+        }
+
+        $this->getresponseApi->updateContact($contactId, $params);
+    }
+
+    /**
+     * @param AddContactCommand $addContactCommand
+     * @throws GetresponseApiException
+     */
+    private function createContact(AddContactCommand $addContactCommand)
+    {
+        $params = [
+            'name' => $addContactCommand->getName(),
+            'email' => $addContactCommand->getEmail(),
+            'dayOfCycle' => $addContactCommand->getDayOfCycle(),
+            'campaign' => [
+                'campaignId' => $addContactCommand->getContactListId(),
+            ]
+        ];
+
+        /** @var CustomField $customField */
+        foreach ($addContactCommand->getCustomFieldsCollection() as $customField) {
             $params['customFieldValues'][] = [
                 'customFieldId' => $customField->getId(),
                 'value' => [$customField->getValue()]
@@ -72,7 +134,20 @@ class ContactService
     }
 
     /**
-     * @return array|CustomFieldsCollection
+     * @param AddContactCommand $addContactCommand
+     * @throws GetresponseApiException
+     */
+    public function addContact(AddContactCommand $addContactCommand)
+    {
+        try {
+            $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
+        } catch (ContactNotFoundException $e) {
+            $this->createContact($addContactCommand);
+        }
+    }
+
+    /**
+     * @return CustomFieldsCollection
      * @throws GetresponseApiException
      */
     public function getAllCustomFields()
@@ -82,7 +157,7 @@ class ContactService
         $headers = $this->getresponseApi->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $customFields = array_merge($customFields,  $this->getresponseApi->getCustomFields($page, self::PER_PAGE));
+            $customFields = array_merge($customFields, $this->getresponseApi->getCustomFields($page, self::PER_PAGE));
         }
 
         $collection = new CustomFieldsCollection();
@@ -96,4 +171,5 @@ class ContactService
 
         return $collection;
     }
+
 }
