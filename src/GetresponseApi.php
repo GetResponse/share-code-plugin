@@ -168,7 +168,8 @@ class GetresponseApi
      * @param string $orderId
      * @param array $params
      * @param bool $skipAutomation
-     * @return
+     * @return array
+     * @throws GetresponseApiException
      */
     public function updateOrder($shopId, $orderId, $params, $skipAutomation = false)
     {
@@ -178,7 +179,7 @@ class GetresponseApi
             $url .= '?additionalFlags=skipAutomation';
         }
 
-        return $this->call($url, 'POST', $params);
+        return $this->sendRequest($url, 'POST', $params);
 
     }
     /**

@@ -6,7 +6,7 @@ use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\AddContactCommand;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\Export\Config\ExportSettings;
+use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Order\AddOrderCommand;
 use GrShareCode\Order\OrderService;
@@ -112,7 +112,8 @@ class ExportCustomersService
             $exportContactCommand->getOrder(),
             $exportContactCommand->getEmail(),
             $this->config->getContactListId(),
-            $shopId
+            $shopId,
+            AddOrderCommand::SKIP_AUTOMATION_TRUE
         );
         $this->orderService->sendOrder($addOrderCommand);
     }

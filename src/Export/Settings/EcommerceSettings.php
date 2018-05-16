@@ -1,5 +1,5 @@
 <?php
-namespace GrShareCode\Export\Config;
+namespace GrShareCode\Export\Settings;
 
 /**
  * Class Config

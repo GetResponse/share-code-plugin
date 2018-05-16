@@ -18,9 +18,7 @@ class OrderService
     /** @var DbRepositoryInterface */
     private $dbRepository;
 
-    /**
-     * @var ProductService
-     */
+    /** @var ProductService */
     private $productService;
 
     /**
@@ -81,11 +79,23 @@ class OrderService
         $grOrderId = $this->dbRepository->getGrOrderIdFromMapping($addOrderCommand->getShopId(), $order->getOrderId());
 
         if (empty($grOrderId)) {
-            $grOrderId = $this->getresponseApi->createOrder($addOrderCommand->getShopId(), $grOrder);
+
+            $grOrderId = $this->getresponseApi->createOrder(
+                $addOrderCommand->getShopId(),
+                $grOrder,
+                $addOrderCommand->skipAutomation()
+            );
+
             $this->dbRepository->saveOrderMapping($addOrderCommand->getShopId(), $order->getOrderId(), $grOrderId);
             $this->getresponseApi->removeCart($addOrderCommand->getShopId(), $order->getCartId());
+
         } else {
-            $this->getresponseApi->updateOrder($addOrderCommand->getShopId(), $grOrderId, $grOrder);
+            $this->getresponseApi->updateOrder(
+                $addOrderCommand->getShopId(),
+                $grOrderId,
+                $grOrder,
+                $addOrderCommand->skipAutomation()
+            );
         }
     }
 }
