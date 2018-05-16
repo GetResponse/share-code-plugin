@@ -18,37 +18,37 @@ interface DbRepositoryInterface
     public function getProductMappingByVariantId($grShopId, $externalProductId, $externalVariantId);
 
     /**
-     * @param string $shopId
-     * @param int $cartId
+     * @param string $grShopId
+     * @param int $externalCartId
      * @param string $grCartId
      */
-    public function saveCartMapping($shopId, $cartId, $grCartId);
+    public function saveCartMapping($grShopId, $externalCartId, $grCartId);
 
     /**
-     * @param string $shopId
-     * @param int $cartId
+     * @param string $grShopId
+     * @param int $externalCartId
      */
-    public function getGrCartIdFromMapping($shopId, $cartId);
+    public function getGrCartIdFromMapping($grShopId, $externalCartId);
 
     /**
-     * @param string $shopId
-     * @param int $orderId
+     * @param string $grShopId
+     * @param int $externalOrderId
      */
-    public function getGrOrderIdFromMapping($shopId, $orderId);
+    public function getGrOrderIdFromMapping($grShopId, $externalOrderId);
 
     /**
-     * @param string $shopId
-     * @param int $orderId
+     * @param string $grShopId
+     * @param int $externalOrderId
      * @param string $grOrderId
      */
-    public function saveOrderMapping($shopId, $orderId, $grOrderId);
+    public function saveOrderMapping($grShopId, $externalOrderId, $grOrderId);
 
     /**
-     * @param string $shopId
-     * @param int $shopProductId
+     * @param string $grShopId
+     * @param int $externalProductId
      * @return ProductMapping
      */
-    public function getProductMappingByProductId($shopId, $shopProductId);
+    public function getProductMappingByProductId($grShopId, $externalProductId);
 
     /**
      * @param ProductMapping $productMapping

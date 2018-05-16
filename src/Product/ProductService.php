@@ -4,8 +4,6 @@ namespace GrShareCode\Product;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
-use GrShareCode\Product\Category\Category;
-use GrShareCode\Product\Category\CategoryCollection;
 use GrShareCode\ProductMapping\ProductMapping;
 
 /**
@@ -52,14 +50,7 @@ class ProductService
             );
 
             if ($productMapping->variantExistsInGr()) {
-
-                $variants[] = [
-                    'variantId' => $productMapping->getGrVariantId(),
-                    'price' => $productVariant->getPrice(),
-                    'priceTax' => $productVariant->getPriceTax(),
-                    'quantity' => $productVariant->getQuantity(),
-                ];
-
+                $variants[] = $productVariant->toRequestArrayWithVariantId($productMapping->getGrVariantId());
                 continue;
             }
 
@@ -86,20 +77,12 @@ class ProductService
      */
     private function createProductWithVariant($grShopId, Product $product)
     {
-
         $productVariant = $product->getVariant();
-
-        $variant = [
-            'name' => $productVariant->getName(),
-            'price' => $productVariant->getPrice(),
-            'priceTax' => $productVariant->getPriceTax(),
-            'sku' => $productVariant->getSku()
-        ];
 
         $grProductParams = [
             'name' => $product->getName(),
-            'categories' => $this->getCategories($product->getCategories()),
-            'variants' => [$variant],
+            'categories' => $product->getCategories()->toRequestArray(),
+            'variants' => [$productVariant->toRequestArray()],
         ];
 
         $grProduct = $this->getresponseApi->createProduct($grShopId, $grProductParams);
@@ -116,34 +99,8 @@ class ProductService
             )
         );
 
-        return [
-            'variantId' => $grVariantId,
-            'price' => $productVariant->getPrice(),
-            'priceTax' => $productVariant->getPriceTax(),
-            'quantity' => $productVariant->getQuantity()
-        ];
-    }
+        return $productVariant->toRequestArrayWithVariantId($grVariantId);
 
-    /**
-     * @param CategoryCollection $categoriesCollection
-     * @return array
-     */
-    private function getCategories(CategoryCollection $categoriesCollection)
-    {
-        $categories = [];
-
-        /** @var Category $category */
-        foreach ($categoriesCollection as $category) {
-
-            $categories[] = [
-                'name' => $category->getName(),
-                'parentId' => $category->getName(),
-                'externalId' => $category->getExternalId(),
-                'url' => $category->getUrl(),
-            ];
-        }
-
-        return $categories;
     }
 
     /**
@@ -157,14 +114,11 @@ class ProductService
     {
         $productVariant = $product->getVariant();
 
-        $variant = [
-            'name' => $productVariant->getName(),
-            'price' => $productVariant->getPrice(),
-            'priceTax' => $productVariant->getPriceTax(),
-            'sku' => $productVariant->getSku()
-        ];
-
-        $grVariant = $this->getresponseApi->createProductVariant($grShopId, $grProductId, $variant);
+        $grVariant = $this->getresponseApi->createProductVariant(
+            $grShopId,
+            $grProductId,
+            $productVariant->toRequestArray()
+        );
 
         $grVariantId = $grVariant['variantId'];
 
@@ -178,12 +132,7 @@ class ProductService
             )
         );
 
-        return [
-            'variantId' => $grVariantId,
-            'price' => $productVariant->getPrice(),
-            'priceTax' => $productVariant->getPriceTax(),
-            'quantity' => $productVariant->getQuantity()
-        ];
+        return $productVariant->toRequestArrayWithVariantId($grVariantId);
     }
 
 }

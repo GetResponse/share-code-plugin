@@ -13,4 +13,26 @@ class CategoryCollection extends TypedCollection
     {
         $this->setItemType('\GrShareCode\Product\Category\Category');
     }
+
+    /**
+     * @return array
+     */
+    public function toRequestArray()
+    {
+        $categories = [];
+
+        /** @var Category $category */
+        foreach ($this->getIterator() as $category) {
+
+            $categories[] = [
+                'name' => $category->getName(),
+                'parentId' => $category->getName(),
+                'externalId' => $category->getExternalId(),
+                'url' => $category->getUrl(),
+            ];
+        }
+
+        return $categories;
+
+    }
 }

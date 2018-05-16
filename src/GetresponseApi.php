@@ -146,30 +146,50 @@ class GetresponseApi
     /**
      * @param string $shopId
      * @param array $params
+     * @param bool $skipAutomation
      * @return string
+     * @throws GetresponseApiException
      */
-    public function createOrder($shopId, $params)
+    public function createOrder($shopId, $params, $skipAutomation = false)
     {
-        return '';
+        $url = 'shops/' . $shopId . '/orders';
+
+        if ($skipAutomation) {
+            $url .= '?additionalFlags=skipAutomation';
+        }
+
+        $result = $this->sendRequest($url, 'POST', $params);
+
+        return is_array($result) ? $result['orderId'] : '';
     }
 
     /**
      * @param string $shopId
      * @param string $orderId
      * @param array $params
+     * @param bool $skipAutomation
+     * @return
      */
-    public function updateOrder($shopId, $orderId, $params)
+    public function updateOrder($shopId, $orderId, $params, $skipAutomation = false)
     {
+        $url = 'shops/' . $shopId . '/orders/' . $orderId;
+
+        if ($skipAutomation) {
+            $url .= '?additionalFlags=skipAutomation';
+        }
+
+        return $this->call($url, 'POST', $params);
 
     }
-
     /**
      * @param string $shopId
-     * @param string $getCartId
+     * @param string $cartId
+     * @return array
+     * @throws GetresponseApiException
      */
-    public function removeCart($shopId, $getCartId)
+    public function removeCart($shopId, $cartId)
     {
-
+        return $this->sendRequest('shops/' . $shopId . '/carts/' . $cartId, 'DELETE');
     }
 
     /**

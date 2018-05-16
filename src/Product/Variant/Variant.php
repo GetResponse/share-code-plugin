@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\Product\Variant;
 
+use GrShareCode\Product\Variant\Images\Image;
 use GrShareCode\Product\Variant\Images\ImagesCollection;
 
 /**
@@ -32,9 +33,8 @@ class Variant
 
     /** @var string */
     private $description;
-    /**
-     * @var ImagesCollection
-     */
+
+    /** @var ImagesCollection */
     private $images;
 
     /**
@@ -137,27 +137,36 @@ class Variant
     }
 
     /**
-     * @return ImagesCollection
-     */
-    public function getImages()
-    {
-        return $this->images;
-    }
-
-    /**
-     * @return int
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    /**
      * @return string
      */
     public function getExternalId()
     {
         return $this->externalId;
+    }
+
+    /**
+     * @return array
+     */
+    public function toRequestArray()
+    {
+        $result = [
+            'name' => $this->getName(),
+            'price' => $this->getPrice(),
+            'priceTax' => $this->getPriceTax(),
+            'sku' => $this->getSku()
+        ];
+
+
+        /** @var Image $image */
+        foreach ($this->getImages()->getIterator() as $image) {
+
+            $result['images'] = [
+                'src' => $image->getSrc(),
+                'position' => $image->getPosition()
+            ];
+        }
+
+        return $result;
     }
 
     /**
@@ -190,6 +199,47 @@ class Variant
     public function getSku()
     {
         return $this->sku;
+    }
+
+    /**
+     * @return ImagesCollection
+     */
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    /**
+     * @param string $grVariantId
+     * @return array
+     */
+    public function toRequestArrayWithVariantId($grVariantId)
+    {
+        $result = [
+            'variantId' => $grVariantId,
+            'price' => $this->getPrice(),
+            'priceTax' => $this->getPriceTax(),
+            'quantity' => $this->getQuantity()
+        ];
+
+        /** @var Image $image */
+        foreach ($this->getImages()->getIterator() as $image) {
+
+            $result['images'] = [
+                'src' => $image->getSrc(),
+                'position' => $image->getPosition()
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
     }
 
 }

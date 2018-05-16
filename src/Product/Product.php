@@ -45,6 +45,7 @@ class Product
         CategoryCollection $categories
     ) {
         $this->assertValidName($name);
+
         $this->externalId = $externalId;
         $this->name = $name;
         $this->productVariant = $productVariant;

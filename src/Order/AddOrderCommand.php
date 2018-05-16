@@ -25,7 +25,7 @@ class AddOrderCommand
      * @param string $contactListId
      * @param string $shopId
      */
-    public function __construct(Order $order, $email, $contactListId, $shopId)
+    public function __construct(Order $order, $email, $contactListId, $shopId, $skipAutomation)
     {
         $this->order = $order;
         $this->contactListId = $contactListId;
