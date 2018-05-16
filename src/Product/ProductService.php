@@ -6,6 +6,7 @@ use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Product\Category\Category;
 use GrShareCode\Product\Category\CategoryCollection;
+use GrShareCode\ProductMapping\ProductMapping;
 
 /**
  * Class ProductService
@@ -47,7 +48,7 @@ class ProductService
             $productMapping = $this->dbRepository->getProductMappingByVariantId(
                 $grShopId,
                 $product->getExternalId(),
-                $productVariant->getId()
+                $productVariant->getExternalId()
             );
 
             if ($productMapping->variantExistsInGr()) {
@@ -106,11 +107,13 @@ class ProductService
         $grVariantId = $grProduct['variants'][0]['variantId'];
 
         $this->dbRepository->saveProductMapping(
-            $grShopId,
-            $product->getExternalId(),
-            $productVariant->getId(),
-            $grProduct['productId'],
-            $grProduct['variants'][0]['variantId']
+            new ProductMapping(
+                $product->getExternalId(),
+                $productVariant->getExternalId(),
+                $grShopId,
+                $grProduct['productId'],
+                $grProduct['variants'][0]['variantId']
+            )
         );
 
         return [
@@ -166,11 +169,13 @@ class ProductService
         $grVariantId = $grVariant['variantId'];
 
         $this->dbRepository->saveProductMapping(
-            $grShopId,
-            $product->getExternalId(),
-            $productVariant->getId(),
-            $grProductId,
-            $grVariantId
+            new ProductMapping(
+                $product->getExternalId(),
+                $productVariant->getExternalId(),
+                $grShopId,
+                $grProductId,
+                $grVariantId
+            )
         );
 
         return [

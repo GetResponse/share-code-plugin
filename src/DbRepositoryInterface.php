@@ -51,15 +51,8 @@ interface DbRepositoryInterface
     public function getProductMappingByProductId($shopId, $shopProductId);
 
     /**
-     * @param string $shopId
-     * @param int $productId
-     * @param int $variantId
-     * @param string $grProductId
-     * @param string $grVariantId
+     * @param ProductMapping $productMapping
      */
-    public function saveProductMapping($shopId, $productId, $variantId, $grProductId, $grVariantId);
-    // @todo: ProductMapping
-
-    public function getCustomFieldMapping();
+    public function saveProductMapping(ProductMapping $productMapping);
 
 }

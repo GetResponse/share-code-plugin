@@ -36,19 +36,13 @@ class Product
      * @param string $name
      * @param Variant $productVariant
      * @param CategoryCollection $categories
-     * @param string $url
-     * @param string $type
-     * @param string $vendor
      * @throws ProductException
      */
     public function __construct(
         $externalId,
         $name,
         Variant $productVariant,
-        CategoryCollection $categories,
-        $url = '',
-        $type = '',
-        $vendor = ''
+        CategoryCollection $categories
     ) {
         $this->assertValidName($name);
         $this->externalId = $externalId;
@@ -57,7 +51,6 @@ class Product
         $this->categories = $categories;
     }
 
-//    @todo: dodaj settery zamiast construktro
     /**
      * @param string $name
      * @throws ProductException
@@ -94,6 +87,17 @@ class Product
     }
 
     /**
+     * @param string $url
+     * @return Product
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getType()
@@ -102,11 +106,33 @@ class Product
     }
 
     /**
+     * @param string $type
+     * @return Product
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getVendor()
     {
         return $this->vendor;
+    }
+
+    /**
+     * @param string $vendor
+     * @return Product
+     */
+    public function setVendor($vendor)
+    {
+        $this->vendor = $vendor;
+
+        return $this;
     }
 
     /**

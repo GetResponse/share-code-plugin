@@ -26,37 +26,6 @@ class ContactService
     }
 
     /**
-     * @param ExportSettings $config
-     * @param ExportContactCommand $exportContactCommand
-     * @throws GetresponseApiException
-     */
-    public function exportContact(ExportSettings $config, ExportContactCommand $exportContactCommand)
-    {
-        // @todo: do przeniesienia do export
-
-        try {
-            $contact = $this->getContactByEmail(
-                $exportContactCommand->getEmail(),
-                $config->getContactListId()
-            );
-
-            $this->updateContact($config, $exportContactCommand, $contact->getContactId());
-
-        } catch (ContactNotFoundException $e) {
-
-            $addContactCommand = new AddContactCommand(
-                $exportContactCommand->getEmail(),
-                $exportContactCommand->getName(),
-                $config->getContactListId(),
-                $config->getDayOfCycle(),
-                $exportContactCommand->getCustomFieldsCollection()
-            );
-            $this->createContact($addContactCommand);
-        }
-
-    }
-
-    /**
      * @param string $email
      * @param string $listId
      * @return Contact
@@ -84,7 +53,7 @@ class ContactService
      * @param string $contactId
      * @throws GetresponseApiException
      */
-    private function updateContact(ExportSettings $config, ExportContactCommand $exportContactCommand, $contactId)
+    public function updateContactOnExport(ExportSettings $config, ExportContactCommand $exportContactCommand, $contactId)
     {
         if (!$config->isUpdateContactEnabled()) {
             return;
@@ -113,7 +82,7 @@ class ContactService
      * @param AddContactCommand $addContactCommand
      * @throws GetresponseApiException
      */
-    private function createContact(AddContactCommand $addContactCommand)
+    public function createContact(AddContactCommand $addContactCommand)
     {
         $params = [
             'name' => $addContactCommand->getName(),

@@ -10,7 +10,7 @@ use GrShareCode\Product\Variant\Images\ImagesCollection;
 class Variant
 {
     /** @var string */
-    private $id;
+    private $externalId;
 
     /** @var string */
     private $name;
@@ -38,7 +38,7 @@ class Variant
     private $images;
 
     /**
-     * @param string $id
+     * @param string $externalId
      * @param string $name
      * @param float $price
      * @param float $priceTax
@@ -50,7 +50,7 @@ class Variant
      * @throws VariantException
      */
     public function __construct(
-        $id,
+        $externalId,
         $name,
         $price,
         $priceTax,
@@ -65,7 +65,7 @@ class Variant
         $this->assertValidPriceTax($priceTax);
         $this->assertValidSku($sku);
 
-        $this->id = $id;
+        $this->externalId = $externalId;
         $this->name = $name;
         $this->price = $price;
         $this->priceTax = $priceTax;
@@ -155,9 +155,9 @@ class Variant
     /**
      * @return string
      */
-    public function getId()
+    public function getExternalId()
     {
-        return $this->id;
+        return $this->externalId;
     }
 
     /**

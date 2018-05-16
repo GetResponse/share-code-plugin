@@ -3,6 +3,8 @@ namespace GrShareCode\Export;
 
 use GrShareCode\Cart\AddCartCommand;
 use GrShareCode\Cart\CartService;
+use GrShareCode\Contact\AddContactCommand;
+use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\Export\Config\ExportSettings;
 use GrShareCode\GetresponseApiException;
@@ -52,8 +54,38 @@ class ExportCustomersService
      */
     public function exportContact(ExportContactCommand $exportContactCommand)
     {
-        $this->contactService->exportContact($this->config, $exportContactCommand);
+        $this->exportCustomer($this->config, $exportContactCommand);
         $this->sendEcommerceData($exportContactCommand);
+    }
+
+    /**
+     * @param ExportSettings $config
+     * @param ExportContactCommand $exportContactCommand
+     * @throws GetresponseApiException
+     */
+    private function exportCustomer(ExportSettings $config, ExportContactCommand $exportContactCommand)
+    {
+        try {
+            $contact = $this->contactService->getContactByEmail(
+                $exportContactCommand->getEmail(),
+                $config->getContactListId()
+            );
+
+            $this->contactService->updateContactOnExport($config, $exportContactCommand, $contact->getContactId());
+
+        } catch (ContactNotFoundException $e) {
+
+            $addContactCommand = new AddContactCommand(
+                $exportContactCommand->getEmail(),
+                $exportContactCommand->getName(),
+                $config->getContactListId(),
+                $config->getDayOfCycle(),
+                $exportContactCommand->getCustomFieldsCollection()
+            );
+
+            $this->contactService->createContact($addContactCommand);
+        }
+
     }
 
     /**
@@ -83,6 +115,5 @@ class ExportCustomersService
             $shopId
         );
         $this->orderService->sendOrder($addOrderCommand);
-
     }
 }
