@@ -137,7 +137,7 @@ class ProductService
 
             $categories[] = [
                 'name' => $category->getName(),
-                'parentId' => $category->getName(),
+                'parentId' => $category->getParentId(),
                 'externalId' => $category->getExternalId(),
                 'url' => $category->getUrl(),
             ];
