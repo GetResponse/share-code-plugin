@@ -2,6 +2,7 @@
 namespace GrShareCode\Contact;
 
 use GrShareCode\Export\Config\Config;
+use GrShareCode\Export\ExportContactCommand;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
 

@@ -2,6 +2,7 @@
 namespace GrShareCode\Shop;
 
 use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiException;
 
 /**
  * Class ShopService
@@ -23,7 +24,8 @@ class ShopService
     }
 
     /**
-     * @return array|ShopsCollection
+     * @return ShopsCollection
+     * @throws GetresponseApiException
      */
     public function getAllShops()
     {

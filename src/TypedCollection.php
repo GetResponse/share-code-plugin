@@ -2,6 +2,7 @@
 namespace GrShareCode;
 
 use ArrayIterator;
+use InvalidArgumentException;
 use IteratorAggregate;
 
 /**
@@ -53,6 +54,7 @@ class TypedCollection implements IteratorAggregate
 
     /**
      * @param object $item
+     * @throws InvalidArgumentException
      */
     private function validateItemType($item)
     {
@@ -65,7 +67,7 @@ class TypedCollection implements IteratorAggregate
             $exceptionMessage .= !empty($this->itemType) ? $this->itemType.' ' : '';
             $exceptionMessage .= 'object expected, given: '.gettype($item);
 
-            throw new \InvalidArgumentException($exceptionMessage);
+            throw new InvalidArgumentException($exceptionMessage);
         }
     }
 

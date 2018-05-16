@@ -4,7 +4,6 @@ namespace GrShareCode\Export;
 use GrShareCode\Cart\AddCartCommand;
 use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\Contact\ExportContactCommand;
 use GrShareCode\Export\Config\Config;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Order\AddOrderCommand;
