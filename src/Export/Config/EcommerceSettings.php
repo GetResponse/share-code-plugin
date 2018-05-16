@@ -5,7 +5,7 @@ namespace GrShareCode\Export\Config;
  * Class Config
  * @package GrShareCode\Export
  */
-class EcommerceConfig
+class EcommerceSettings
 {
     /** @var boolean */
     private $ecommerceEnabled;
@@ -17,7 +17,7 @@ class EcommerceConfig
      * @param boolean $ecommerceEnabled
      * @param string $shopId
      */
-    public function __construct($ecommerceEnabled, $shopId)
+    public function __construct($ecommerceEnabled, $shopId = null)
     {
         $this->ecommerceEnabled = $ecommerceEnabled;
         $this->shopId = $shopId;

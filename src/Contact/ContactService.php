@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Contact;
 
-use GrShareCode\Export\Config\Config;
+use GrShareCode\Export\Config\ExportSettings;
 use GrShareCode\Export\ExportContactCommand;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
@@ -26,12 +26,13 @@ class ContactService
     }
 
     /**
-     * @param Config $config
+     * @param ExportSettings $config
      * @param ExportContactCommand $exportContactCommand
      * @throws GetresponseApiException
      */
-    public function exportContact(Config $config, ExportContactCommand $exportContactCommand)
+    public function exportContact(ExportSettings $config, ExportContactCommand $exportContactCommand)
     {
+        // @todo: do przeniesienia do export
 
         try {
             $contact = $this->getContactByEmail(
@@ -78,12 +79,12 @@ class ContactService
     }
 
     /**
-     * @param Config $config
+     * @param ExportSettings $config
      * @param ExportContactCommand $exportContactCommand
      * @param string $contactId
      * @throws GetresponseApiException
      */
-    private function updateContact(Config $config, ExportContactCommand $exportContactCommand, $contactId)
+    private function updateContact(ExportSettings $config, ExportContactCommand $exportContactCommand, $contactId)
     {
         if (!$config->isUpdateContactEnabled()) {
             return;

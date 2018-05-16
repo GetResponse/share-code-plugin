@@ -323,8 +323,10 @@ class GetresponseApi
 
         curl_close($curl);
         if (isset($response['httpStatus']) && 400 <= $response['httpStatus']) {
-            throw GetresponseApiException::createForInvalidApiResponseCode($response['message'],
-                $response['httpStatus']);
+            throw GetresponseApiException::createForInvalidApiResponseCode(
+                $response['message'],
+                $response['httpStatus']
+            );
         }
 
         return $response;

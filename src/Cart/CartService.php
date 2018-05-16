@@ -42,6 +42,8 @@ class CartService
      */
     public function sendCart(AddCartCommand $addCartCommand)
     {
+//        $this->validator->validate($addCartCommand);
+
         $contact = $this->getresponseApi->getContactByEmail($addCartCommand->getEmail(), $addCartCommand->getContactListId());
 
         if (empty($contact)) {

@@ -4,7 +4,7 @@ namespace GrShareCode\Export;
 use GrShareCode\Cart\AddCartCommand;
 use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\Export\Config\Config;
+use GrShareCode\Export\Config\ExportSettings;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Order\AddOrderCommand;
 use GrShareCode\Order\OrderService;
@@ -19,7 +19,7 @@ class ExportCustomersService
     /** @var ContactService */
     private $contactService;
 
-    /** @var Config */
+    /** @var ExportSettings */
     private $config;
 
     /** @var CartService */
@@ -29,13 +29,13 @@ class ExportCustomersService
     private $orderService;
 
     /**
-     * @param Config $config
+     * @param ExportSettings $config
      * @param ContactService $contactService
      * @param CartService $cartService
      * @param OrderService $orderService
      */
     public function __construct(
-        Config $config,
+        ExportSettings $config,
         ContactService $contactService,
         CartService $cartService,
         OrderService $orderService
@@ -62,26 +62,27 @@ class ExportCustomersService
      */
     private function sendEcommerceData(ExportContactCommand $exportContactCommand)
     {
-        if ($this->config->getEcommerceConfig()->isEcommerceEnabled()) {
-
-            $shopId = $this->config->getEcommerceConfig()->getShopId();
-
-            $addCartCommand = new AddCartCommand(
-                $exportContactCommand->getCart(),
-                $exportContactCommand->getEmail(),
-                $this->config->getContactListId(),
-                $shopId
-            );
-            $this->cartService->sendCart($addCartCommand);
-
-            $addOrderCommand = new AddOrderCommand(
-                $exportContactCommand->getOrder(),
-                $exportContactCommand->getEmail(),
-                $this->config->getContactListId(),
-                $shopId
-            );
-            $this->orderService->sendOrder($addOrderCommand);
-
+        if (!$this->config->getEcommerceConfig()->isEcommerceEnabled()) {
+            return;
         }
+
+        $shopId = $this->config->getEcommerceConfig()->getShopId();
+
+        $addCartCommand = new AddCartCommand(
+            $exportContactCommand->getCart(),
+            $exportContactCommand->getEmail(),
+            $this->config->getContactListId(),
+            $shopId
+        );
+        $this->cartService->sendCart($addCartCommand);
+
+        $addOrderCommand = new AddOrderCommand(
+            $exportContactCommand->getOrder(),
+            $exportContactCommand->getEmail(),
+            $this->config->getContactListId(),
+            $shopId
+        );
+        $this->orderService->sendOrder($addOrderCommand);
+
     }
 }

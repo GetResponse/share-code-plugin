@@ -11,11 +11,11 @@ interface DbRepositoryInterface
 {
     /**
      * @param string $grShopId
-     * @param int $shopProductId
-     * @param int $shopVariantId
+     * @param int $externalProductId
+     * @param int $externalVariantId
      * @return ProductMapping
      */
-    public function getProductMappingByVariantId($grShopId, $shopProductId, $shopVariantId);
+    public function getProductMappingByVariantId($grShopId, $externalProductId, $externalVariantId);
 
     /**
      * @param string $shopId
@@ -57,8 +57,8 @@ interface DbRepositoryInterface
      * @param string $grProductId
      * @param string $grVariantId
      */
-    public function saveProductMapping(ProductMapping $shopId, $productId, $variantId, $grProductId, $grVariantId);
-
+    public function saveProductMapping($shopId, $productId, $variantId, $grProductId, $grVariantId);
+    // @todo: ProductMapping
 
     public function getCustomFieldMapping();
 

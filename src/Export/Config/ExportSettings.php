@@ -5,7 +5,7 @@ namespace GrShareCode\Export\Config;
  * Class Config
  * @package GrShareCode\Export\Config
  */
-class Config
+class ExportSettings
 {
     /** @var string */
     private $contactListId;
@@ -19,7 +19,7 @@ class Config
     /** @var bool */
     private $updateContactEnabled;
 
-    /** @var EcommerceConfig */
+    /** @var EcommerceSettings */
     private $ecommerceConfig;
 
     /**
@@ -27,14 +27,14 @@ class Config
      * @param int $dayOfCycle
      * @param bool $jobSchedulerEnabled
      * @param bool $updateContactEnabled
-     * @param EcommerceConfig $ecommerceConfig
+     * @param EcommerceSettings $ecommerceConfig
      */
     public function __construct(
         $contactListId,
         $dayOfCycle,
         $jobSchedulerEnabled,
         $updateContactEnabled,
-        EcommerceConfig $ecommerceConfig
+        EcommerceSettings $ecommerceConfig
     ) {
         $this->contactListId = $contactListId;
         $this->dayOfCycle = $dayOfCycle;
@@ -76,7 +76,7 @@ class Config
     }
 
     /**
-     * @return EcommerceConfig
+     * @return EcommerceSettings
      */
     public function getEcommerceConfig()
     {

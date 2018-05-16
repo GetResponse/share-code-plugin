@@ -46,7 +46,7 @@ class ProductService
 
             $productMapping = $this->dbRepository->getProductMappingByVariantId(
                 $grShopId,
-                $product->getId(),
+                $product->getExternalId(),
                 $productVariant->getId()
             );
 
@@ -62,7 +62,7 @@ class ProductService
                 continue;
             }
 
-            $productMapping = $this->dbRepository->getProductMappingByProductId($grShopId, $product->getId());
+            $productMapping = $this->dbRepository->getProductMappingByProductId($grShopId, $product->getExternalId());
 
             if ($productMapping->productExistsInGr()) {
                 $variant = $this->createProductWithVariant($grShopId, $product);
@@ -107,7 +107,7 @@ class ProductService
 
         $this->dbRepository->saveProductMapping(
             $grShopId,
-            $product->getId(),
+            $product->getExternalId(),
             $productVariant->getId(),
             $grProduct['productId'],
             $grProduct['variants'][0]['variantId']
@@ -167,7 +167,7 @@ class ProductService
 
         $this->dbRepository->saveProductMapping(
             $grShopId,
-            $product->getId(),
+            $product->getExternalId(),
             $productVariant->getId(),
             $grProductId,
             $grVariantId
