@@ -160,7 +160,7 @@ class Variant
         /** @var Image $image */
         foreach ($this->getImages()->getIterator() as $image) {
 
-            $result['images'] = [
+            $result['images'][] = [
                 'src' => $image->getSrc(),
                 'position' => $image->getPosition()
             ];
@@ -225,7 +225,7 @@ class Variant
         /** @var Image $image */
         foreach ($this->getImages()->getIterator() as $image) {
 
-            $result['images'] = [
+            $result['images'][] = [
                 'src' => $image->getSrc(),
                 'position' => $image->getPosition()
             ];
