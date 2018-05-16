@@ -11,6 +11,9 @@ class Address
     private $countryCode;
 
     /** @var string */
+    private $countryName;
+
+    /** @var string */
     private $name;
 
     /** @var string */
@@ -227,5 +230,21 @@ class Address
     public function getCompany()
     {
         return $this->company;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryName()
+    {
+        return $this->countryName;
+    }
+
+    /**
+     * @param string $countryName
+     */
+    public function setCountryName($countryName)
+    {
+        $this->countryName = $countryName;
     }
 }
