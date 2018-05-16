@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\Order;
 
+use GrShareCode\Address\Address;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
@@ -71,8 +72,8 @@ class OrderService
             'shippingPrice' => $order->getShippingPrice(),
             'billingPrice' => $order->getBillingPrice(),
             'processedAt' => $order->getProcessedAt(),
-            'shippingAddress' => $order->getShippingAddress(),
-            'billingAddress' => $order->getBillingAddress(),
+            'shippingAddress' => $this->buildAddress($order->getShippingAddress()),
+            'billingAddress' => $this->buildAddress($order->getBillingAddress()),
             'selectedVariants' => $variants,
         ];
 
@@ -97,5 +98,28 @@ class OrderService
                 $addOrderCommand->skipAutomation()
             );
         }
+    }
+
+    /**
+     * @param Address $address
+     * @return array
+     */
+    private function buildAddress(Address $address)
+    {
+        return [
+            'countryCode' => $address->getCountryCode(),
+            'countryName' => $address->getCountryName(),
+            'name' => $address->getName(),
+            'firstName' => $address->getFirstName(),
+            'lastName' => $address->getLastName(),
+            'address1' => $address->getAddress1(),
+            'address2' => $address->getAddress2(),
+            'city' => $address->getCity(),
+            'zip' => $address->getZip(),
+            'province' => $address->getProvince(),
+            'provinceCode' => $address->getProvinceCode(),
+            'phone' => $address->getPhone(),
+            'company' => $address->getCompany()
+        ];
     }
 }
