@@ -57,6 +57,7 @@ class Product
         $this->categories = $categories;
     }
 
+//    @todo: dodaj settery zamiast construktro
     /**
      * @param string $name
      * @throws ProductException

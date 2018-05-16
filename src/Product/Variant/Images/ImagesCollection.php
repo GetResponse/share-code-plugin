@@ -11,6 +11,6 @@ class ImagesCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\Product\Image');
+        $this->setItemType('\GrShareCode\Product\Variant\Images\Image');
     }
 }

@@ -44,6 +44,9 @@ class OrderService
      */
     public function sendOrder(AddOrderCommand $addOrderCommand)
     {
+
+//        $this->validator-
+        // @todo: add Validator
         $contact = $this->getresponseApi->getContactByEmail(
             $addOrderCommand->getEmail(),
             $addOrderCommand->getContactListId()

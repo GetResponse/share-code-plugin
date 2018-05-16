@@ -1,7 +1,8 @@
 <?php
-namespace GrShareCode\Contact;
+namespace GrShareCode\Export;
 
 use GrShareCode\Cart\Cart;
+use GrShareCode\Contact\CustomFieldsCollection;
 use GrShareCode\Order\Order;
 
 /**

@@ -55,7 +55,6 @@ class ExportCustomersService
     {
         $this->contactService->exportContact($this->config, $exportContactCommand);
         $this->sendEcommerceData($exportContactCommand);
-
     }
 
     /**
