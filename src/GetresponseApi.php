@@ -70,6 +70,7 @@ class GetresponseApi
         ];
 
         $result = $this->sendRequest('contacts?'.$this->setParams($params));
+
         return is_array($result) ? reset($result) : [];
     }
 
@@ -120,12 +121,14 @@ class GetresponseApi
     /**
      * @param string $shopId
      * @param array $params
-     * @return array
+     * @return string
      * @throws GetresponseApiException
      */
     public function createCart($shopId, $params)
     {
-        return $this->sendRequest('shops/'.$shopId.'/carts', 'POST', $params);
+        $result = $this->sendRequest('shops/'.$shopId.'/carts', 'POST', $params);
+
+        return is_array($result) ? $result['cartId'] : '';
     }
 
     /**

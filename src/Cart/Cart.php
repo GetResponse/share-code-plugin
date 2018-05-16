@@ -11,6 +11,9 @@ use GrShareCode\Product\ProductsCollection;
 class Cart
 {
 
+    /** @var int */
+    private $cartId;
+
     /** @var Product */
     private $products;
 
@@ -22,9 +25,6 @@ class Cart
 
     /** @var string */
     private $totalTaxPrice;
-
-    /** @var int */
-    private $cartId;
 
     /**
      * @param int $cartId

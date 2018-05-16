@@ -65,7 +65,7 @@ class ProductService
 
             $productMapping = $this->dbRepository->getProductMappingByProductId($grShopId, $product->getExternalId());
 
-            if ($productMapping->productExistsInGr()) {
+            if (!$productMapping->productExistsInGr()) {
                 $variant = $this->createProductWithVariant($grShopId, $product);
             } else {
                 $variant = $this->createProductVariant($grShopId, $productMapping->getGrProductId(), $product);
@@ -112,7 +112,7 @@ class ProductService
                 $productVariant->getExternalId(),
                 $grShopId,
                 $grProduct['productId'],
-                $grProduct['variants'][0]['variantId']
+                $grVariantId
             )
         );
 

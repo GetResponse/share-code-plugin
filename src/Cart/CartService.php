@@ -77,8 +77,8 @@ class CartService
         $grCartId = $this->dbRepository->getGrCartIdFromMapping($grShopId, $externalCartId);
 
         if (empty($grCartId)) {
-            $grCart = $this->getresponseApi->createCart($grShopId, $createCartPayload);
-            $this->dbRepository->saveCartMapping($grShopId, $externalCartId, $grCart['cartId']);
+            $grCartId = $this->getresponseApi->createCart($grShopId, $createCartPayload);
+            $this->dbRepository->saveCartMapping($grShopId, $externalCartId, $grCartId);
         } else {
             $this->getresponseApi->updateCart($grShopId, $grCartId, $createCartPayload);
         }
