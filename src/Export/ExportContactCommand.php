@@ -33,7 +33,7 @@ class ExportContactCommand
      * @param Cart $cart
      * @param Order $order
      */
-    public function __construct($email, $name, CustomFieldsCollection $customFieldsCollection, Cart $cart, Order $order)
+    public function __construct($email, $name, CustomFieldsCollection $customFieldsCollection = null, Cart $cart = null, Order $order = null)
     {
         $this->email = $email;
         $this->name = $name;
