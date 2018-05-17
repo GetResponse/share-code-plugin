@@ -2,9 +2,9 @@
 namespace GrShareCode\Tests\Unit\Domain\Cart;
 
 use GrShareCode\Cart\CartService;
-use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiException;
 use GrShareCode\Product\ProductService;
 use GrShareCode\Tests\Generator;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +22,7 @@ class CartServiceTest extends TestCase
     private $grApiMock;
 
     /** @var ProductService|\PHPUnit_Framework_MockObject_MockObject */
-    private $productService;
+    private $productServiceMock;
 
     public function setUp()
     {
@@ -34,7 +34,7 @@ class CartServiceTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->productService = $this->getMockBuilder(ProductService::class)
+        $this->productServiceMock = $this->getMockBuilder(ProductService::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -42,6 +42,7 @@ class CartServiceTest extends TestCase
     /**
      * @test
      * @doesNotPerformAssertions
+     * @throws GetresponseApiException
      */
     public function shouldCreateCartWithProductInGetResponse()
     {
@@ -57,7 +58,7 @@ class CartServiceTest extends TestCase
         $this->dbRepositoryMock->method('getProductMappingByVariantId')->willReturn(null);
         $this->dbRepositoryMock->expects($this->once())->method('saveCartMapping');
 
-        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productService);
+        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
 
         $cartService->sendCart($command);
     }
@@ -77,7 +78,7 @@ class CartServiceTest extends TestCase
 
         $this->dbRepositoryMock->method('getGrCartIdFromMapping')->willReturn(3);
 
-        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productService);
+        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
 
         $cartService->sendCart($command);
     }
@@ -85,16 +86,33 @@ class CartServiceTest extends TestCase
     /**
      * @test
      */
-    public function shouldThrowExceptionWhenContactNotFound()
+    public function shouldNotSendCartForContactThatNotExistsInGr()
     {
-        $this->expectException(ContactNotFoundException::class);
-
         $command = Generator::createAddCartCommand();
 
-        $this->grApiMock->method('getContactByEmail')->willThrowException(new ContactNotFoundException());
+        $this->grApiMock
+            ->expects($this->once())
+            ->method('getContactByEmail')
+            ->with($command->getEmail(), $command->getContactListId())
+            ->willReturn([]);
 
-        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productService);
+        $this->productServiceMock
+            ->expects($this->never())
+            ->method('getProductVariants');
 
+        $this->dbRepositoryMock
+            ->expects($this->never())
+            ->method('getGrCartIdFromMapping');
+
+        $this->grApiMock
+            ->expects($this->never())
+            ->method('createCart');
+
+        $this->grApiMock
+            ->expects($this->never())
+            ->method('updateCart');
+
+        $cartService = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
         $cartService->sendCart($command);
     }
 }
