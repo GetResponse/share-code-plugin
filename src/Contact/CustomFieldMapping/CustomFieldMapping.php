@@ -1,5 +1,7 @@
 <?php
-namespace GrShareCode\Contact\CustomField;
+namespace GrShareCode\Contact\CustomFieldMapping;
+
+use GrShareCode\Validation\Assert\Assert;
 
 /**
  * Class CustomFieldMapping
@@ -7,14 +9,6 @@ namespace GrShareCode\Contact\CustomField;
  */
 class CustomFieldMapping
 {
-    const STATUS_ACTIVE = 'active';
-    const STATUS_INACTIVE = 'inactive';
-
-    const STATUSES_ALL = [
-        self::STATUS_ACTIVE,
-        self::STATUS_INACTIVE
-    ];
-
     const FIELD_EMAIL = 'email';
     const FIELD_FIRSTNAME = 'firstname';
     const FIELD_LASTNAME = 'lastname';
@@ -46,49 +40,45 @@ class CustomFieldMapping
     private $grCustomFieldId;
 
     /** @var string */
-    private $status;
-
-    /** @var string */
     private $externalCustomFieldValue;
 
     /**
      * @param string $externalCustomFieldName
      * @param string $externalCustomFieldValue
      * @param string $grCustomFieldId
-     * @param string $status
-     * @throws CustomFieldMappingException
      */
-    public function __construct($externalCustomFieldName, $externalCustomFieldValue, $grCustomFieldId, $status)
+    public function __construct($externalCustomFieldName, $externalCustomFieldValue, $grCustomFieldId)
     {
-        $this->assertCustomFieldNameValid($externalCustomFieldName);
-        $this->assertStatusValid($status);
+        $this->setExternalCustomFieldName($externalCustomFieldName);
+        $this->setExternalCustomFieldValue($externalCustomFieldValue);
+        $this->setGrCustomFieldId($grCustomFieldId);
+    }
 
+    /**
+     * @param string $externalCustomFieldName
+     */
+    private function setExternalCustomFieldName($externalCustomFieldName)
+    {
+        Assert::that($externalCustomFieldName)->choice(self::FIELDS_ALL);
         $this->externalCustomFieldName = $externalCustomFieldName;
+    }
+
+    /**
+     * @param string $externalCustomFieldValue
+     */
+    private function setExternalCustomFieldValue($externalCustomFieldValue)
+    {
+        Assert::that($externalCustomFieldValue)->notBlank()->string();
         $this->externalCustomFieldValue = $externalCustomFieldValue;
+    }
+
+    /**
+     * @param int $grCustomFieldId
+     */
+    private function setGrCustomFieldId($grCustomFieldId)
+    {
+        Assert::that($grCustomFieldId)->notNull()->integer();
         $this->grCustomFieldId = $grCustomFieldId;
-        $this->status = $status;
-    }
-
-    /**
-     * @param $externalCustomFieldName
-     * @throws CustomFieldMappingException
-     */
-    private function assertCustomFieldNameValid($externalCustomFieldName)
-    {
-        if (!in_array($externalCustomFieldName, self::FIELDS_ALL, true)) {
-            throw CustomFieldMappingException::createForInvalidExternalCustomFieldName($externalCustomFieldName);
-        }
-    }
-
-    /**
-     * @param string $status
-     * @throws CustomFieldMappingException
-     */
-    private function assertStatusValid($status)
-    {
-        if (!in_array($status, self::STATUSES_ALL, true)) {
-            throw CustomFieldMappingException::createForInvalidStatus($status);
-        }
     }
 
     /**
@@ -113,14 +103,6 @@ class CustomFieldMapping
     public function getGrCustomFieldId()
     {
         return $this->grCustomFieldId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
     }
 
 }

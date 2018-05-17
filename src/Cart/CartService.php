@@ -1,7 +1,6 @@
 <?php
 namespace GrShareCode\Cart;
 
-use GrShareCode\Cart\Validation\Validator;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
@@ -22,9 +21,6 @@ class CartService
     /** @var ProductService */
     private $productService;
 
-    /** @var Validator */
-    private $validator;
-
     /**
      * @param GetresponseApi $getresponseApi
      * @param DbRepositoryInterface $dbRepository
@@ -33,24 +29,19 @@ class CartService
     public function __construct(
         GetresponseApi $getresponseApi,
         DbRepositoryInterface $dbRepository,
-        ProductService $productService,
-        Validator $validator
+        ProductService $productService
     ) {
         $this->getresponseApi = $getresponseApi;
         $this->dbRepository = $dbRepository;
         $this->productService = $productService;
-        $this->validator = $validator;
     }
 
     /**
      * @param AddCartCommand $addCartCommand
      * @throws GetresponseApiException
-     * @throws AddCartCommandException
      */
     public function sendCart(AddCartCommand $addCartCommand)
     {
-        $this->validator->validate($addCartCommand);
-
         $contact = $this->getresponseApi->getContactByEmail($addCartCommand->getEmail(), $addCartCommand->getContactListId());
 
         if (empty($contact)) {

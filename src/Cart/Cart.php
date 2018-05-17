@@ -1,8 +1,8 @@
 <?php
 namespace GrShareCode\Cart;
 
-use GrShareCode\Product\Product;
 use GrShareCode\Product\ProductsCollection;
+use GrShareCode\Validation\Assert\Assert;
 
 /**
  * Class Cart
@@ -10,11 +10,10 @@ use GrShareCode\Product\ProductsCollection;
  */
 class Cart
 {
-
     /** @var int */
     private $cartId;
 
-    /** @var Product */
+    /** @var ProductsCollection */
     private $products;
 
     /** @var string */
@@ -35,10 +34,54 @@ class Cart
      */
     public function __construct($cartId, ProductsCollection $products, $currency, $totalPrice, $totalTaxPrice)
     {
+        $this->setCartId($cartId);
+        $this->setProducts($products);
+        $this->setCurrency($currency);
+        $this->setTotalPrice($totalPrice);
+        $this->setTotalTaxPrice($totalTaxPrice);
+    }
+
+    /**
+     * @param $cartId
+     */
+    private function setCartId($cartId)
+    {
+        Assert::that($cartId)->notNull()->integer();
         $this->cartId = $cartId;
+    }
+
+    /**
+     * @param ProductsCollection $products
+     */
+    private function setProducts(ProductsCollection $products)
+    {
         $this->products = $products;
+    }
+
+    /**
+     * @param string $currency
+     */
+    private function setCurrency($currency)
+    {
+        Assert::that($currency)->notBlank()->string()->length(3);
         $this->currency = $currency;
+    }
+
+    /**
+     * @param float $totalPrice
+     */
+    private function setTotalPrice($totalPrice)
+    {
+        Assert::that($totalPrice)->notNull()->float();
         $this->totalPrice = $totalPrice;
+    }
+
+    /**
+     * @param null|float $totalTaxPrice
+     */
+    private function setTotalTaxPrice($totalTaxPrice)
+    {
+        Assert::that($totalTaxPrice)->nullOr()->float();
         $this->totalTaxPrice = $totalTaxPrice;
     }
 

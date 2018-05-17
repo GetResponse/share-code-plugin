@@ -3,6 +3,7 @@ namespace GrShareCode\Product;
 
 use GrShareCode\Product\Category\CategoryCollection;
 use GrShareCode\Product\Variant\Variant;
+use GrShareCode\Validation\Assert\Assert;
 
 /**
  * Class Product
@@ -36,31 +37,47 @@ class Product
      * @param string $name
      * @param Variant $productVariant
      * @param CategoryCollection $categories
-     * @throws ProductException
      */
-    public function __construct(
-        $externalId,
-        $name,
-        Variant $productVariant,
-        CategoryCollection $categories
-    ) {
-        $this->assertValidName($name);
+    public function __construct($externalId, $name, Variant $productVariant, CategoryCollection $categories)
+    {
+        $this->setExternalId($externalId);
+        $this->setName($name);
+        $this->setProductVariant($productVariant);
+        $this->setCategories($categories);
+    }
 
+    /**
+     * @param int $externalId
+     */
+    private function setExternalId($externalId)
+    {
+        Assert::that($externalId)->notNull()->integer();
         $this->externalId = $externalId;
-        $this->name = $name;
-        $this->productVariant = $productVariant;
-        $this->categories = $categories;
     }
 
     /**
      * @param string $name
-     * @throws ProductException
      */
-    private function assertValidName($name)
+    private function setName($name)
     {
-        if (empty($name)) {
-            throw ProductException::createForInvalidName();
-        }
+        Assert::that($name)->notBlank()->string();
+        $this->name = $name;
+    }
+
+    /**
+     * @param Variant $productVariant
+     */
+    private function setProductVariant(Variant $productVariant)
+    {
+        $this->productVariant = $productVariant;
+    }
+
+    /**
+     * @param CategoryCollection $categories
+     */
+    private function setCategories(CategoryCollection $categories)
+    {
+        $this->categories = $categories;
     }
 
     /**
@@ -93,6 +110,7 @@ class Product
      */
     public function setUrl($url)
     {
+        Assert::that($url)->nullOr()->string();
         $this->url = $url;
 
         return $this;
@@ -112,6 +130,7 @@ class Product
      */
     public function setType($type)
     {
+        Assert::that($type)->nullOr()->string();
         $this->type = $type;
 
         return $this;
@@ -131,6 +150,7 @@ class Product
      */
     public function setVendor($vendor)
     {
+        Assert::that($vendor)->nullOr()->string();
         $this->vendor = $vendor;
 
         return $this;

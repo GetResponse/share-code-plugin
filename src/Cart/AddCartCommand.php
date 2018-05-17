@@ -1,6 +1,8 @@
 <?php
 namespace GrShareCode\Cart;
 
+use GrShareCode\Validation\Assert\Assert;
+
 /**
  * Class AddCartCommand
  * @package GrShareCode\Cart
@@ -27,9 +29,44 @@ class AddCartCommand
      */
     public function __construct(Cart $cart, $email, $contactListId, $shopId)
     {
+        $this->setCart($cart);
+        $this->setEmail($email);
+        $this->setContactListId($contactListId);
+        $this->setShopId($shopId);
+    }
+
+    /**
+     * @param Cart $cart
+     */
+    private function setCart(Cart $cart)
+    {
         $this->cart = $cart;
+    }
+
+    /**
+     * @param string $email
+     */
+    private function setEmail($email)
+    {
+        Assert::that($email)->email();
         $this->email = $email;
+    }
+
+    /**
+     * @param string $contactListId
+     */
+    private function setContactListId($contactListId)
+    {
+        Assert::that($contactListId)->notBlank()->string();
         $this->contactListId = $contactListId;
+    }
+
+    /**
+     * @param string $shopId
+     */
+    private function setShopId($shopId)
+    {
+        Assert::that($shopId)->notBlank()->string();
         $this->shopId = $shopId;
     }
 

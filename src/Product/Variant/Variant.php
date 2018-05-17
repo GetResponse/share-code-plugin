@@ -3,6 +3,7 @@ namespace GrShareCode\Product\Variant;
 
 use GrShareCode\Product\Variant\Images\Image;
 use GrShareCode\Product\Variant\Images\ImagesCollection;
+use GrShareCode\Validation\Assert\Assert;
 
 /**
  * Class Variant
@@ -10,6 +11,8 @@ use GrShareCode\Product\Variant\Images\ImagesCollection;
  */
 class Variant
 {
+    const DESCRIPTION_MAX_LENGTH = 1000;
+
     /** @var string */
     private $externalId;
 
@@ -38,86 +41,64 @@ class Variant
     private $images;
 
     /**
-     * @param string $externalId
+     * @param int $externalId
      * @param string $name
      * @param float $price
      * @param float $priceTax
      * @param string $sku
-     * @param int $quantity
-     * @param string $url
-     * @param string $description
-     * @param ImagesCollection $images
-     * @throws VariantException
      */
-    public function __construct(
-        $externalId,
-        $name,
-        $price,
-        $priceTax,
-        $sku,
-        $quantity,
-        $url,
-        $description,
-        ImagesCollection $images
-    ) {
-        $this->assertValidName($name);
-        $this->assertValidPrice($price);
-        $this->assertValidPriceTax($priceTax);
-        $this->assertValidSku($sku);
+    public function __construct($externalId, $name, $price, $priceTax, $sku)
+    {
+        $this->setExternalId($externalId);
+        $this->setName($name);
+        $this->setPrice($price);
+        $this->setPriceTax($priceTax);
+        $this->setSku($sku);
+    }
 
+    /**
+     * @param int $externalId
+     */
+    private function setExternalId($externalId)
+    {
+        Assert::that($externalId)->notNull()->integer();
         $this->externalId = $externalId;
-        $this->name = $name;
-        $this->price = $price;
-        $this->priceTax = $priceTax;
-        $this->sku = $sku;
-        $this->quantity = $quantity;
-        $this->url = $url;
-        $this->description = $description;
-        $this->images = $images;
     }
 
     /**
      * @param string $name
-     * @throws VariantException
      */
-    private function assertValidName($name)
+    private function setName($name)
     {
-        if (empty($name)) {
-            throw VariantException::createForInvalidName();
-        }
+        Assert::that($name)->notBlank()->string();
+        $this->name = $name;
     }
 
     /**
      * @param float $price
-     * @throws VariantException
      */
-    private function assertValidPrice($price)
+    private function setPrice($price)
     {
-        if (empty($price)) {
-            throw VariantException::createForInvalidPrice();
-        }
+        Assert::that($price)->notNull()->float();
+        $this->price = $price;
     }
 
     /**
      * @param float $priceTax
-     * @throws VariantException
      */
-    private function assertValidPriceTax($priceTax)
+    private function setPriceTax($priceTax)
     {
-        if (empty($priceTax)) {
-            throw VariantException::createForInvalidPriceTax();
-        }
+        Assert::that($priceTax)->notNull()->float();
+        $this->priceTax = $priceTax;
     }
 
     /**
      * @param string $sku
-     * @throws VariantException
      */
-    private function assertValidSku($sku)
+    private function setSku($sku)
     {
-        if (empty($sku)) {
-            throw VariantException::createForInvalidSku();
-        }
+        Assert::that($sku)->notBlank()->string();
+        $this->sku = $sku;
     }
 
     /**
@@ -129,11 +110,35 @@ class Variant
     }
 
     /**
+     * @param string $url
+     * @return $this
+     */
+    public function setUrl($url)
+    {
+        Assert::that($url)->notNull()->string();
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return $this
+     */
+    public function setDescription($description)
+    {
+        Assert::that($description)->notBlank()->string()->maxLength(self::DESCRIPTION_MAX_LENGTH);
+        $this->description = $description;
+
+        return $this;
     }
 
     /**
@@ -210,6 +215,17 @@ class Variant
     }
 
     /**
+     * @param ImagesCollection $images
+     * @return $this
+     */
+    public function setImages(ImagesCollection $images)
+    {
+        $this->images = $images;
+
+        return $this;
+    }
+
+    /**
      * @param string $grVariantId
      * @return array
      */
@@ -223,7 +239,7 @@ class Variant
         ];
 
         /** @var Image $image */
-        foreach ($this->getImages()->getIterator() as $image) {
+        foreach ($this->getImages() as $image) {
 
             $result['images'][] = [
                 'src' => $image->getSrc(),
@@ -240,6 +256,18 @@ class Variant
     public function getQuantity()
     {
         return $this->quantity;
+    }
+
+    /**
+     * @param integer $quantity
+     * @return $this
+     */
+    public function setQuantity($quantity)
+    {
+        Assert::that($quantity)->notNull()->integer();
+        $this->quantity = $quantity;
+
+        return $this;
     }
 
 }

@@ -1,6 +1,8 @@
 <?php
 namespace GrShareCode\Order;
 
+use GrShareCode\Validation\Assert\Assert;
+
 /**
  * Class AddOrderCommand
  * @package GrShareCode\Order
@@ -21,9 +23,8 @@ class AddOrderCommand
 
     /** @var string */
     private $shopId;
-    /**
-     * @var bool
-     */
+
+    /** @var bool */
     private $skipAutomation;
 
     /**
@@ -31,20 +32,45 @@ class AddOrderCommand
      * @param string $email
      * @param string $contactListId
      * @param string $shopId
-     * @param bool $skipAutomation
      */
     public function __construct(
         Order $order,
         $email,
         $contactListId,
-        $shopId,
-        $skipAutomation = self::SKIP_AUTOMATION_FALSE
+        $shopId
     ) {
         $this->order = $order;
-        $this->contactListId = $contactListId;
+        $this->skipAutomation = self::SKIP_AUTOMATION_FALSE;
+        $this->setEmail($email);
+        $this->setContactListId($contactListId);
+        $this->setShopId($shopId);
+    }
+
+    /**
+     * @param string $email
+     */
+    private function setEmail($email)
+    {
+        Assert::that($email)->email();
         $this->email = $email;
+    }
+
+    /**
+     * @param string $contactListId
+     */
+    private function setContactListId($contactListId)
+    {
+        Assert::that($contactListId)->notBlank()->string();
+        $this->contactListId = $contactListId;
+    }
+
+    /**
+     * @param string $shopId
+     */
+    private function setShopId($shopId)
+    {
+        Assert::that($shopId)->notBlank()->string();
         $this->shopId = $shopId;
-        $this->skipAutomation = $skipAutomation;
     }
 
     /**
@@ -85,6 +111,11 @@ class AddOrderCommand
     public function getShopId()
     {
         return $this->shopId;
+    }
+
+    public function setToSkipAutomation()
+    {
+        $this->skipAutomation = self::SKIP_AUTOMATION_TRUE;
     }
 
 }

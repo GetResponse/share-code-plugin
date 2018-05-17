@@ -1,5 +1,5 @@
 <?php
-namespace GrShareCode\Contact\CustomField;
+namespace GrShareCode\Contact\CustomFieldMapping;
 
 use GrShareCode\TypedCollection;
 

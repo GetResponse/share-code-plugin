@@ -36,23 +36,22 @@ class AddressFactory
         $provinceCode,
         $phone,
         $company
-    )
-    {
+    ) {
         $address = new Address(
             CountryCodeConverter::getCountryCodeInISO3166Alpha3($countryCode),
-            $firstName.' '.$lastName
+            $firstName . ' ' . $lastName
         );
 
-        $address->setFirstName(substr($firstName, 0, 64));
-        $address->setLastName(substr($lastName, 0, 64));
-        $address->setAddress1(substr($address1, 0, 255));
-        $address->setAddress2(substr($address2, 0, 255));
-        $address->setCity(substr($city, 0, 128));
-        $address->setZip(substr($zip, 0, 64));
-        $address->setProvince(substr($province, 0, 255));
-        $address->setProvinceCode(substr($provinceCode, 0, 64));
-        $address->setPhone(substr($phone, 0, 255));
-        $address->setCompany(substr($company, 0, 128));
+        $address->setFirstName(substr($firstName, 0, Address::FIRSTNAME_MAX_LENGTH));
+        $address->setLastName(substr($lastName, 0, Address::LASTNAME_MAX_LENGTH));
+        $address->setAddress1(substr($address1, 0, Address::ADDRESS1_MAX_LENGTH));
+        $address->setAddress2(substr($address2, 0, Address::ADDRESS2_MAX_LENGTH));
+        $address->setCity(substr($city, 0, Address::CITY_MAX_LENGTH));
+        $address->setZip(substr($zip, 0, Address::ZIP_MAX_LENGTH));
+        $address->setProvince(substr($province, 0, Address::PROVINCE_MAX_LENGTH));
+        $address->setProvinceCode(substr($provinceCode, 0, Address::PROVINCE_CODE_MAX_LENGTH));
+        $address->setPhone(substr($phone, 0, Address::PHONE_MAX_LENGTH));
+        $address->setCompany(substr($company, 0, Address::COMPANY_MAX_LENGTH));
 
         return $address;
     }

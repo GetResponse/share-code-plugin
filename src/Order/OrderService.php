@@ -70,7 +70,7 @@ class OrderService
             'cartId' => $order->getCartId(),
             'description' => $order->getDescription(),
             'shippingPrice' => $order->getShippingPrice(),
-            'billingPrice' => $order->getBillingPrice(),
+            'billingPrice' => $order->getBillingStatus(),
             'processedAt' => $order->getProcessedAt(),
             'shippingAddress' => $this->buildAddress($order->getShippingAddress()),
             'billingAddress' => $this->buildAddress($order->getBillingAddress()),

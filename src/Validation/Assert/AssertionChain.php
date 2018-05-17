@@ -219,8 +219,8 @@ class AssertionChain
             throw new LogicException('Exception class name must be passed as a string');
         }
 
-        if ('Assert\Assertion' !== $className && !\is_subclass_of($className, 'Assert\Assertion')) {
-            throw new LogicException($className . ' is not (a subclass of) Assert\Assertion');
+        if ('GrShareCode\Validation\Assert\Assertion' !== $className && !\is_subclass_of($className, 'GrShareCode\Validation\Assert\Assertion')) {
+            throw new LogicException($className . ' is not (a subclass of) GrShareCode\Validation\Assert\Assertion');
         }
 
         $this->assertionClassName = $className;

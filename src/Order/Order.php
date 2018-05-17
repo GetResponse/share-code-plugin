@@ -3,6 +3,7 @@ namespace GrShareCode\Order;
 
 use GrShareCode\Address\Address;
 use GrShareCode\Product\ProductsCollection;
+use GrShareCode\Validation\Assert\Assert;
 
 /**
  * Class Order
@@ -41,7 +42,7 @@ class Order
     private $shippingPrice;
 
     /** @var float */
-    private $billingPrice;
+    private $billingStatus;
 
     /** @var string */
     private $processedAt;
@@ -63,7 +64,7 @@ class Order
      * @param int $cartId
      * @param string $description
      * @param float $shippingPrice
-     * @param float $billingPrice
+     * @param float $billingStatus
      * @param string $processedAt
      * @param Address $shippingAddress
      * @param Address $billingAddress
@@ -79,24 +80,148 @@ class Order
         $cartId,
         $description,
         $shippingPrice,
-        $billingPrice,
+        $billingStatus,
         $processedAt,
         Address $shippingAddress,
         Address $billingAddress
     ) {
+
+        $this->setOrderId($orderId);
+        $this->setProducts($products);
+        $this->setTotalPrice($totalPrice);
+        $this->setTotalPriceTax($totalPriceTax);
+        $this->setOrderUrl($orderUrl);
+        $this->setCurrency($currency);
+        $this->setStatus($status);
+        $this->setCartId($cartId);
+        $this->setDescription($description);
+        $this->setShippingPrice($shippingPrice);
+        $this->setBillingStatus($billingStatus);
+        $this->setProcessedAt($processedAt);
+        $this->setShippingAddress($shippingAddress);
+        $this->setBillingAddress($shippingAddress);
+    }
+
+    /**
+     * @param int $orderId
+     */
+    private function setOrderId($orderId)
+    {
+        Assert::that($orderId)->notNull()->integer();
         $this->orderId = $orderId;
+    }
+
+    /**
+     * @param ProductsCollection $products
+     */
+    private function setProducts(ProductsCollection $products)
+    {
         $this->products = $products;
+    }
+
+    /**
+     * @param float $totalPrice
+     */
+    private function setTotalPrice($totalPrice)
+    {
+        Assert::that($totalPrice)->notNull()->float();
         $this->totalPrice = $totalPrice;
+    }
+
+    /**
+     * @param null|float $totalPriceTax
+     */
+    private function setTotalPriceTax($totalPriceTax)
+    {
+        Assert::that($totalPriceTax)->nullOr()->float();
         $this->totalPriceTax = $totalPriceTax;
+    }
+
+    /**
+     * @param null|string $orderUrl
+     */
+    private function setOrderUrl($orderUrl)
+    {
+        Assert::that($orderUrl)->nullOr()->string();
         $this->orderUrl = $orderUrl;
+    }
+
+    /**
+     * @param string $currency
+     */
+    private function setCurrency($currency)
+    {
+        Assert::that($currency)->notBlank()->string()->length(3);
         $this->currency = $currency;
+    }
+
+    /**
+     * @param null|string $status
+     */
+    private function setStatus($status)
+    {
+        Assert::that($status)->nullOr()->string();
         $this->status = $status;
+    }
+
+    /**
+     * @param int $cartId
+     */
+    private function setCartId($cartId)
+    {
+        Assert::that($cartId)->notNull()->integer();
         $this->cartId = $cartId;
+    }
+
+    /**
+     * @param null|string $description
+     */
+    private function setDescription($description)
+    {
+        Assert::that($description)->nullOr()->string();
         $this->description = $description;
+    }
+
+    /**
+     * @param null|float $shippingPrice
+     */
+    private function setShippingPrice($shippingPrice)
+    {
+        Assert::that($shippingPrice)->nullOr()->float();
         $this->shippingPrice = $shippingPrice;
-        $this->billingPrice = $billingPrice;
+    }
+
+    /**
+     * @param null|string $billingStatus
+     */
+    private function setBillingStatus($billingStatus)
+    {
+        Assert::that($billingStatus)->nullOr()->string();
+        $this->billingStatus = $billingStatus;
+    }
+
+    /**
+     * @param string $processedAt
+     */
+    private function setProcessedAt($processedAt)
+    {
+        Assert::that($processedAt)->date('Y-m-dTH:i:sO');
         $this->processedAt = $processedAt;
+    }
+
+    /**
+     * @param Address $shippingAddress
+     */
+    private function setShippingAddress(Address $shippingAddress)
+    {
         $this->shippingAddress = $shippingAddress;
+    }
+
+    /**
+     * @param Address $billingAddress
+     */
+    private function setBillingAddress(Address $billingAddress)
+    {
         $this->billingAddress = $billingAddress;
     }
 
@@ -183,9 +308,9 @@ class Order
     /**
      * @return float
      */
-    public function getBillingPrice()
+    public function getBillingStatus()
     {
-        return $this->billingPrice;
+        return $this->billingStatus;
     }
 
     /**

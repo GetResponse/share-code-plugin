@@ -112,9 +112,10 @@ class ExportCustomersService
             $exportContactCommand->getOrder(),
             $exportContactCommand->getEmail(),
             $this->config->getContactListId(),
-            $shopId,
-            AddOrderCommand::SKIP_AUTOMATION_TRUE
+            $shopId
         );
+        $addOrderCommand->setToSkipAutomation();
+
         $this->orderService->sendOrder($addOrderCommand);
     }
 }

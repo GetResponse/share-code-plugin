@@ -1,6 +1,8 @@
 <?php
 namespace GrShareCode\Product\Variant\Images;
 
+use GrShareCode\Validation\Assert\Assert;
+
 /**
  * Class Image
  * @package GrShareCode\Product\Variant\Images
@@ -19,7 +21,25 @@ class Image
      */
     public function __construct($src, $position)
     {
+        $this->setSrc($src);
+        $this->setPosition($position);
+    }
+
+    /**
+     * @param string $src
+     */
+    private function setSrc($src)
+    {
+        Assert::that($src)->notBlank()->string();
         $this->src = $src;
+    }
+
+    /**
+     * @param int $position
+     */
+    private function setPosition($position)
+    {
+        Assert::that($position)->notNull()->integer();
         $this->position = $position;
     }
 

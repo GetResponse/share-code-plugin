@@ -1,12 +1,25 @@
 <?php
 namespace GrShareCode\Address;
 
+use GrShareCode\Validation\Assert\Assert;
+
 /**
  * Class Address
  * @package GrShareCode\Address
  */
 class Address
 {
+    const FIRSTNAME_MAX_LENGTH = 64;
+    const LASTNAME_MAX_LENGTH = 64;
+    const ADDRESS1_MAX_LENGTH = 255;
+    const ADDRESS2_MAX_LENGTH = 255;
+    const CITY_MAX_LENGTH = 128;
+    const ZIP_MAX_LENGTH = 64;
+    const PROVINCE_MAX_LENGTH = 255;
+    const PROVINCE_CODE_MAX_LENGTH = 64;
+    const PHONE_MAX_LENGTH = 255;
+    const COMPANY_MAX_LENGTH = 128;
+
     /** @var string */
     private $countryCode;
 
@@ -52,88 +65,26 @@ class Address
      */
     public function __construct($countryCode, $name)
     {
+        $this->setCountryCode($this->countryCode);
+        $this->setName($name);
+    }
+
+    /**
+     * @param string $countryCode
+     */
+    private function setCountryCode($countryCode)
+    {
+        Assert::that($countryCode)->notBlank()->string()->length(3);
         $this->countryCode = $countryCode;
+    }
+
+    /**
+     * @param string $name
+     */
+    private function setName($name)
+    {
+        Assert::that($name)->notBlank()->string();
         $this->name = $name;
-    }
-
-    /**
-     * @param string $firstName
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
-    }
-
-    /**
-     * @param string $lastName
-     */
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-    }
-
-    /**
-     * @param string $address1
-     */
-    public function setAddress1($address1)
-    {
-        $this->address1 = $address1;
-    }
-
-    /**
-     * @param string $address2
-     */
-    public function setAddress2($address2)
-    {
-        $this->address2 = $address2;
-    }
-
-    /**
-     * @param string $city
-     */
-    public function setCity($city)
-    {
-        $this->city = $city;
-    }
-
-    /**
-     * @param string $zip
-     */
-    public function setZip($zip)
-    {
-        $this->zip = $zip;
-    }
-
-    /**
-     * @param string $province
-     */
-    public function setProvince($province)
-    {
-        $this->province = $province;
-    }
-
-    /**
-     * @param string $provinceCode
-     */
-    public function setProvinceCode($provinceCode)
-    {
-        $this->provinceCode = $provinceCode;
-    }
-
-    /**
-     * @param string $phone
-     */
-    public function setPhone($phone)
-    {
-        $this->phone = $phone;
-    }
-
-    /**
-     * @param string $company
-     */
-    public function setCompany($company)
-    {
-        $this->company = $company;
     }
 
     /**
@@ -161,11 +112,29 @@ class Address
     }
 
     /**
+     * @param string $firstName
+     */
+    public function setFirstName($firstName)
+    {
+        Assert::that($firstName)->maxLength(self::FIRSTNAME_MAX_LENGTH);
+        $this->firstName = $firstName;
+    }
+
+    /**
      * @return string
      */
     public function getLastName()
     {
         return $this->lastName;
+    }
+
+    /**
+     * @param string $lastName
+     */
+    public function setLastName($lastName)
+    {
+        Assert::that($lastName)->maxLength(self::LASTNAME_MAX_LENGTH);
+        $this->lastName = $lastName;
     }
 
     /**
@@ -177,11 +146,29 @@ class Address
     }
 
     /**
+     * @param string $address1
+     */
+    public function setAddress1($address1)
+    {
+        Assert::that($address1)->maxLength(self::ADDRESS1_MAX_LENGTH);
+        $this->address1 = $address1;
+    }
+
+    /**
      * @return string
      */
     public function getAddress2()
     {
         return $this->address2;
+    }
+
+    /**
+     * @param string $address2
+     */
+    public function setAddress2($address2)
+    {
+        Assert::that($address2)->maxLength(self::ADDRESS2_MAX_LENGTH);
+        $this->address2 = $address2;
     }
 
     /**
@@ -193,11 +180,29 @@ class Address
     }
 
     /**
+     * @param string $city
+     */
+    public function setCity($city)
+    {
+        Assert::that($city)->maxLength(self::CITY_MAX_LENGTH);
+        $this->city = $city;
+    }
+
+    /**
      * @return string
      */
     public function getZip()
     {
         return $this->zip;
+    }
+
+    /**
+     * @param string $zip
+     */
+    public function setZip($zip)
+    {
+        Assert::that($zip)->maxLength(self::ZIP_MAX_LENGTH);
+        $this->zip = $zip;
     }
 
     /**
@@ -209,11 +214,29 @@ class Address
     }
 
     /**
+     * @param string $province
+     */
+    public function setProvince($province)
+    {
+        Assert::that($province)->maxLength(self::PROVINCE_MAX_LENGTH);
+        $this->province = $province;
+    }
+
+    /**
      * @return string
      */
     public function getProvinceCode()
     {
         return $this->provinceCode;
+    }
+
+    /**
+     * @param string $provinceCode
+     */
+    public function setProvinceCode($provinceCode)
+    {
+        Assert::that($provinceCode)->maxLength(self::PROVINCE_CODE_MAX_LENGTH);
+        $this->provinceCode = $provinceCode;
     }
 
     /**
@@ -225,11 +248,29 @@ class Address
     }
 
     /**
+     * @param string $phone
+     */
+    public function setPhone($phone)
+    {
+        Assert::that($phone)->maxLength(self::PHONE_MAX_LENGTH);
+        $this->phone = $phone;
+    }
+
+    /**
      * @return string
      */
     public function getCompany()
     {
         return $this->company;
+    }
+
+    /**
+     * @param string $company
+     */
+    public function setCompany($company)
+    {
+        Assert::that($company)->maxLength(self::COMPANY_MAX_LENGTH);
+        $this->company = $company;
     }
 
     /**

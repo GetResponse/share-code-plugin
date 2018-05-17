@@ -1,6 +1,8 @@
 <?php
 namespace GrShareCode\Product\Category;
 
+use GrShareCode\Validation\Assert\Assert;
+
 /**
  * Class Category
  * @package GrShareCode\Product\Category
@@ -24,32 +26,31 @@ class Category
 
     /**
      * @param string $name
-     * @param string $parentId
-     * @param string $externalId
-     * @param string $url
-     * @param bool $isDefault
-     * @throws CategoryException
      */
-    public function __construct($name, $parentId = null, $externalId = null, $url = null, $isDefault = null)
+    public function __construct($name)
     {
-        $this->assertValidName($name);
-
-        $this->name = $name;
-        $this->parentId = $parentId;
-        $this->externalId = $externalId;
-        $this->url = $url;
-        $this->isDefault = $isDefault;
+        $this->setName($name);
     }
 
     /**
      * @param string $name
-     * @throws CategoryException
      */
-    private function assertValidName($name)
+    private function setName($name)
     {
-        if (empty($name)) {
-            throw CategoryException::createForInvalidName();
-        }
+        Assert::that($name)->notBlank()->string();
+        $this->name = $name;
+    }
+
+    /**
+     * @param null|boolean $default
+     * @return $this
+     */
+    public function setDefault($default)
+    {
+        Assert::that($default)->nullOr()->boolean();
+        $this->isDefault = $default;
+
+        return $this;
     }
 
     /**
@@ -77,6 +78,18 @@ class Category
     }
 
     /**
+     * @param null|string $parentId
+     * @return $this
+     */
+    public function setParentId($parentId)
+    {
+        Assert::that($parentId)->nullOr()->string();
+        $this->parentId = $parentId;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getExternalId()
@@ -85,11 +98,35 @@ class Category
     }
 
     /**
+     * @param string $externalId
+     * @return $this
+     */
+    public function setExternalId($externalId)
+    {
+        Assert::that($externalId)->nullOr()->string();
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * @param null|string $url
+     * @return $this
+     */
+    public function setUrl($url)
+    {
+        Assert::that($url)->nullOr()->string();
+        $this->url = $url;
+
+        return $this;
     }
 
 }

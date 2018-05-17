@@ -29,7 +29,7 @@ class Generator
     public static function createAddCartCommand()
     {
         $products = self::createProductsCollection();
-        $cart = new Cart(1, $products, 'PLN', 10, 123.3);
+        $cart = new Cart(1, $products, 'PLN', 10.00, 123.3);
         return new AddCartCommand(
             $cart,
             'simple@example.com',
