@@ -67,14 +67,15 @@ class ContactService
             ]
         ];
 
-        /** @var CustomField $customField */
-        foreach ($exportContactCommand->getCustomFieldsCollection() as $customField) {
-            $params['customFieldValues'][] = [
-                'customFieldId' => $customField->getId(),
-                'value' => [$customField->getValue()]
-            ];
+        if (!empty($exportContactCommand->getCustomFieldsCollection())) {
+            /** @var CustomField $customField */
+            foreach ($exportContactCommand->getCustomFieldsCollection() as $customField) {
+                $params['customFieldValues'][] = [
+                    'customFieldId' => $customField->getId(),
+                    'value'         => [$customField->getValue()]
+                ];
+            }
         }
-
         $this->getresponseApi->updateContact($contactId, $params);
     }
 
