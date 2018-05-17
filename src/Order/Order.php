@@ -205,7 +205,7 @@ class Order
      */
     private function setProcessedAt($processedAt)
     {
-        Assert::that($processedAt)->date('Y-m-dTH:i:sO');
+        Assert::that($processedAt)->date(\DateTime::ISO8601);
         $this->processedAt = $processedAt;
     }
 

@@ -1,18 +1,18 @@
 <?php
 namespace GrShareCode\Tests;
 
+use GrShareCode\Address\Address;
 use GrShareCode\Cart\AddCartCommand;
 use GrShareCode\Cart\Cart;
+use GrShareCode\Order\AddOrderCommand;
+use GrShareCode\Order\Order;
 use GrShareCode\Product\Category\Category;
 use GrShareCode\Product\Category\CategoryCollection;
-use GrShareCode\Product\Category\CategoryException;
 use GrShareCode\Product\Product;
-use GrShareCode\Product\ProductException;
 use GrShareCode\Product\ProductsCollection;
 use GrShareCode\Product\Variant\Images\Image;
 use GrShareCode\Product\Variant\Images\ImagesCollection;
 use GrShareCode\Product\Variant\Variant;
-use GrShareCode\Product\Variant\VariantException;
 
 /**
  * Class Faker
@@ -72,5 +72,50 @@ class Generator
             ->setUrl('https://getresponse.com')
             ->setDescription('This is description')
             ->setImages($imageCollection);
+    }
+
+    public static function createAddOrderCommand()
+    {
+        $order = new Order(
+            21,
+            self::createProductsCollection(),
+            20.00,
+            25.00,
+            'http://getresponse.com',
+            'PLN',
+            'pending',
+            431,
+            'This is description',
+            3.53,
+            'awaiting',
+            '2018-05-17T16:15:33+0200',
+            self::createAddress(),
+            self::createAddress()
+        );
+
+        return new AddOrderCommand(
+            $order,
+            'simple@example.com',
+            'listId',
+            'shopId'
+        );
+    }
+
+    /**
+     * @return Address
+     */
+    public static function createAddress()
+    {
+        return (new Address('POL', 'Poland'))
+            ->setFirstName('Adam')
+            ->setLastName('Kowalski')
+            ->setAddress1('Address number 1')
+            ->setAddress2('Address number 2')
+            ->setCity('Gdynia')
+            ->setZip('81-102')
+            ->setProvince('Pomorskie')
+            ->setProvinceCode('AASDMEF2')
+            ->setPhone('48-123-321-123')
+            ->setCompany('GetResponse Company');
     }
 }
