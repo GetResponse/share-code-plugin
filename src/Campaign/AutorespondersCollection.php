@@ -11,6 +11,6 @@ class AutorespondersCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\TypedCollection\Autoresponder');
+        $this->setItemType('\GrShareCode\Campaign\Autoresponder');
     }
 }
