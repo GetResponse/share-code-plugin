@@ -65,7 +65,7 @@ class Address
      */
     public function __construct($countryCode, $name)
     {
-        $this->setCountryCode($this->countryCode);
+        $this->setCountryCode($countryCode);
         $this->setName($name);
     }
 
@@ -113,11 +113,14 @@ class Address
 
     /**
      * @param string $firstName
+     * @return $this
      */
     public function setFirstName($firstName)
     {
         Assert::that($firstName)->maxLength(self::FIRSTNAME_MAX_LENGTH);
         $this->firstName = $firstName;
+
+        return $this;
     }
 
     /**
@@ -130,11 +133,14 @@ class Address
 
     /**
      * @param string $lastName
+     * @return $this
      */
     public function setLastName($lastName)
     {
         Assert::that($lastName)->maxLength(self::LASTNAME_MAX_LENGTH);
         $this->lastName = $lastName;
+
+        return $this;
     }
 
     /**
@@ -147,11 +153,13 @@ class Address
 
     /**
      * @param string $address1
+     * @return $this
      */
     public function setAddress1($address1)
     {
         Assert::that($address1)->maxLength(self::ADDRESS1_MAX_LENGTH);
         $this->address1 = $address1;
+        return $this;
     }
 
     /**
@@ -164,11 +172,14 @@ class Address
 
     /**
      * @param string $address2
+     * @return $this
      */
     public function setAddress2($address2)
     {
         Assert::that($address2)->maxLength(self::ADDRESS2_MAX_LENGTH);
         $this->address2 = $address2;
+
+        return $this;
     }
 
     /**
@@ -181,11 +192,14 @@ class Address
 
     /**
      * @param string $city
+     * @return $this
      */
     public function setCity($city)
     {
         Assert::that($city)->maxLength(self::CITY_MAX_LENGTH);
         $this->city = $city;
+
+        return $this;
     }
 
     /**
@@ -198,11 +212,14 @@ class Address
 
     /**
      * @param string $zip
+     * @return $this
      */
     public function setZip($zip)
     {
         Assert::that($zip)->maxLength(self::ZIP_MAX_LENGTH);
         $this->zip = $zip;
+
+        return $this;
     }
 
     /**
@@ -215,11 +232,14 @@ class Address
 
     /**
      * @param string $province
+     * @return $this
      */
     public function setProvince($province)
     {
         Assert::that($province)->maxLength(self::PROVINCE_MAX_LENGTH);
         $this->province = $province;
+
+        return $this;
     }
 
     /**
@@ -232,11 +252,14 @@ class Address
 
     /**
      * @param string $provinceCode
+     * @return $this
      */
     public function setProvinceCode($provinceCode)
     {
         Assert::that($provinceCode)->maxLength(self::PROVINCE_CODE_MAX_LENGTH);
         $this->provinceCode = $provinceCode;
+
+        return $this;
     }
 
     /**
@@ -249,11 +272,14 @@ class Address
 
     /**
      * @param string $phone
+     * @return $this
      */
     public function setPhone($phone)
     {
         Assert::that($phone)->maxLength(self::PHONE_MAX_LENGTH);
         $this->phone = $phone;
+
+        return $this;
     }
 
     /**
@@ -266,11 +292,14 @@ class Address
 
     /**
      * @param string $company
+     * @return $this
      */
     public function setCompany($company)
     {
         Assert::that($company)->maxLength(self::COMPANY_MAX_LENGTH);
         $this->company = $company;
+
+        return $this;
     }
 
     /**
