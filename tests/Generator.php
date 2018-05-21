@@ -4,6 +4,9 @@ namespace GrShareCode\Tests;
 use GrShareCode\Address\Address;
 use GrShareCode\Cart\AddCartCommand;
 use GrShareCode\Cart\Cart;
+use GrShareCode\Contact\CustomField;
+use GrShareCode\Contact\CustomFieldsCollection;
+use GrShareCode\Export\ExportContactCommand;
 use GrShareCode\Order\AddOrderCommand;
 use GrShareCode\Order\Order;
 use GrShareCode\Product\Category\Category;
@@ -76,7 +79,20 @@ class Generator
 
     public static function createAddOrderCommand()
     {
-        $order = new Order(
+        return new AddOrderCommand(
+            self::createOrder(),
+            'simple@example.com',
+            'listId',
+            'shopId'
+        );
+    }
+
+    /**
+     * @return Order
+     */
+    private static function createOrder()
+    {
+        return new Order(
             21,
             self::createProductsCollection(),
             20.00,
@@ -91,13 +107,6 @@ class Generator
             '2018-05-17T16:15:33+0200',
             self::createAddress(),
             self::createAddress()
-        );
-
-        return new AddOrderCommand(
-            $order,
-            'simple@example.com',
-            'listId',
-            'shopId'
         );
     }
 
@@ -117,5 +126,22 @@ class Generator
             ->setProvinceCode('AASDMEF2')
             ->setPhone('48-123-321-123')
             ->setCompany('GetResponse Company');
+    }
+
+    /**
+     * @return ExportContactCommand
+     */
+    public static function createExportContactCommand()
+    {
+        $customFieldsCollection = new CustomFieldsCollection();
+        $customFieldsCollection->add(new CustomField('id1', 'company', 'country'));
+
+        return new ExportContactCommand(
+            'adam.kowalski@getresponse.com',
+            'Adam Kowalski',
+            $customFieldsCollection,
+            new Cart(1, self::createProductsCollection(), 'PLN', 10.00, 123.3),
+            self::createOrder()
+        );
     }
 }

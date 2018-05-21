@@ -22,7 +22,7 @@ class ExportCustomersService
     private $contactService;
 
     /** @var ExportSettings */
-    private $config;
+    private $exportSettings;
 
     /** @var CartService */
     private $cartService;
@@ -31,19 +31,19 @@ class ExportCustomersService
     private $orderService;
 
     /**
-     * @param ExportSettings $config
+     * @param ExportSettings $exportSettings
      * @param ContactService $contactService
      * @param CartService $cartService
      * @param OrderService $orderService
      */
     public function __construct(
-        ExportSettings $config,
+        ExportSettings $exportSettings,
         ContactService $contactService,
         CartService $cartService,
         OrderService $orderService
     ) {
+        $this->exportSettings = $exportSettings;
         $this->contactService = $contactService;
-        $this->config = $config;
         $this->cartService = $cartService;
         $this->orderService = $orderService;
     }
@@ -54,7 +54,7 @@ class ExportCustomersService
      */
     public function exportContact(ExportContactCommand $exportContactCommand)
     {
-        $this->exportCustomer($this->config, $exportContactCommand);
+        $this->exportCustomer($this->exportSettings, $exportContactCommand);
         $this->sendEcommerceData($exportContactCommand);
     }
 
@@ -94,16 +94,16 @@ class ExportCustomersService
      */
     private function sendEcommerceData(ExportContactCommand $exportContactCommand)
     {
-        if (!$this->config->getEcommerceConfig()->isEcommerceEnabled()) {
+        if (!$this->exportSettings->getEcommerceConfig()->isEcommerceEnabled()) {
             return;
         }
 
-        $shopId = $this->config->getEcommerceConfig()->getShopId();
+        $shopId = $this->exportSettings->getEcommerceConfig()->getShopId();
 
         $addCartCommand = new AddCartCommand(
             $exportContactCommand->getCart(),
             $exportContactCommand->getEmail(),
-            $this->config->getContactListId(),
+            $this->exportSettings->getContactListId(),
             $shopId
         );
         $this->cartService->sendCart($addCartCommand);
@@ -111,7 +111,7 @@ class ExportCustomersService
         $addOrderCommand = new AddOrderCommand(
             $exportContactCommand->getOrder(),
             $exportContactCommand->getEmail(),
-            $this->config->getContactListId(),
+            $this->exportSettings->getContactListId(),
             $shopId
         );
         $addOrderCommand->setToSkipAutomation();
