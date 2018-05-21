@@ -274,6 +274,18 @@ class GetresponseApi
     }
 
     /**
+     * @return string
+     * @throws GetresponseApiException
+     */
+    public function getTrackingCode()
+    {
+        $trackingCode = $this->sendRequest('tracking');
+        $trackingCode = is_array($trackingCode) ? reset($trackingCode) : [];
+
+        return isset($trackingCode['snippet']) ? $trackingCode['snippet'] : '';
+    }
+
+    /**
      * @param string $apiMethod
      * @param string $method
      * @param array $params
