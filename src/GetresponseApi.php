@@ -17,9 +17,6 @@ class GetresponseApi
     /** @var string */
     private $xAppId;
 
-    /** @var string */
-    private $domain;
-
     /** @var ApiType */
     private $apiType;
 
@@ -315,8 +312,8 @@ class GetresponseApi
         ];
 
         // for GetResponse 360
-        if (!empty($this->domain)) {
-            $headers[] = 'X-Domain: '.$this->domain;
+        if (!empty($this->apiType->isMx())) {
+            $headers[] = 'X-Domain: ' . $this->apiType->getDomain();
         }
 
         //also as get method

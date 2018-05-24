@@ -18,7 +18,47 @@ class ApiType
     /** @var string */
     private $type;
 
+    /** @var string */
+    private $domain;
+
+    /** @var array */
     private $apiTypes = [self::SMB, self::MX_PL, self::MX_US];
+
+    /**
+     * @param string $type
+     * @param null $domain
+     * @throws ApiTypeException
+     */
+    public function __construct($type, $domain = null)
+    {
+        $this->validateApiType($type);
+        $this->validateApiDomain($type, $domain);
+        $this->type = $type;
+        $this->domain = $domain;
+    }
+
+    /**
+     * @param string $apiType
+     * @throws ApiTypeException
+     */
+    private function validateApiType($apiType)
+    {
+        if (!in_array($apiType, $this->apiTypes, true)) {
+            throw ApiTypeException::createForInvalidApiType();
+        }
+    }
+
+    /**
+     * @param string $type
+     * @param string $domain
+     * @throws ApiTypeException
+     */
+    private function validateApiDomain($type, $domain)
+    {
+        if (empty($domain) && in_array($type, [self::MX_US, self::MX_PL], true)) {
+            throw ApiTypeException::createForInvalidApiType();
+        }
+    }
 
     /**
      * @return ApiType
@@ -30,31 +70,31 @@ class ApiType
     }
 
     /**
+     * @param string $domain
      * @return ApiType
      * @throws ApiTypeException
      */
-    public static function createForMxUs()
+    public static function createForMxUs($domain)
     {
-        return new self(self::MX_US);
+        return new self(self::MX_US, $domain);
     }
 
     /**
+     * @param string $domain
      * @return ApiType
      * @throws ApiTypeException
      */
-    public static function createForMxPl()
+    public static function createForMxPl($domain)
     {
-        return new self(self::MX_PL);
+        return new self(self::MX_PL, $domain);
     }
 
     /**
-     * @param string $type
-     * @throws ApiTypeException
+     * @return string
      */
-    public function __construct($type)
+    public function getDomain()
     {
-        $this->validateApiType($type);
-        $this->type = $type;
+        return $this->domain;
     }
 
     /**
@@ -79,13 +119,10 @@ class ApiType
     }
 
     /**
-     * @param $apiType
-     * @throws ApiTypeException
+     * @return bool
      */
-    private function validateApiType($apiType)
+    public function isMx()
     {
-        if (!in_array($apiType, $this->apiTypes)) {
-            throw ApiTypeException::createForInvalidApiType();
-        }
+        return in_array($this->type, [self::MX_US, self::MX_PL], true);
     }
 }

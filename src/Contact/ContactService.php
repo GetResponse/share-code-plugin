@@ -1,8 +1,8 @@
 <?php
 namespace GrShareCode\Contact;
 
-use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\Export\ExportContactCommand;
+use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
 
@@ -26,6 +26,49 @@ class ContactService
     }
 
     /**
+     * @param ExportSettings $config
+     * @param ExportContactCommand $exportContactCommand
+     * @param string $contactId
+     * @throws GetresponseApiException
+     */
+    public function updateContactOnExport(ExportSettings $config, ExportContactCommand $exportContactCommand, $contactId) {
+
+        if (!$config->isUpdateContactEnabled()) {
+            return;
+        }
+
+        $params = [
+            'name' => $exportContactCommand->getName(),
+            'dayOfCycle' => $config->getDayOfCycle(),
+            'campaign' => [
+                'campaignId' => $config->getContactListId(),
+            ]
+        ];
+
+        /** @var CustomField $customField */
+        foreach ($exportContactCommand->getCustomFieldsCollection() as $customField) {
+            $params['customFieldValues'][] = [
+                'customFieldId' => $customField->getId(),
+                'value' => [$customField->getValue()]
+            ];
+        }
+        $this->getresponseApi->updateContact($contactId, $params);
+    }
+
+    /**
+     * @param AddContactCommand $addContactCommand
+     * @throws GetresponseApiException
+     */
+    public function addContact(AddContactCommand $addContactCommand)
+    {
+        try {
+            $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
+        } catch (ContactNotFoundException $e) {
+            $this->createContact($addContactCommand);
+        }
+    }
+
+    /**
      * @param string $email
      * @param string $listId
      * @return Contact
@@ -45,38 +88,6 @@ class ContactService
             $response['name'],
             $response['email']
         );
-    }
-
-    /**
-     * @param ExportSettings $config
-     * @param ExportContactCommand $exportContactCommand
-     * @param string $contactId
-     * @throws GetresponseApiException
-     */
-    public function updateContactOnExport(ExportSettings $config, ExportContactCommand $exportContactCommand, $contactId)
-    {
-        if (!$config->isUpdateContactEnabled()) {
-            return;
-        }
-
-        $params = [
-            'name' => $exportContactCommand->getName(),
-            'dayOfCycle' => $config->getDayOfCycle(),
-            'campaign' => [
-                'campaignId' => $config->getContactListId(),
-            ]
-        ];
-
-        if (!empty($exportContactCommand->getCustomFieldsCollection())) {
-            /** @var CustomField $customField */
-            foreach ($exportContactCommand->getCustomFieldsCollection() as $customField) {
-                $params['customFieldValues'][] = [
-                    'customFieldId' => $customField->getId(),
-                    'value'         => [$customField->getValue()]
-                ];
-            }
-        }
-        $this->getresponseApi->updateContact($contactId, $params);
     }
 
     /**
@@ -103,19 +114,6 @@ class ContactService
         }
 
         $this->getresponseApi->createContact($params);
-    }
-
-    /**
-     * @param AddContactCommand $addContactCommand
-     * @throws GetresponseApiException
-     */
-    public function addContact(AddContactCommand $addContactCommand)
-    {
-        try {
-            $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
-        } catch (ContactNotFoundException $e) {
-            $this->createContact($addContactCommand);
-        }
     }
 
     /**
