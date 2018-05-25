@@ -242,7 +242,7 @@ class GetresponseApi
      */
     public function getAutoresponders($campaignId, $page, $perPage)
     {
-        return $this->sendRequest('autoresponders?' . $this->setParams(['campaignId' => $campaignId, 'page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->sendRequest('autoresponders?' . $this->setParams(['query' => ['campaignId' => $campaignId], 'page' => $page, 'perPage' => $perPage]), 'GET', [], true);
     }
 
     /**
