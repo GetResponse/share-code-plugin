@@ -99,11 +99,14 @@ class ContactService
         $params = [
             'name' => $addContactCommand->getName(),
             'email' => $addContactCommand->getEmail(),
-            'dayOfCycle' => $addContactCommand->getDayOfCycle(),
             'campaign' => [
                 'campaignId' => $addContactCommand->getContactListId(),
             ]
         ];
+
+        if (null !== $addContactCommand->getDayOfCycle()) {
+            $params['dayOfCycle'] = $addContactCommand->getDayOfCycle();
+        }
 
         /** @var CustomField $customField */
         foreach ($addContactCommand->getCustomFieldsCollection() as $customField) {
