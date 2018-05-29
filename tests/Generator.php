@@ -168,7 +168,8 @@ class Generator
             'awaiting',
             '2018-05-17T16:15:33+0200',
             self::createAddress(),
-            self::createAddress()
+            self::createAddress(),
+            new Cart(1, self::createProductsCollection(), 'PLN', 10.00, 123.3)
         );
 
         $historicalOrderCollection = new HistoricalOrderCollection();

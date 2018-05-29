@@ -7,6 +7,7 @@ use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\AddContactCommand;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
+use GrShareCode\Export\HistoricalOrder\HistoricalOrder;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Order\AddOrderCommand;
 use GrShareCode\Order\OrderService;
@@ -46,7 +47,7 @@ class ExportContactService
     public function exportContact(ExportContactCommand $exportContactCommand)
     {
         $this->exportCustomer($exportContactCommand);
-        $this->sendEcommerceData($exportContactCommand);
+        $this->exportEcommerceData($exportContactCommand);
     }
 
     /**
@@ -83,7 +84,7 @@ class ExportContactService
      * @param ExportContactCommand $exportContactCommand
      * @throws GetresponseApiException
      */
-    private function sendEcommerceData(ExportContactCommand $exportContactCommand)
+    private function exportEcommerceData(ExportContactCommand $exportContactCommand)
     {
         $exportSettings = $exportContactCommand->getExportSettings();
 
@@ -91,12 +92,13 @@ class ExportContactService
             return;
         }
 
+        /** @var HistoricalOrder $historicalOrder */
         foreach ($exportContactCommand->getHistoricalOrderCollection() as $historicalOrder) {
 
             $shopId = $exportSettings->getEcommerceConfig()->getShopId();
 
             $addCartCommand = new AddCartCommand(
-                CartFactory::createFromHistoricalOrder($historicalOrder),
+                $historicalOrder->getCart(),
                 $exportContactCommand->getEmail(),
                 $exportSettings->getContactListId(),
                 $shopId
