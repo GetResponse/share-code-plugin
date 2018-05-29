@@ -53,7 +53,6 @@ class ExportCustomersServiceTest extends TestCase
         ]);
 
         $exportCustomersService = new ExportCustomersService(
-            $exportSettings,
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock
@@ -68,7 +67,7 @@ class ExportCustomersServiceTest extends TestCase
             ->expects($this->once())
             ->method('updateContactOnExport');
 
-        $exportContactCommand = Generator::createExportContactCommand();
+        $exportContactCommand = Generator::createExportContactCommandWithSettings($exportSettings);
         $exportCustomersService->exportContact($exportContactCommand);
     }
 
@@ -87,7 +86,6 @@ class ExportCustomersServiceTest extends TestCase
         ]);
 
         $exportCustomersService = new ExportCustomersService(
-            $exportSettings,
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock
@@ -102,7 +100,7 @@ class ExportCustomersServiceTest extends TestCase
             ->expects($this->once())
             ->method('createContact');
 
-        $exportContactCommand = Generator::createExportContactCommand();
+        $exportContactCommand = Generator::createExportContactCommandWithSettings($exportSettings);
         $exportCustomersService->exportContact($exportContactCommand);
     }
 
@@ -121,7 +119,6 @@ class ExportCustomersServiceTest extends TestCase
         ]);
 
         $exportCustomersService = new ExportCustomersService(
-            $exportSettings,
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock
@@ -140,7 +137,7 @@ class ExportCustomersServiceTest extends TestCase
             ->expects($this->once())
             ->method('sendOrder');
 
-        $exportContactCommand = Generator::createExportContactCommand();
+        $exportContactCommand = Generator::createExportContactCommandWithSettings($exportSettings);
         $exportCustomersService->exportContact($exportContactCommand);
     }
 

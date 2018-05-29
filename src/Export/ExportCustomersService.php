@@ -2,11 +2,11 @@
 namespace GrShareCode\Export;
 
 use GrShareCode\Cart\AddCartCommand;
+use GrShareCode\Cart\CartFactory;
 use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\AddContactCommand;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Order\AddOrderCommand;
 use GrShareCode\Order\OrderService;
@@ -21,9 +21,6 @@ class ExportCustomersService
     /** @var ContactService */
     private $contactService;
 
-    /** @var ExportSettings */
-    private $exportSettings;
-
     /** @var CartService */
     private $cartService;
 
@@ -31,18 +28,12 @@ class ExportCustomersService
     private $orderService;
 
     /**
-     * @param ExportSettings $exportSettings
      * @param ContactService $contactService
      * @param CartService $cartService
      * @param OrderService $orderService
      */
-    public function __construct(
-        ExportSettings $exportSettings,
-        ContactService $contactService,
-        CartService $cartService,
-        OrderService $orderService
-    ) {
-        $this->exportSettings = $exportSettings;
+    public function __construct(ContactService $contactService, CartService $cartService, OrderService $orderService)
+    {
         $this->contactService = $contactService;
         $this->cartService = $cartService;
         $this->orderService = $orderService;
@@ -54,32 +45,33 @@ class ExportCustomersService
      */
     public function exportContact(ExportContactCommand $exportContactCommand)
     {
-        $this->exportCustomer($this->exportSettings, $exportContactCommand);
+        $this->exportCustomer($exportContactCommand);
         $this->sendEcommerceData($exportContactCommand);
     }
 
     /**
-     * @param ExportSettings $config
      * @param ExportContactCommand $exportContactCommand
      * @throws GetresponseApiException
      */
-    private function exportCustomer(ExportSettings $config, ExportContactCommand $exportContactCommand)
+    private function exportCustomer(ExportContactCommand $exportContactCommand)
     {
+        $exportSettings = $exportContactCommand->getExportSettings();
+
         try {
             $contact = $this->contactService->getContactByEmail(
                 $exportContactCommand->getEmail(),
-                $config->getContactListId()
+                $exportSettings->getContactListId()
             );
 
-            $this->contactService->updateContactOnExport($config, $exportContactCommand, $contact->getContactId());
+            $this->contactService->updateContactOnExport($exportContactCommand, $contact->getContactId());
 
         } catch (ContactNotFoundException $e) {
 
             $addContactCommand = new AddContactCommand(
                 $exportContactCommand->getEmail(),
                 $exportContactCommand->getName(),
-                $config->getContactListId(),
-                $config->getDayOfCycle(),
+                $exportSettings->getContactListId(),
+                $exportSettings->getDayOfCycle(),
                 $exportContactCommand->getCustomFieldsCollection()
             );
 
@@ -94,28 +86,33 @@ class ExportCustomersService
      */
     private function sendEcommerceData(ExportContactCommand $exportContactCommand)
     {
-        if (!$this->exportSettings->getEcommerceConfig()->isEcommerceEnabled()) {
+        $exportSettings = $exportContactCommand->getExportSettings();
+
+        if (!$exportSettings->getEcommerceConfig()->isEcommerceEnabled()) {
             return;
         }
 
-        $shopId = $this->exportSettings->getEcommerceConfig()->getShopId();
+        foreach ($exportContactCommand->getHistoricalOrderCollection() as $historicalOrder) {
 
-        $addCartCommand = new AddCartCommand(
-            $exportContactCommand->getCart(),
-            $exportContactCommand->getEmail(),
-            $this->exportSettings->getContactListId(),
-            $shopId
-        );
-        $this->cartService->sendCart($addCartCommand);
+            $shopId = $exportSettings->getEcommerceConfig()->getShopId();
 
-        $addOrderCommand = new AddOrderCommand(
-            $exportContactCommand->getOrder(),
-            $exportContactCommand->getEmail(),
-            $this->exportSettings->getContactListId(),
-            $shopId
-        );
-        $addOrderCommand->setToSkipAutomation();
+            $addCartCommand = new AddCartCommand(
+                CartFactory::createFromHistoricalOrder($historicalOrder),
+                $exportContactCommand->getEmail(),
+                $exportSettings->getContactListId(),
+                $shopId
+            );
+            $this->cartService->sendCart($addCartCommand);
 
-        $this->orderService->sendOrder($addOrderCommand);
+            $addOrderCommand = new AddOrderCommand(
+                $historicalOrder,
+                $exportContactCommand->getEmail(),
+                $exportSettings->getContactListId(),
+                $shopId
+            );
+            $addOrderCommand->setToSkipAutomation();
+
+            $this->orderService->sendOrder($addOrderCommand);
+        }
     }
 }

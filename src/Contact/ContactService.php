@@ -26,22 +26,23 @@ class ContactService
     }
 
     /**
-     * @param ExportSettings $config
      * @param ExportContactCommand $exportContactCommand
      * @param string $contactId
      * @throws GetresponseApiException
      */
-    public function updateContactOnExport(ExportSettings $config, ExportContactCommand $exportContactCommand, $contactId) {
+    public function updateContactOnExport(ExportContactCommand $exportContactCommand, $contactId) {
 
-        if (!$config->isUpdateContactEnabled()) {
+        $exportSettings = $exportContactCommand->getExportSettings();
+
+        if (!$exportSettings->isUpdateContactEnabled()) {
             return;
         }
 
         $params = [
             'name' => $exportContactCommand->getName(),
-            'dayOfCycle' => $config->getDayOfCycle(),
+            'dayOfCycle' => $exportSettings->getDayOfCycle(),
             'campaign' => [
-                'campaignId' => $config->getContactListId(),
+                'campaignId' => $exportSettings->getContactListId(),
             ]
         ];
 

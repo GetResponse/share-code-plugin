@@ -7,6 +7,9 @@ use GrShareCode\Cart\Cart;
 use GrShareCode\Contact\CustomField;
 use GrShareCode\Contact\CustomFieldsCollection;
 use GrShareCode\Export\ExportContactCommand;
+use GrShareCode\Export\HistoricalOrder\HistoricalOrder;
+use GrShareCode\Export\HistoricalOrder\HistoricalOrderCollection;
+use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\Order\AddOrderCommand;
 use GrShareCode\Order\Order;
 use GrShareCode\Product\Category\Category;
@@ -129,9 +132,10 @@ class Generator
     }
 
     /**
+     * @param ExportSettings $exportSettings
      * @return ExportContactCommand
      */
-    public static function createExportContactCommand()
+    public static function createExportContactCommandWithSettings(ExportSettings $exportSettings)
     {
         $customFieldsCollection = new CustomFieldsCollection();
         $customFieldsCollection->add(new CustomField('id1', 'company', 'country'));
@@ -139,9 +143,38 @@ class Generator
         return new ExportContactCommand(
             'adam.kowalski@getresponse.com',
             'Adam Kowalski',
+            $exportSettings,
             $customFieldsCollection,
-            new Cart(1, self::createProductsCollection(), 'PLN', 10.00, 123.3),
-            self::createOrder()
+            self::createHistoricalOrderCollection()
         );
     }
+
+    /**
+     * @return HistoricalOrderCollection
+     */
+    private static function createHistoricalOrderCollection()
+    {
+        $order = new HistoricalOrder(
+            21,
+            self::createProductsCollection(),
+            20.00,
+            25.00,
+            'http://getresponse.com',
+            'PLN',
+            'pending',
+            431,
+            'This is description',
+            3.53,
+            'awaiting',
+            '2018-05-17T16:15:33+0200',
+            self::createAddress(),
+            self::createAddress()
+        );
+
+        $historicalOrderCollection = new HistoricalOrderCollection();
+        $historicalOrderCollection->add($order);
+
+        return $historicalOrderCollection;
+    }
+
 }
