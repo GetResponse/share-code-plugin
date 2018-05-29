@@ -46,7 +46,6 @@ class RunCommand
                     break;
                 default:
                     throw new JobException(sprintf('Job name:%s not specified', $job->getName()));
-                    break;
             }
 
             $this->dbRepository->deleteJob($job);

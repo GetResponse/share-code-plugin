@@ -21,7 +21,6 @@ class ContactServiceTest extends TestCase
         $this->getResponseApiMock = $this->getMockBuilder(GetresponseApi::class)
             ->disableOriginalConstructor()
             ->getMock();
-
     }
 
     /**
@@ -97,13 +96,32 @@ class ContactServiceTest extends TestCase
         $this->assertEquals($customFieldCollection, $contactService->getAllCustomFields());
     }
 
+    /**
+     * @test
+     */
     public function shouldCreateContact()
     {
-//        $this->getResponseApiMock
+        $params = [
+            'name' => 'Adam Kowalski',
+            'email' => 'adam.kowalski@getresponse.com',
+            'campaign' => [
+                'campaignId' => 'contactListId'
+            ],
+            'dayOfCycle' => 3,
+            'customFieldValues' => [
+                ['customFieldId' => 'id_1', 'value' => ['value_1']],
+                ['customFieldId' => 'id_2', 'value' => ['value_2']]
+            ]
+        ];
+        $this->getResponseApiMock
+            ->expects($this->once())
+            ->method('createContact')
+            ->with($params);
 
-        $addContactCommand = Generator::creaAddContactCommnad();
+        $addContactCommand = Generator::createAddContactCommand();
+
         $contactService = new ContactService($this->getResponseApiMock);
-        $contactService->createContact();
+        $contactService->createContact($addContactCommand);
 
     }
 }

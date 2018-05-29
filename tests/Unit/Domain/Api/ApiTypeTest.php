@@ -61,6 +61,7 @@ class ApiTypeTest extends TestCase
 
     /**
      * @return array
+     * @throws ApiTypeException
      */
     public function GetValidApiTypeProvider()
     {

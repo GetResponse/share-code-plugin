@@ -4,6 +4,7 @@ namespace GrShareCode\Tests;
 use GrShareCode\Address\Address;
 use GrShareCode\Cart\AddCartCommand;
 use GrShareCode\Cart\Cart;
+use GrShareCode\Contact\AddContactCommand;
 use GrShareCode\Contact\CustomField;
 use GrShareCode\Contact\CustomFieldsCollection;
 use GrShareCode\Export\ExportContactCommand;
@@ -176,6 +177,24 @@ class Generator
         $historicalOrderCollection->add($order);
 
         return $historicalOrderCollection;
+    }
+
+    /**
+     * @return AddContactCommand
+     */
+    public static function createAddContactCommand()
+    {
+        $customFieldCollection = new CustomFieldsCollection();
+        $customFieldCollection->add(new CustomField('id_1', 'name_1', 'value_1'));
+        $customFieldCollection->add(new CustomField('id_2', 'name_2', 'value_2'));
+
+        return new AddContactCommand(
+            'adam.kowalski@getresponse.com',
+            'Adam Kowalski',
+            'contactListId',
+            3,
+            $customFieldCollection
+        );
     }
 
 }
