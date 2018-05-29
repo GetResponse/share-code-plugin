@@ -5,7 +5,7 @@ use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\Contact;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\Export\ExportCustomersService;
+use GrShareCode\Export\ExportContactService;
 use GrShareCode\Export\Settings\ExportSettingsFactory;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Tests\Generator;
@@ -52,7 +52,7 @@ class ExportCustomersServiceTest extends TestCase
             'shopId' => null
         ]);
 
-        $exportCustomersService = new ExportCustomersService(
+        $exportCustomersService = new ExportContactService(
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock
@@ -85,7 +85,7 @@ class ExportCustomersServiceTest extends TestCase
             'shopId' => null
         ]);
 
-        $exportCustomersService = new ExportCustomersService(
+        $exportCustomersService = new ExportContactService(
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock
@@ -118,7 +118,7 @@ class ExportCustomersServiceTest extends TestCase
             'shopId' => 'grShopId'
         ]);
 
-        $exportCustomersService = new ExportCustomersService(
+        $exportCustomersService = new ExportContactService(
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock

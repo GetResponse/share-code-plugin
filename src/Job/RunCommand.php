@@ -2,7 +2,8 @@
 namespace GrShareCode\Job;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\Export\ExportCustomer;
+use GrShareCode\Export\ExportContactCommand;
+use GrShareCode\Export\ExportContactServiceFactory;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
 
@@ -12,11 +13,11 @@ use GrShareCode\GetresponseApiException;
  */
 class RunCommand
 {
-    /** @var ExportCustomer */
-    private $exportCustomer;
-
     /** @var DbRepositoryInterface */
     private $dbRepository;
+
+    /** @var GetresponseApi */
+    private $api;
 
     /**
      * @param GetresponseApi $api
@@ -24,8 +25,8 @@ class RunCommand
      */
     public function __construct(GetresponseApi $api, DbRepositoryInterface $dbRepository)
     {
-        $this->exportCustomer = new ExportCustomer($api, $dbRepository);
         $this->dbRepository = $dbRepository;
+        $this->api = $api;
     }
 
     /**
@@ -41,7 +42,7 @@ class RunCommand
 
             switch ($job->getName()) {
                 case Job::NAME_EXPORT_CONTACT:
-                    $this->exportCustomer->execute(unserialize($messageContent));
+                    $this->exportCustomer(unserialize($messageContent));
                     break;
                 default:
                     throw new JobException(sprintf('Job name:%s not specified', $job->getName()));
@@ -50,5 +51,15 @@ class RunCommand
 
             $this->dbRepository->deleteJob($job);
         }
+    }
+
+    /**
+     * @param ExportContactCommand $exportContactCommand
+     * @throws GetresponseApiException
+     */
+    private function exportCustomer(ExportContactCommand $exportContactCommand)
+    {
+        $exportService = ExportContactServiceFactory::create($this->api, $this->dbRepository);
+        $exportService->exportContact($exportContactCommand);
     }
 }

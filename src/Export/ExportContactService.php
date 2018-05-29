@@ -12,10 +12,10 @@ use GrShareCode\Order\AddOrderCommand;
 use GrShareCode\Order\OrderService;
 
 /**
- * Class ExportCustomersService
+ * Class ExportContactService
  * @package GrShareCode\Export
  */
-class ExportCustomersService
+class ExportContactService
 {
 
     /** @var ContactService */
@@ -77,7 +77,6 @@ class ExportCustomersService
 
             $this->contactService->createContact($addContactCommand);
         }
-
     }
 
     /**
