@@ -246,6 +246,17 @@ class GetresponseApi
     }
 
     /**
+     * @param array $params
+     * @return string
+     * @throws GetresponseApiException
+     */
+    public function createShop($params)
+    {
+        $shop = $this->sendRequest('contacts', 'POST', $params);
+        return !empty($shop['shopId']) ? $shop['shopId'] : '';
+    }
+
+    /**
      * @param int $page
      * @param int $perPage
      *
