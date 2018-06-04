@@ -246,6 +246,16 @@ class GetresponseApi
     }
 
     /**
+     * @param int $id
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getAutoresponderById($id)
+    {
+        return $this->sendRequest('autoresponders/' . $id, 'GET', [], true);
+    }
+
+    /**
      * @param array $params
      * @return string
      * @throws GetresponseApiException
