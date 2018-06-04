@@ -33,7 +33,7 @@ class Generator
     public static function createAddCartCommand()
     {
         $products = self::createProductsCollection();
-        $cart = new Cart(1, $products, 'PLN', 10.00, 123.3);
+        $cart = new Cart('100001', $products, 'PLN', 10.00, 123.3);
 
         return new AddCartCommand(
             $cart,
@@ -170,7 +170,7 @@ class Generator
             '2018-05-17T16:15:33+0200',
             self::createAddress(),
             self::createAddress(),
-            new Cart(1, self::createProductsCollection(), 'PLN', 10.00, 123.3)
+            new Cart('100001', self::createProductsCollection(), 'PLN', 10.00, 123.3)
         );
 
         $historicalOrderCollection = new HistoricalOrderCollection();
