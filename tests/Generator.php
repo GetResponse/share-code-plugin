@@ -97,14 +97,14 @@ class Generator
     private static function createOrder()
     {
         return new Order(
-            21,
+            '21',
             self::createProductsCollection(),
             20.00,
             25.00,
             'http://getresponse.com',
             'PLN',
             'pending',
-            431,
+            '431',
             'This is description',
             3.53,
             'awaiting',
@@ -156,14 +156,14 @@ class Generator
     private static function createHistoricalOrderCollection()
     {
         $order = new HistoricalOrder(
-            21,
+            '21',
             self::createProductsCollection(),
             20.00,
             25.00,
             'http://getresponse.com',
             'PLN',
             'pending',
-            431,
+            '431',
             'This is description',
             3.53,
             'awaiting',

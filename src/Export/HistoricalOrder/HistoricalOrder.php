@@ -18,14 +18,14 @@ class HistoricalOrder extends Order
     private $cart;
 
     /**
-     * @param int $orderId
+     * @param int $externalOrderId
      * @param ProductsCollection $products
      * @param float $totalPrice
      * @param float $totalPriceTax
      * @param string $orderUrl
      * @param string $currency
      * @param string $status
-     * @param int $cartId
+     * @param int $externalCartId
      * @param string $description
      * @param float $shippingPrice
      * @param float $billingStatus
@@ -35,14 +35,14 @@ class HistoricalOrder extends Order
      * @param Cart $cart
      */
     public function __construct(
-        $orderId,
+        $externalOrderId,
         ProductsCollection $products,
         $totalPrice,
         $totalPriceTax,
         $orderUrl,
         $currency,
         $status,
-        $cartId,
+        $externalCartId,
         $description,
         $shippingPrice,
         $billingStatus,
@@ -52,14 +52,14 @@ class HistoricalOrder extends Order
         Cart $cart
     ) {
         parent::__construct(
-            $orderId,
+            $externalOrderId,
             $products,
             $totalPrice,
             $totalPriceTax,
             $orderUrl,
             $currency,
             $status,
-            $cartId,
+            $externalCartId,
             $description,
             $shippingPrice,
             $billingStatus,

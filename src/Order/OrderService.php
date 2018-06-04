@@ -56,15 +56,17 @@ class OrderService
 
         $variants = $this->productService->getProductVariants($order->getProducts(), $addOrderCommand->getShopId());
 
+        $cartId = $this->dbRepository->getGrCartIdFromMapping($addOrderCommand->getShopId(), $order->getExternalCartId());
+
         $grOrder = [
             'contactId' => $contact['contactId'],
             'totalPrice' => $order->getTotalPrice(),
             'totalPriceTax' => $order->getTotalPriceTax(),
             'orderUrl' => $order->getOrderUrl(),
-            'externalId' => $order->getOrderId(),
+            'externalId' => $order->getExternalOrderId(),
             'currency' => $order->getCurrency(),
             'status' => $order->getStatus(),
-            'cartId' => $order->getCartId(),
+            'cartId' => $cartId,
             'description' => $order->getDescription(),
             'shippingPrice' => $order->getShippingPrice(),
             'billingPrice' => $order->getBillingStatus(),
@@ -74,7 +76,7 @@ class OrderService
             'selectedVariants' => $variants,
         ];
 
-        $grOrderId = $this->dbRepository->getGrOrderIdFromMapping($addOrderCommand->getShopId(), $order->getOrderId());
+        $grOrderId = $this->dbRepository->getGrOrderIdFromMapping($addOrderCommand->getShopId(), $order->getExternalOrderId());
 
         if (empty($grOrderId)) {
 
@@ -84,8 +86,8 @@ class OrderService
                 $addOrderCommand->skipAutomation()
             );
 
-            $this->dbRepository->saveOrderMapping($addOrderCommand->getShopId(), $order->getOrderId(), $grOrderId);
-            $this->getresponseApi->removeCart($addOrderCommand->getShopId(), $order->getCartId());
+            $this->dbRepository->saveOrderMapping($addOrderCommand->getShopId(), $order->getExternalOrderId(), $grOrderId);
+            $this->getresponseApi->removeCart($addOrderCommand->getShopId(), $order->getExternalCartId());
 
         } else {
             $this->getresponseApi->updateOrder(
