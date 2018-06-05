@@ -1,9 +1,9 @@
 <?php
 namespace GrShareCode\Export;
 
-use GrShareCode\Cart\Cart;
 use GrShareCode\Contact\CustomFieldsCollection;
-use GrShareCode\Order\Order;
+use GrShareCode\Export\HistoricalOrder\HistoricalOrderCollection;
+use GrShareCode\Export\Settings\ExportSettings;
 
 /**
  * Class ExportContactCommand
@@ -17,37 +17,50 @@ class ExportContactCommand
     /** @var string */
     private $email;
 
+    /** @var ExportSettings */
+    private $exportSettings;
+
     /** @var CustomFieldsCollection */
     private $customFieldsCollection;
 
-    /** @var Cart */
-    private $cart;
-
-    /** @var Order */
-    private $order;
+    /** @var HistoricalOrderCollection */
+    private $historicalOrderCollection;
 
     /**
      * @param string $email
      * @param string $name
+     * @param ExportSettings $exportSettings
      * @param CustomFieldsCollection $customFieldsCollection
-     * @param Cart $cart
-     * @param Order $order
+     * @param HistoricalOrderCollection $historicalOrderCollection
      */
-    public function __construct($email, $name, CustomFieldsCollection $customFieldsCollection = null, Cart $cart = null, Order $order = null)
-    {
+    public function __construct(
+        $email,
+        $name,
+        ExportSettings $exportSettings,
+        CustomFieldsCollection $customFieldsCollection,
+        HistoricalOrderCollection $historicalOrderCollection
+    ) {
         $this->email = $email;
         $this->name = $name;
+        $this->exportSettings = $exportSettings;
         $this->customFieldsCollection = $customFieldsCollection;
-        $this->cart = $cart;
-        $this->order = $order;
+        $this->historicalOrderCollection = $historicalOrderCollection;
     }
 
     /**
-     * @return Cart
+     * @return ExportSettings
      */
-    public function getCart()
+    public function getExportSettings()
     {
-        return $this->cart;
+        return $this->exportSettings;
+    }
+
+    /**
+     * @return HistoricalOrderCollection
+     */
+    public function getHistoricalOrderCollection()
+    {
+        return $this->historicalOrderCollection;
     }
 
     /**
@@ -72,14 +85,6 @@ class ExportContactCommand
     public function getCustomFieldsCollection()
     {
         return $this->customFieldsCollection;
-    }
-
-    /**
-     * @return Order
-     */
-    public function getOrder()
-    {
-        return $this->order;
     }
 
 }
