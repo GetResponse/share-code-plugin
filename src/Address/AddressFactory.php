@@ -43,16 +43,16 @@ class AddressFactory
         );
 
         $address
-            ->setFirstName(substr($firstName, 0, Address::FIRSTNAME_MAX_LENGTH))
-            ->setLastName(substr($lastName, 0, Address::LASTNAME_MAX_LENGTH))
-            ->setAddress1(substr($address1, 0, Address::ADDRESS1_MAX_LENGTH))
-            ->setAddress2(substr($address2, 0, Address::ADDRESS2_MAX_LENGTH))
-            ->setCity(substr($city, 0, Address::CITY_MAX_LENGTH))
-            ->setZip(substr($zip, 0, Address::ZIP_MAX_LENGTH))
-            ->setProvince(substr($province, 0, Address::PROVINCE_MAX_LENGTH))
-            ->setProvinceCode(substr($provinceCode, 0, Address::PROVINCE_CODE_MAX_LENGTH))
-            ->setPhone(substr($phone, 0, Address::PHONE_MAX_LENGTH))
-            ->setCompany(substr($company, 0, Address::COMPANY_MAX_LENGTH));
+            ->setFirstName(mb_substr($firstName, 0, Address::FIRSTNAME_MAX_LENGTH))
+            ->setLastName(mb_substr($lastName, 0, Address::LASTNAME_MAX_LENGTH))
+            ->setAddress1(mb_substr($address1, 0, Address::ADDRESS1_MAX_LENGTH))
+            ->setAddress2(mb_substr($address2, 0, Address::ADDRESS2_MAX_LENGTH))
+            ->setCity(mb_substr($city, 0, Address::CITY_MAX_LENGTH))
+            ->setZip(mb_substr($zip, 0, Address::ZIP_MAX_LENGTH))
+            ->setProvince(mb_substr($province, 0, Address::PROVINCE_MAX_LENGTH))
+            ->setProvinceCode(mb_substr($provinceCode, 0, Address::PROVINCE_CODE_MAX_LENGTH))
+            ->setPhone(mb_substr($phone, 0, Address::PHONE_MAX_LENGTH))
+            ->setCompany(mb_substr($company, 0, Address::COMPANY_MAX_LENGTH));
 
         return $address;
     }
