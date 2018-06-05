@@ -87,7 +87,7 @@ class OrderService
             );
 
             $this->dbRepository->saveOrderMapping($addOrderCommand->getShopId(), $order->getExternalOrderId(), $grOrderId);
-            $this->getresponseApi->removeCart($addOrderCommand->getShopId(), $order->getExternalCartId());
+            $this->getresponseApi->removeCart($addOrderCommand->getShopId(), $cartId);
 
         } else {
             $this->getresponseApi->updateOrder(
