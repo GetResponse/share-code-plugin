@@ -50,10 +50,17 @@ class WebFormService
         }
 
         foreach ($webForms as $webForm) {
+
+            if (empty($webForm)) {
+                continue;
+            }
+
             $webFormDetails = current($webForm);
+
             $collection->add(new WebForm(
                 $webFormDetails['webformId'],
                 $webFormDetails['name'],
+                $webFormDetails['scriptUrl'],
                 $webFormDetails['campaign']['name'],
                 $webFormDetails['status']
             ));
@@ -74,10 +81,17 @@ class WebFormService
         }
 
         foreach ($forms as $form) {
+
+            if (empty($form)) {
+                continue;
+            }
+
             $formDetails = current($form);
+
             $collection->add(new WebForm(
                 $formDetails['webformId'],
                 $formDetails['name'],
+                $formDetails['scriptUrl'],
                 $formDetails['campaign']['name'],
                 $formDetails['status'] === 'published' ? WebForm::STATUS_ENABLED : WebForm::STATUS_DISABLED
             ));

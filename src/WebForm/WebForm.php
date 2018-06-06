@@ -24,16 +24,21 @@ class WebForm
     /** @var string */
     private $status;
 
+    /** @var string */
+    private $scriptUrl;
+
     /**
      * @param string $webFormId
      * @param string $name
+     * @param string $scriptUrl
      * @param string $campaignName
      * @param string $status
      */
-    public function __construct($webFormId, $name, $campaignName, $status)
+    public function __construct($webFormId, $name, $scriptUrl, $campaignName, $status)
     {
         $this->webFormId = $webFormId;
         $this->name = $name;
+        $this->scriptUrl = $scriptUrl;
         $this->campaignName = $campaignName;
         $this->setStatus($status);
     }
@@ -45,6 +50,14 @@ class WebForm
     {
         Assert::that($status)->choice([self::STATUS_DISABLED, self::STATUS_ENABLED]);
         $this->status = $status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScriptUrl()
+    {
+        return $this->scriptUrl;
     }
 
     /**
