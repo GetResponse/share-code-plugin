@@ -50,11 +50,12 @@ class WebFormService
         }
 
         foreach ($webForms as $webForm) {
+            $webFormDetails = current($webForm);
             $collection->add(new WebForm(
-                $webForm[0]['webformId'],
-                $webForm[0]['name'],
-                $webForm[0]['campaign']['name'],
-                $webForm[0]['status']
+                $webFormDetails['webformId'],
+                $webFormDetails['name'],
+                $webFormDetails['campaign']['name'],
+                $webFormDetails['status']
             ));
         }
     }
@@ -73,11 +74,12 @@ class WebFormService
         }
 
         foreach ($forms as $form) {
+            $formDetails = current($form);
             $collection->add(new WebForm(
-                $form[0]['webformId'],
-                $form[0]['name'],
-                $form[0]['campaign']['name'],
-                $form[0]['status'] === 'published' ? WebForm::STATUS_ENABLED : WebForm::STATUS_DISABLED
+                $formDetails['webformId'],
+                $formDetails['name'],
+                $formDetails['campaign']['name'],
+                $formDetails['status'] === 'published' ? WebForm::STATUS_ENABLED : WebForm::STATUS_DISABLED
             ));
         }
     }

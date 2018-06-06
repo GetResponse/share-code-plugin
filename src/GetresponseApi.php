@@ -325,17 +325,20 @@ class GetresponseApi
     }
 
     /**
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getAccountFeatures()
+    {
+        return (array)$this->sendRequest('accounts/features');
+    }
+
+    /**
      * @return string
      * @throws GetresponseApiException
      */
-    public function getTrackingCode()
+    public function getTrackingCodeSnippet()
     {
-        $features = (array) $this->sendRequest('accounts/features');
-
-        if (!isset($features['feature_tracking']) || false == $features['feature_tracking']) {
-            return '';
-        }
-
         $trackingCode = $this->sendRequest('tracking');
         $trackingCode = is_array($trackingCode) ? reset($trackingCode) : [];
 
