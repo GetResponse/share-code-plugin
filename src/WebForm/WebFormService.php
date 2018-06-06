@@ -49,20 +49,14 @@ class WebFormService
             $webForms[] = $this->getresponseApi->getWebForms($page, self::PER_PAGE);
         }
 
-        foreach ($webForms as $webForm) {
-
-            if (empty($webForm)) {
-                continue;
-            }
-
-            $webFormDetails = current($webForm);
+        foreach (array_merge(...$webForms) as $webForm) {
 
             $collection->add(new WebForm(
-                $webFormDetails['webformId'],
-                $webFormDetails['name'],
-                $webFormDetails['scriptUrl'],
-                $webFormDetails['campaign']['name'],
-                $webFormDetails['status']
+                $webForm['webformId'],
+                $webForm['name'],
+                $webForm['scriptUrl'],
+                $webForm['campaign']['name'],
+                $webForm['status']
             ));
         }
     }
@@ -80,20 +74,14 @@ class WebFormService
             $forms[] = $this->getresponseApi->getForms($page, self::PER_PAGE);
         }
 
-        foreach ($forms as $form) {
-
-            if (empty($form)) {
-                continue;
-            }
-
-            $formDetails = current($form);
+        foreach (array_merge(...$forms) as $form) {
 
             $collection->add(new WebForm(
-                $formDetails['webformId'],
-                $formDetails['name'],
-                $formDetails['scriptUrl'],
-                $formDetails['campaign']['name'],
-                $formDetails['status'] === 'published' ? WebForm::STATUS_ENABLED : WebForm::STATUS_DISABLED
+                $form['webformId'],
+                $form['name'],
+                $form['scriptUrl'],
+                $form['campaign']['name'],
+                $form['status'] === 'published' ? WebForm::STATUS_ENABLED : WebForm::STATUS_DISABLED
             ));
         }
     }
