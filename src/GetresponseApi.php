@@ -297,6 +297,12 @@ class GetresponseApi
      */
     public function getTrackingCode()
     {
+        $features = (array) $this->sendRequest('accounts/features');
+
+        if (!isset($features['feature_tracking']) || false == $features['feature_tracking']) {
+            return '';
+        }
+
         $trackingCode = $this->sendRequest('tracking');
         $trackingCode = is_array($trackingCode) ? reset($trackingCode) : [];
 
