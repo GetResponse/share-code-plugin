@@ -375,7 +375,7 @@ class GetresponseApi
         $headers = [
             'X-Auth-Token: api-key ' . $this->apiKey,
             'Content-Type: application/json',
-            'User-Agent: ' . $this->userAgentHeader,
+            'User-Agent: ' . $this->userAgentHeader->getUserAgentInfo(),
             'X-APP-ID: ' . $this->xAppId,
         ];
 
