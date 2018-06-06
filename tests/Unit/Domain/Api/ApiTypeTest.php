@@ -3,6 +3,7 @@ namespace GrShareCode\Tests\Unit\Domain\Api;
 
 use GrShareCode\Api\ApiType;
 use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\UserAgentHeader;
 use GrShareCode\GetresponseApi;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +25,7 @@ class ApiTypeTest extends TestCase
 
     /**
      * @test
-     * @dataProvider ApiUrlProvider
+     * @dataProvider apiUrlProvider
      * @param string $type
      * @param null|string $domain
      * @param string $url
@@ -51,19 +52,20 @@ class ApiTypeTest extends TestCase
 
     /**
      * @test
-     * @dataProvider GetValidApiTypeProvider
+     * @dataProvider validApiTypeProvider
      * @doesNotPerformAssertions
      */
     public function shouldValidateApiType($type)
     {
-        new GetresponseApi('api key', $type, 'x app id');
+        $userAgentHeader = new UserAgentHeader('shopify', '3.9', '234');
+        new GetresponseApi('api key', $type, 'x app id', $userAgentHeader);
     }
 
     /**
      * @return array
      * @throws ApiTypeException
      */
-    public function GetValidApiTypeProvider()
+    public function validApiTypeProvider()
     {
         return [
             [ApiType::createForMxPl('https://example.com')],
@@ -75,7 +77,7 @@ class ApiTypeTest extends TestCase
     /**
      * @return array
      */
-    public function ApiUrlProvider()
+    public function apiUrlProvider()
     {
         return [
             [ApiType::SMB, null, ApiType::API_URL_SMB],

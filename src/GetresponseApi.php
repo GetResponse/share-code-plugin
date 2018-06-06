@@ -2,6 +2,7 @@
 namespace GrShareCode;
 
 use GrShareCode\Api\ApiType;
+use GrShareCode\Api\UserAgentHeader;
 
 /**
  * Class GetresponseApi
@@ -23,16 +24,21 @@ class GetresponseApi
     /** @var array */
     private $headers;
 
+    /** @var UserAgentHeader */
+    private $userAgentHeader;
+
     /**
      * @param string $apiKey
      * @param ApiType $apiType
      * @param string $xAppId
+     * @param UserAgentHeader $userAgentHeader
      */
-    public function __construct($apiKey, ApiType $apiType, $xAppId)
+    public function __construct($apiKey, ApiType $apiType, $xAppId, UserAgentHeader $userAgentHeader)
     {
         $this->apiKey = $apiKey;
         $this->apiType = $apiType;
         $this->xAppId = $xAppId;
+        $this->userAgentHeader = $userAgentHeader;
     }
 
     /**
@@ -321,7 +327,6 @@ class GetresponseApi
     public function createProductVariant($shopId, $productId, $params)
     {
         return $this->sendRequest('shops/'.$shopId.'/products/'.$productId.'/variants', 'POST', $params);
-
     }
 
     /**
@@ -368,10 +373,10 @@ class GetresponseApi
         $apiMethod = $this->apiType->getApiUrl().$apiMethod;
 
         $headers = [
-            'X-Auth-Token: api-key '.$this->apiKey,
+            'X-Auth-Token: api-key ' . $this->apiKey,
             'Content-Type: application/json',
-            'User-Agent: PHP GetResponse client 0 . 0 . 1',
-            'X-APP-ID: '.$this->xAppId,
+            'User-Agent: ' . $this->userAgentHeader,
+            'X-APP-ID: ' . $this->xAppId,
         ];
 
         // for GetResponse 360
