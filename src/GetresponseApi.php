@@ -203,6 +203,30 @@ class GetresponseApi
     }
 
     /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getWebForms($page, $perPage)
+    {
+        return $this->sendRequest('webforms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getForms($page, $perPage)
+    {
+        return $this->sendRequest('forms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
      * @param $name
      *
      * @return mixed|null
