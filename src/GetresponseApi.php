@@ -2,6 +2,7 @@
 namespace GrShareCode;
 
 use GrShareCode\Api\ApiType;
+use GrShareCode\Api\UserAgentHeader;
 
 /**
  * Class GetresponseApi
@@ -23,16 +24,21 @@ class GetresponseApi
     /** @var array */
     private $headers;
 
+    /** @var UserAgentHeader */
+    private $userAgentHeader;
+
     /**
      * @param string $apiKey
      * @param ApiType $apiType
      * @param string $xAppId
+     * @param UserAgentHeader $userAgentHeader
      */
-    public function __construct($apiKey, ApiType $apiType, $xAppId)
+    public function __construct($apiKey, ApiType $apiType, $xAppId, UserAgentHeader $userAgentHeader)
     {
         $this->apiKey = $apiKey;
         $this->apiType = $apiType;
         $this->xAppId = $xAppId;
+        $this->userAgentHeader = $userAgentHeader;
     }
 
     /**
@@ -212,6 +218,30 @@ class GetresponseApi
     }
 
     /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getWebForms($page, $perPage)
+    {
+        return $this->sendRequest('webforms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getForms($page, $perPage)
+    {
+        return $this->sendRequest('forms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
      * @param $name
      *
      * @return mixed|null
@@ -297,21 +327,23 @@ class GetresponseApi
     public function createProductVariant($shopId, $productId, $params)
     {
         return $this->sendRequest('shops/'.$shopId.'/products/'.$productId.'/variants', 'POST', $params);
+    }
 
+    /**
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getAccountFeatures()
+    {
+        return (array)$this->sendRequest('accounts/features');
     }
 
     /**
      * @return string
      * @throws GetresponseApiException
      */
-    public function getTrackingCode()
+    public function getTrackingCodeSnippet()
     {
-        $features = (array) $this->sendRequest('accounts/features');
-
-        if (!isset($features['feature_tracking']) || false == $features['feature_tracking']) {
-            return '';
-        }
-
         $trackingCode = $this->sendRequest('tracking');
         $trackingCode = is_array($trackingCode) ? reset($trackingCode) : [];
 
@@ -341,10 +373,10 @@ class GetresponseApi
         $apiMethod = $this->apiType->getApiUrl().$apiMethod;
 
         $headers = [
-            'X-Auth-Token: api-key '.$this->apiKey,
+            'X-Auth-Token: api-key ' . $this->apiKey,
             'Content-Type: application/json',
-            'User-Agent: PHP GetResponse client 0 . 0 . 1',
-            'X-APP-ID: '.$this->xAppId,
+            'User-Agent: ' . $this->userAgentHeader->getUserAgentInfo(),
+            'X-APP-ID: ' . $this->xAppId,
         ];
 
         // for GetResponse 360
