@@ -52,6 +52,15 @@ class GetresponseApi
     }
 
     /**
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getAccountInfo()
+    {
+        return $this->sendRequest('accounts');
+    }
+
+    /**
      * @param string $email
      * @param string $listId
      * @return array
