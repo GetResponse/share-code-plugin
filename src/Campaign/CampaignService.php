@@ -49,7 +49,37 @@ class CampaignService
         return $collection;
     }
 
-    /**√
+    /**
+     * @return AutorespondersCollection
+     * @throws GetresponseApiException
+     */
+    public function getAutoresponders()
+    {
+        $collection = new AutorespondersCollection();
+
+        $autoresponders = $this->getresponseApi->getAutoresponders(array(), 1, self::PER_PAGE);
+
+        $headers = $this->getresponseApi->getHeaders();
+
+        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
+            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getAutoresponders(array(), $page, self::PER_PAGE));
+        }
+
+        foreach ($autoresponders as $field) {
+            $collection->add(new Autoresponder(
+                $field['autoresponderId'],
+                $field['name'],
+                $field['campaignId'],
+                $field['subject'],
+                $field['status'],
+                $field['triggerSettings']['dayOfCycle']
+            ));
+        }
+
+        return $collection;
+    }
+
+    /**
      * @param string $campaignId
      * @return AutorespondersCollection
      * @throws GetresponseApiException
@@ -58,12 +88,12 @@ class CampaignService
     {
         $collection = new AutorespondersCollection();
 
-        $autoresponders = $this->getresponseApi->getAutoresponders($campaignId, 1, self::PER_PAGE);
+        $autoresponders = $this->getresponseApi->getAutoresponders(array('campaignId' => $campaignId), 1, self::PER_PAGE);
 
         $headers = $this->getresponseApi->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getAutoresponders($campaignId, $page, self::PER_PAGE));
+            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getAutoresponders(array('campaignId' => $campaignId), $page, self::PER_PAGE));
         }
 
         foreach ($autoresponders as $field) {
