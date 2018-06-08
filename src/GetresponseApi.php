@@ -380,7 +380,7 @@ class GetresponseApi
         ];
 
         // for GetResponse 360
-        if (!empty($this->apiType->isMx())) {
+        if ($this->apiType->isMx()) {
             $headers[] = 'X-Domain: ' . $this->apiType->getDomain();
         }
 
@@ -413,7 +413,6 @@ class GetresponseApi
             curl_close($curl);
             throw GetresponseApiException::createForInvalidCurlResponse($error_message);
         }
-
 
         if ($withHeaders) {
             list($headers, $response) = explode("\r\n\r\n", $response, 2);

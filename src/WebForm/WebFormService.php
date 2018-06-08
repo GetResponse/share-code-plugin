@@ -49,7 +49,9 @@ class WebFormService
             $webForms[] = $this->getresponseApi->getWebForms($page, self::PER_PAGE);
         }
 
-        foreach (array_merge(...$webForms) as $webForm) {
+        $webFormsList = call_user_func_array('array_merge', $webForms);
+
+        foreach ($webFormsList as $webForm) {
 
             $collection->add(new WebForm(
                 $webForm['webformId'],
@@ -74,7 +76,9 @@ class WebFormService
             $forms[] = $this->getresponseApi->getForms($page, self::PER_PAGE);
         }
 
-        foreach (array_merge(...$forms) as $form) {
+        $formsList = call_user_func_array('array_merge', $forms);
+
+        foreach ($formsList as $form) {
 
             $collection->add(new WebForm(
                 $form['webformId'],
