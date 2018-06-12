@@ -279,9 +279,9 @@ class GetresponseApi
      * @return array
      * @throws GetresponseApiException
      */
-    public function getAutoresponders($params, $page, $perPage)
+    public function getAutoresponders($campaignId, $page, $perPage)
     {
-        return $this->sendRequest('autoresponders?' . $this->setParams(['query' => $params, 'page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->sendRequest('autoresponders?' . $this->setParams(['query' => ['campaignId' => $campaignId], 'page' => $page, 'perPage' => $perPage]), 'GET', [], true);
     }
 
     /**
@@ -301,8 +301,18 @@ class GetresponseApi
      */
     public function createShop($params)
     {
-        $shop = $this->sendRequest('contacts', 'POST', $params);
+        $shop = $this->sendRequest('shops', 'POST', $params);
         return !empty($shop['shopId']) ? $shop['shopId'] : '';
+    }
+
+    /**
+     * @param string $shopId
+     * @return string
+     * @throws GetresponseApiException
+     */
+    public function deleteShop($shopId)
+    {
+        return $this->sendRequest('shops/' . $shopId, 'DELETE');
     }
 
     /**
@@ -380,7 +390,7 @@ class GetresponseApi
         ];
 
         // for GetResponse 360
-        if ($this->apiType->isMx()) {
+        if (!empty($this->apiType->isMx())) {
             $headers[] = 'X-Domain: ' . $this->apiType->getDomain();
         }
 
