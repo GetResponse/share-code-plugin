@@ -48,4 +48,25 @@ class ShopService
 
         return $collection;
     }
+
+    /**
+     * @param AddShopCommand $addShopCommand
+     * @return string
+     */
+    public function addShop(AddShopCommand $addShopCommand)
+    {
+        return $this->getresponseApi->createShop([
+            'name' => $addShopCommand->getName(),
+            'locale' => $addShopCommand->getLocale(),
+            'currency' => $addShopCommand->getCurrency()
+        ]);
+    }
+
+    /**
+     * @param string $shopId
+     */
+    public function deleteShop($shopId)
+    {
+        $this->getresponseApi->deleteShop($shopId);
+    }
 }

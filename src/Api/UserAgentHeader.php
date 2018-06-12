@@ -18,6 +18,9 @@ class UserAgentHeader
     /** @var string */
     private $pluginVersion;
 
+    /** @var string */
+    private $phpVersion;
+
     /**
      * @param string $serviceName
      * @param string $serviceVersion
@@ -28,6 +31,7 @@ class UserAgentHeader
         $this->serviceName = $serviceName;
         $this->serviceVersion = $serviceVersion;
         $this->pluginVersion = $pluginVersion;
+        $this->phpVersion = PHP_VERSION;
     }
 
     /**
@@ -35,7 +39,7 @@ class UserAgentHeader
      */
     public function getUserAgentInfo()
     {
-        return $this->serviceName . self::SEPARATOR . $this->serviceVersion . self::SEPARATOR . $this->pluginVersion;
+        return $this->serviceName . self::SEPARATOR . $this->serviceVersion . self::SEPARATOR . $this->pluginVersion . self::SEPARATOR . $this->phpVersion;
     }
 
 }
