@@ -63,7 +63,8 @@ class ContactService
     public function addContact(AddContactCommand $addContactCommand)
     {
         try {
-            $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
+            $contact = $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
+            $this->updateContact($contact->getContactId(), $addContactCommand);
         } catch (ContactNotFoundException $e) {
             $this->createContact($addContactCommand);
         }
@@ -97,27 +98,19 @@ class ContactService
      */
     public function createContact(AddContactCommand $addContactCommand)
     {
-        $params = [
-            'name' => $addContactCommand->getName(),
-            'email' => $addContactCommand->getEmail(),
-            'campaign' => [
-                'campaignId' => $addContactCommand->getContactListId(),
-            ]
-        ];
-
-        if (null !== $addContactCommand->getDayOfCycle()) {
-            $params['dayOfCycle'] = $addContactCommand->getDayOfCycle();
-        }
-
-        /** @var CustomField $customField */
-        foreach ($addContactCommand->getCustomFieldsCollection() as $customField) {
-            $params['customFieldValues'][] = [
-                'customFieldId' => $customField->getId(),
-                'value' => [$customField->getValue()]
-            ];
-        }
-
+        $params = $this->prepareParams($addContactCommand);
         $this->getresponseApi->createContact($params);
+    }
+
+    /**
+     * @param string $contactId
+     * @param AddContactCommand $addContactCommand
+     * @throws GetresponseApiException
+     */
+    private function updateContact($contactId, AddContactCommand $addContactCommand)
+    {
+        $params = $this->prepareParams($addContactCommand);
+        $this->getresponseApi->updateContact($contactId, $params);
     }
 
     /**
@@ -146,4 +139,32 @@ class ContactService
         return $collection;
     }
 
+    /**
+     * @param AddContactCommand $addContactCommand
+     * @return array
+     */
+    private function prepareParams(AddContactCommand $addContactCommand)
+    {
+        $params = [
+            'name' => $addContactCommand->getName(),
+            'email' => $addContactCommand->getEmail(),
+            'campaign' => [
+                'campaignId' => $addContactCommand->getContactListId(),
+            ]
+        ];
+
+        if (null !== $addContactCommand->getDayOfCycle()) {
+            $params['dayOfCycle'] = $addContactCommand->getDayOfCycle();
+        }
+
+        /** @var CustomField $customField */
+        foreach ($addContactCommand->getCustomFieldsCollection() as $customField) {
+            $params['customFieldValues'][] = [
+                'customFieldId' => $customField->getId(),
+                'value' => [$customField->getValue()]
+            ];
+        }
+
+        return $params;
+    }
 }
