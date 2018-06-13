@@ -60,7 +60,7 @@ class ContactService
      * @param AddContactCommand $addContactCommand
      * @throws GetresponseApiException
      */
-    public function addContact(AddContactCommand $addContactCommand)
+    public function upsertContact(AddContactCommand $addContactCommand)
     {
         try {
             $contact = $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
