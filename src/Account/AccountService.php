@@ -40,4 +40,18 @@ class AccountService
             $accountInfo['zipCode']
         );
     }
+
+    /**
+     * @return bool
+     */
+    public function isConnectionAvailable()
+    {
+        try {
+            $this->getresponseApi->checkConnection();
+        } catch (GetresponseApiException $e) {
+            return false;
+        }
+
+        return true;
+    }
 }
