@@ -4,13 +4,13 @@ namespace GrShareCode\ContactList;
 use GrShareCode\TypedCollection;
 
 /**
- * Class CampaignsCollection
+ * Class ContactListCollection
  * @package GrShareCode\ContactList
  */
-class CampaignsCollection extends TypedCollection
+class ContactListCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\ContactList\Campaign');
+        $this->setItemType('\GrShareCode\ContactList\ContactList');
     }
 }

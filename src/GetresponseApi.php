@@ -299,7 +299,7 @@ class GetresponseApi
      * @return array
      * @throws GetresponseApiException
      */
-    public function getCampaigns($page, $perPage)
+    public function getContactList($page, $perPage)
     {
         return $this->sendRequest('campaigns?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
     }

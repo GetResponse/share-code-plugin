@@ -2,10 +2,10 @@
 namespace GrShareCode\ContactList;
 
 /**
- * Class Campaign
+ * Class ContactList
  * @package GrShareCode\ContactList
  */
-class Campaign
+class ContactList
 {
     /** @var string */
     private $id;

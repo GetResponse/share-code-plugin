@@ -97,23 +97,23 @@ class ContactListService
     }
 
     /**
-     * @return CampaignsCollection
+     * @return ContactListCollection
      * @throws GetresponseApiException
      */
-    public function getAllCampaigns()
+    public function getAllContactLists()
     {
-        $campaigns = $this->getresponseApi->getCampaigns(1, self::PER_PAGE);
+        $campaigns = $this->getresponseApi->getContactList(1, self::PER_PAGE);
 
         $headers = $this->getresponseApi->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $campaigns = array_merge($campaigns,  $this->getresponseApi->getCampaigns($page, self::PER_PAGE));
+            $campaigns = array_merge($campaigns,  $this->getresponseApi->getContactList($page, self::PER_PAGE));
         }
 
-        $collection = new CampaignsCollection();
+        $collection = new ContactListCollection();
 
         foreach ($campaigns as $field) {
-            $collection->add(new Campaign(
+            $collection->add(new ContactList(
                 $field['campaignId'],
                 $field['name']
             ));
