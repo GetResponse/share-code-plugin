@@ -1,5 +1,5 @@
 <?php
-namespace GrShareCode\Campaign;
+namespace GrShareCode\ContactList;
 
 use GrShareCode\TypedCollection;
 

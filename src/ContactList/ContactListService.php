@@ -1,6 +1,10 @@
 <?php
 namespace GrShareCode\ContactList;
 
+use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationBody;
+use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationBodyCollection;
+use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationSubject;
+use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationSubjectCollection;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
 
@@ -91,5 +95,93 @@ class ContactListService
 
         return $collection;
     }
+
+    /**
+     * @return CampaignsCollection
+     * @throws GetresponseApiException
+     */
+    public function getAllCampaigns()
+    {
+        $campaigns = $this->getresponseApi->getCampaigns(1, self::PER_PAGE);
+
+        $headers = $this->getresponseApi->getHeaders();
+
+        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
+            $campaigns = array_merge($campaigns,  $this->getresponseApi->getCampaigns($page, self::PER_PAGE));
+        }
+
+        $collection = new CampaignsCollection();
+
+        foreach ($campaigns as $field) {
+            $collection->add(new Campaign(
+                $field['campaignId'],
+                $field['name']
+            ));
+        }
+
+        return $collection;
+    }
+
+    /**
+     * @return AutorespondersCollection
+     * @throws GetresponseApiException
+     */
+    public function getAutoresponders()
+    {
+        $collection = new AutorespondersCollection();
+
+        $autoresponders = $this->getresponseApi->getAutoresponders(array(), 1, self::PER_PAGE);
+
+        $headers = $this->getresponseApi->getHeaders();
+
+        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
+            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getAutoresponders(array(), $page, self::PER_PAGE));
+        }
+
+        foreach ($autoresponders as $field) {
+            $collection->add(new Autoresponder(
+                $field['autoresponderId'],
+                $field['name'],
+                $field['campaignId'],
+                $field['subject'],
+                $field['status'],
+                $field['triggerSettings']['dayOfCycle']
+            ));
+        }
+
+        return $collection;
+    }
+
+    /**
+     * @param string $campaignId
+     * @return AutorespondersCollection
+     * @throws GetresponseApiException
+     */
+    public function getCampaignAutoresponders($campaignId)
+    {
+        $collection = new AutorespondersCollection();
+
+        $autoresponders = $this->getresponseApi->getAutoresponders(['campaignId' => $campaignId], 1, self::PER_PAGE);
+
+        $headers = $this->getresponseApi->getHeaders();
+
+        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
+            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getAutoresponders(['campaignId' => $campaignId], $page, self::PER_PAGE));
+        }
+
+        foreach ($autoresponders as $field) {
+            $collection->add(new Autoresponder(
+                $field['autoresponderId'],
+                $field['name'],
+                $field['campaignId'],
+                $field['subject'],
+                $field['status'],
+                $field['triggerSettings']['dayOfCycle']
+            ));
+        }
+
+        return $collection;
+    }
+
 
 }

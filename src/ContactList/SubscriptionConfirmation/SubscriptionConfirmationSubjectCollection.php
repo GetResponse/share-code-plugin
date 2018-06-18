@@ -1,11 +1,11 @@
 <?php
-namespace GrShareCode\ContactList;
+namespace GrShareCode\ContactList\SubscriptionConfirmation;
 
 use GrShareCode\TypedCollection;
 
 /**
  * Class SubscriptionConfirmationSubjectCollection
- * @package GrShareCode\ContactList
+ * @package GrShareCode\ContactList\SubscriptionConfirmation
  */
 class SubscriptionConfirmationSubjectCollection extends TypedCollection
 {

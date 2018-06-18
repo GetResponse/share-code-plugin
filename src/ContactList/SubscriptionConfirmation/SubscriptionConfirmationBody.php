@@ -1,9 +1,9 @@
 <?php
-namespace GrShareCode\ContactList;
+namespace GrShareCode\ContactList\SubscriptionConfirmation;
 
 /**
  * Class SubscriptionConfirmationBody
- * @package GrShareCode\ContactList
+ * @package GrShareCode\ContactList\SubscriptionConfirmation
  */
 class SubscriptionConfirmationBody
 {

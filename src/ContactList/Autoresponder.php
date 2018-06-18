@@ -1,5 +1,5 @@
 <?php
-namespace GrShareCode\Campaign;
+namespace GrShareCode\ContactList;
 
 /**
  * Class Autoresponder
@@ -98,6 +98,6 @@ class Autoresponder
      */
     public function isEnabled()
     {
-        return self::ENABLED === $this->status ? true : false;
+        return self::ENABLED === $this->status;
     }
 }
