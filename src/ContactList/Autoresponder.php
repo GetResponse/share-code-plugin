@@ -3,7 +3,7 @@ namespace GrShareCode\ContactList;
 
 /**
  * Class Autoresponder
- * @package GrShareCode\Campaign
+ * @package GrShareCode\ContactList
  */
 class Autoresponder
 {

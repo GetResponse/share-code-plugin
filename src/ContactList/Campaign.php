@@ -3,7 +3,7 @@ namespace GrShareCode\ContactList;
 
 /**
  * Class Campaign
- * @package GrShareCode\Campaign
+ * @package GrShareCode\ContactList
  */
 class Campaign
 {

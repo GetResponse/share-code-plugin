@@ -5,12 +5,12 @@ use GrShareCode\TypedCollection;
 
 /**
  * Class CampaignsCollection
- * @package GrShareCode\Campaign
+ * @package GrShareCode\ContactList
  */
 class CampaignsCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\Campaign\Campaign');
+        $this->setItemType('\GrShareCode\ContactList\Campaign');
     }
 }
