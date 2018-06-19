@@ -67,8 +67,8 @@ class ContactListService
 
         foreach ($subjects as $subject) {
             $collection->add(new SubscriptionConfirmationSubject(
-                $subject['id'],
-                $subject['name']
+                $subject['subscriptionConfirmationSubjectId'],
+                $subject['subject']
             ));
         }
 
@@ -87,7 +87,7 @@ class ContactListService
 
         foreach ($subjects as $subject) {
             $collection->add(new SubscriptionConfirmationBody(
-                $subject['id'],
+                $subject['subscriptionConfirmationBodyId'],
                 $subject['name'],
                 $subject['contentPlain']
             ));
