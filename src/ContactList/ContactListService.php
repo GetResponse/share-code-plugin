@@ -183,5 +183,23 @@ class ContactListService
         return $collection;
     }
 
+    /**
+     * @param AddContactListCommand $addContactListCommand
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function createContactList(AddContactListCommand $addContactListCommand)
+    {
+        return $this->getresponseApi->createContactList([
+            'name' => $addContactListCommand->getContactListName(),
+            'confirmation' => [
+                'fromField' => ['fromFieldId' => $addContactListCommand->getFromField()],
+                'replyTo' => ['fromFieldId' => $addContactListCommand->getReplyTo()],
+                'subscriptionConfirmationBodyId' => $addContactListCommand->getSubscriptionConfirmationBodyId(),
+                'subscriptionConfirmationSubjectId' => $addContactListCommand->getSubscriptionConfirmationSubjectId()
+            ],
+            'languageCode' => $addContactListCommand->getLanguageCode()
+        ]);
+    }
 
 }
