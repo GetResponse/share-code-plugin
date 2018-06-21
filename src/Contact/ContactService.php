@@ -62,6 +62,10 @@ class ContactService
     public function upsertContact(AddContactCommand $addContactCommand)
     {
         try {
+            $contact = $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
+            $this->updateContact($contact->getContactId(), $addContactCommand);
+        } catch (ContactNotFoundException $e) {
+
             $origin = $this->getresponseApi->getCustomFieldByName('origin');
 
             if (empty($origin)) {
@@ -78,10 +82,6 @@ class ContactService
                 $origin['name'],
                 $addContactCommand->getOriginValue()
             ));
-
-            $contact = $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
-            $this->updateContact($contact->getContactId(), $addContactCommand);
-        } catch (ContactNotFoundException $e) {
             $this->createContact($addContactCommand);
         }
     }
