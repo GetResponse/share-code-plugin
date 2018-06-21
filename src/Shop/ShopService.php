@@ -52,6 +52,7 @@ class ShopService
     /**
      * @param AddShopCommand $addShopCommand
      * @return string
+     * @throws GetresponseApiException
      */
     public function addShop(AddShopCommand $addShopCommand)
     {
@@ -64,6 +65,7 @@ class ShopService
 
     /**
      * @param string $shopId
+     * @throws GetresponseApiException
      */
     public function deleteShop($shopId)
     {

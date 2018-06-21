@@ -240,6 +240,38 @@ class GetresponseApi
     }
 
     /**
+     * @param string $lang
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getSubscriptionConfirmationSubject($lang = 'EN')
+    {
+        return $this->sendRequest('subscription-confirmations/subject/'  . $lang, 'GET', [], true);
+    }
+
+    /**
+     * @param string $lang
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getSubscriptionConfirmationBody($lang = 'EN')
+    {
+        return $this->sendRequest('subscription-confirmations/body/'  . $lang, 'GET', [], true);
+    }
+
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getFromFields($page, $perPage)
+    {
+        return $this->sendRequest('from-fields?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
      * @param int $page
      * @param int $perPage
      *
@@ -277,9 +309,20 @@ class GetresponseApi
      * @return array
      * @throws GetresponseApiException
      */
-    public function getCampaigns($page, $perPage)
+    public function getContactList($page, $perPage)
     {
         return $this->sendRequest('campaigns?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+
+    /**
+     * @param array $params
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function createContactList(array $params)
+    {
+        return $this->sendRequest('campaigns', 'POST', $params);
     }
 
     /**
