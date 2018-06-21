@@ -218,6 +218,16 @@ class GetresponseApi
     }
 
     /**
+     * @param array $params
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function createCustomField($params)
+    {
+        return $this->sendRequest('custom-fields', 'POST', $params);
+    }
+
+    /**
      * @param int $page
      * @param int $perPage
      *

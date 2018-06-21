@@ -63,6 +63,23 @@ class ContactService
     public function upsertContact(AddContactCommand $addContactCommand)
     {
         try {
+            $origin = $this->getresponseApi->getCustomFieldByName('origin');
+
+            if (empty($origin)) {
+                $origin = $this->getresponseApi->createCustomField([
+                    'name' => 'origin',
+                    'type' => 'text',
+                    'hidden' => false,
+                    'values' => [$addContactCommand->getOriginValue()]
+                ]);
+            }
+
+            $addContactCommand->addCustomField(new CustomField(
+                $origin['customFieldId'],
+                $origin['name'],
+                $addContactCommand->getOriginValue()
+            ));
+
             $contact = $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
             $this->updateContact($contact->getContactId(), $addContactCommand);
         } catch (ContactNotFoundException $e) {
