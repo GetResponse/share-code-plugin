@@ -303,31 +303,6 @@ class GetresponseApi
     }
 
     /**
-     * @param string $name
-     * @return string|null
-     * @throws GetresponseApiException
-     */
-    public function createCustomField($name, $type, $hidden, $values)
-    {
-        $result = (array) $this->sendRequest(
-            'custom-fields',
-            'POST',
-            [
-                'name' => $name,
-                'type' => $type,
-                'hidden' => $hidden,
-                'values' => $values
-            ]
-        );
-
-        if (isset($result['customFieldId'])) {
-            return $result['customFieldId'];
-        }
-
-        return null;
-    }
-
-    /**
      * @param int $page
      * @param int $perPage
      *
