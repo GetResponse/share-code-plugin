@@ -218,6 +218,16 @@ class GetresponseApi
     }
 
     /**
+     * @param array $params
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function createCustomField($params)
+    {
+        return $this->sendRequest('custom-fields', 'POST', $params);
+    }
+
+    /**
      * @param int $page
      * @param int $perPage
      *
@@ -324,9 +334,20 @@ class GetresponseApi
      * @return array
      * @throws GetresponseApiException
      */
-    public function getCampaigns($page, $perPage)
+    public function getContactList($page, $perPage)
     {
         return $this->sendRequest('campaigns?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+
+    /**
+     * @param array $params
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function createContactList(array $params)
+    {
+        return $this->sendRequest('campaigns', 'POST', $params);
     }
 
     /**

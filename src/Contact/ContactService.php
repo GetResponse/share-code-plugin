@@ -2,7 +2,6 @@
 namespace GrShareCode\Contact;
 
 use GrShareCode\Export\ExportContactCommand;
-use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
 
@@ -66,6 +65,23 @@ class ContactService
             $contact = $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
             $this->updateContact($contact->getContactId(), $addContactCommand);
         } catch (ContactNotFoundException $e) {
+
+            $origin = $this->getresponseApi->getCustomFieldByName('origin');
+
+            if (empty($origin)) {
+                $origin = $this->getresponseApi->createCustomField([
+                    'name' => 'origin',
+                    'type' => 'text',
+                    'hidden' => false,
+                    'values' => [$addContactCommand->getOriginValue()]
+                ]);
+            }
+
+            $addContactCommand->addCustomField(new CustomField(
+                $origin['customFieldId'],
+                $origin['name'],
+                $addContactCommand->getOriginValue()
+            ));
             $this->createContact($addContactCommand);
         }
     }
