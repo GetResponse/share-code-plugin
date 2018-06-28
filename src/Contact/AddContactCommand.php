@@ -22,20 +22,25 @@ class AddContactCommand
     /** @var CustomFieldsCollection */
     private $customFieldsCollection;
 
+    /** @var string */
+    private $originValue;
+
     /**
      * @param string $email
      * @param string $name
      * @param string $contactListId
      * @param int $dayOfCycle
      * @param CustomFieldsCollection $customFieldsCollection
+     * @param string $originValue
      */
-    public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection)
+    public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $originValue)
     {
         $this->email = $email;
         $this->name = $name;
         $this->contactListId = $contactListId;
         $this->dayOfCycle = $dayOfCycle;
         $this->customFieldsCollection = $customFieldsCollection;
+        $this->originValue = $originValue;
     }
 
     /**
@@ -76,5 +81,21 @@ class AddContactCommand
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOriginValue()
+    {
+        return $this->originValue;
+    }
+
+    /**
+     * @param CustomField $customField
+     */
+    public function addCustomField(CustomField $customField)
+    {
+        $this->customFieldsCollection->add($customField);
     }
 }

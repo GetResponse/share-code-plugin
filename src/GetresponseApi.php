@@ -2,6 +2,7 @@
 namespace GrShareCode;
 
 use GrShareCode\Api\ApiType;
+use GrShareCode\Api\UserAgentHeader;
 
 /**
  * Class GetresponseApi
@@ -17,25 +18,27 @@ class GetresponseApi
     /** @var string */
     private $xAppId;
 
-    /** @var string */
-    private $domain;
-
     /** @var ApiType */
     private $apiType;
 
     /** @var array */
     private $headers;
 
+    /** @var UserAgentHeader */
+    private $userAgentHeader;
+
     /**
      * @param string $apiKey
      * @param ApiType $apiType
      * @param string $xAppId
+     * @param UserAgentHeader $userAgentHeader
      */
-    public function __construct($apiKey, ApiType $apiType, $xAppId)
+    public function __construct($apiKey, ApiType $apiType, $xAppId, UserAgentHeader $userAgentHeader)
     {
         $this->apiKey = $apiKey;
         $this->apiType = $apiType;
         $this->xAppId = $xAppId;
+        $this->userAgentHeader = $userAgentHeader;
     }
 
     /**
@@ -52,6 +55,15 @@ class GetresponseApi
         } catch (\Exception $e) {
             throw GetresponseApiException::createForInvalidApiKey();
         }
+    }
+
+    /**
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getAccountInfo()
+    {
+        return $this->sendRequest('accounts');
     }
 
     /**
@@ -206,6 +218,72 @@ class GetresponseApi
     }
 
     /**
+     * @param array $params
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function createCustomField($params)
+    {
+        return $this->sendRequest('custom-fields', 'POST', $params);
+    }
+
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getWebForms($page, $perPage)
+    {
+        return $this->sendRequest('webforms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
+     * @param string $lang
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getSubscriptionConfirmationSubject($lang = 'EN')
+    {
+        return $this->sendRequest('subscription-confirmations/subject/'  . $lang, 'GET', [], true);
+    }
+
+    /**
+     * @param string $lang
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getSubscriptionConfirmationBody($lang = 'EN')
+    {
+        return $this->sendRequest('subscription-confirmations/body/'  . $lang, 'GET', [], true);
+    }
+
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getFromFields($page, $perPage)
+    {
+        return $this->sendRequest('from-fields?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getForms($page, $perPage)
+    {
+        return $this->sendRequest('forms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
      * @param $name
      *
      * @return mixed|null
@@ -231,9 +309,20 @@ class GetresponseApi
      * @return array
      * @throws GetresponseApiException
      */
-    public function getCampaigns($page, $perPage)
+    public function getContactList($page, $perPage)
     {
         return $this->sendRequest('campaigns?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+
+    /**
+     * @param array $params
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function createContactList(array $params)
+    {
+        return $this->sendRequest('campaigns', 'POST', $params);
     }
 
     /**
@@ -245,7 +334,38 @@ class GetresponseApi
      */
     public function getAutoresponders($campaignId, $page, $perPage)
     {
-        return $this->sendRequest('autoresponders?' . $this->setParams(['campaignId' => $campaignId, 'page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->sendRequest('autoresponders?' . $this->setParams(['query' => ['campaignId' => $campaignId], 'page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+    }
+
+    /**
+     * @param int $id
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getAutoresponderById($id)
+    {
+        return $this->sendRequest('autoresponders/' . $id, 'GET', [], true);
+    }
+
+    /**
+     * @param array $params
+     * @return string
+     * @throws GetresponseApiException
+     */
+    public function createShop($params)
+    {
+        $shop = $this->sendRequest('shops', 'POST', $params);
+        return !empty($shop['shopId']) ? $shop['shopId'] : '';
+    }
+
+    /**
+     * @param string $shopId
+     * @return string
+     * @throws GetresponseApiException
+     */
+    public function deleteShop($shopId)
+    {
+        return $this->sendRequest('shops/' . $shopId, 'DELETE');
     }
 
     /**
@@ -270,14 +390,22 @@ class GetresponseApi
     public function createProductVariant($shopId, $productId, $params)
     {
         return $this->sendRequest('shops/'.$shopId.'/products/'.$productId.'/variants', 'POST', $params);
+    }
 
+    /**
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getAccountFeatures()
+    {
+        return (array)$this->sendRequest('accounts/features');
     }
 
     /**
      * @return string
      * @throws GetresponseApiException
      */
-    public function getTrackingCode()
+    public function getTrackingCodeSnippet()
     {
         $trackingCode = $this->sendRequest('tracking');
         $trackingCode = is_array($trackingCode) ? reset($trackingCode) : [];
@@ -308,15 +436,15 @@ class GetresponseApi
         $apiMethod = $this->apiType->getApiUrl().$apiMethod;
 
         $headers = [
-            'X-Auth-Token: api-key '.$this->apiKey,
+            'X-Auth-Token: api-key ' . $this->apiKey,
             'Content-Type: application/json',
-            'User-Agent: PHP GetResponse client 0 . 0 . 1',
-            'X-APP-ID: '.$this->xAppId,
+            'User-Agent: ' . $this->userAgentHeader->getUserAgentInfo(),
+            'X-APP-ID: ' . $this->xAppId,
         ];
 
         // for GetResponse 360
-        if (!empty($this->domain)) {
-            $headers[] = 'X-Domain: '.$this->domain;
+        if (!empty($this->apiType->isMx())) {
+            $headers[] = 'X-Domain: ' . $this->apiType->getDomain();
         }
 
         //also as get method
@@ -348,7 +476,6 @@ class GetresponseApi
             curl_close($curl);
             throw GetresponseApiException::createForInvalidCurlResponse($error_message);
         }
-
 
         if ($withHeaders) {
             list($headers, $response) = explode("\r\n\r\n", $response, 2);

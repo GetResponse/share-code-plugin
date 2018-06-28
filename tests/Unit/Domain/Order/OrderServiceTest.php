@@ -49,7 +49,7 @@ class OrderServiceTest extends TestCase
         $this->dbRepositoryMock
             ->expects($this->once())
             ->method('getGrOrderIdFromMapping')
-            ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getOrderId())
+            ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
             ->willReturn([]);
 
         $this->grApiMock
@@ -83,7 +83,7 @@ class OrderServiceTest extends TestCase
         $this->dbRepositoryMock
             ->expects($this->once())
             ->method('getGrOrderIdFromMapping')
-            ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getOrderId())
+            ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
             ->willReturn(3);
 
         $this->grApiMock

@@ -10,7 +10,7 @@ use GrShareCode\Validation\Assert\Assert;
  */
 class Cart
 {
-    /** @var int */
+    /** @var string */
     private $cartId;
 
     /** @var ProductsCollection */
@@ -26,7 +26,7 @@ class Cart
     private $totalTaxPrice;
 
     /**
-     * @param int $cartId
+     * @param string $cartId
      * @param ProductsCollection $products
      * @param string $currency
      * @param string $totalPrice
@@ -42,11 +42,11 @@ class Cart
     }
 
     /**
-     * @param $cartId
+     * @param string $cartId
      */
     private function setCartId($cartId)
     {
-        Assert::that($cartId)->notNull()->integer();
+        Assert::that($cartId)->notNull()->string();
         $this->cartId = $cartId;
     }
 
@@ -86,7 +86,7 @@ class Cart
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getCartId()
     {

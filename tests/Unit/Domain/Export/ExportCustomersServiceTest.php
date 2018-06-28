@@ -5,7 +5,7 @@ use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\Contact;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\Export\ExportCustomersService;
+use GrShareCode\Export\ExportContactService;
 use GrShareCode\Export\Settings\ExportSettingsFactory;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Tests\Generator;
@@ -52,8 +52,7 @@ class ExportCustomersServiceTest extends TestCase
             'shopId' => null
         ]);
 
-        $exportCustomersService = new ExportCustomersService(
-            $exportSettings,
+        $exportCustomersService = new ExportContactService(
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock
@@ -68,7 +67,7 @@ class ExportCustomersServiceTest extends TestCase
             ->expects($this->once())
             ->method('updateContactOnExport');
 
-        $exportContactCommand = Generator::createExportContactCommand();
+        $exportContactCommand = Generator::createExportContactCommandWithSettings($exportSettings);
         $exportCustomersService->exportContact($exportContactCommand);
     }
 
@@ -86,8 +85,7 @@ class ExportCustomersServiceTest extends TestCase
             'shopId' => null
         ]);
 
-        $exportCustomersService = new ExportCustomersService(
-            $exportSettings,
+        $exportCustomersService = new ExportContactService(
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock
@@ -102,7 +100,7 @@ class ExportCustomersServiceTest extends TestCase
             ->expects($this->once())
             ->method('createContact');
 
-        $exportContactCommand = Generator::createExportContactCommand();
+        $exportContactCommand = Generator::createExportContactCommandWithSettings($exportSettings);
         $exportCustomersService->exportContact($exportContactCommand);
     }
 
@@ -120,8 +118,7 @@ class ExportCustomersServiceTest extends TestCase
             'shopId' => 'grShopId'
         ]);
 
-        $exportCustomersService = new ExportCustomersService(
-            $exportSettings,
+        $exportCustomersService = new ExportContactService(
             $this->contactServiceMock,
             $this->cartServiceMock,
             $this->orderServiceMock
@@ -140,7 +137,7 @@ class ExportCustomersServiceTest extends TestCase
             ->expects($this->once())
             ->method('sendOrder');
 
-        $exportContactCommand = Generator::createExportContactCommand();
+        $exportContactCommand = Generator::createExportContactCommandWithSettings($exportSettings);
         $exportCustomersService->exportContact($exportContactCommand);
     }
 
