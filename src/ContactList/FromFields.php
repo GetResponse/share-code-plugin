@@ -1,11 +1,11 @@
 <?php
-namespace GrShareCode\Campaign;
+namespace GrShareCode\ContactList;
 
 /**
- * Class Campaign
- * @package GrShareCode\Campaign
+ * Class FromFields
+ * @package GrShareCode\ContactList
  */
-class Campaign
+class FromFields
 {
     /** @var string */
     private $id;
@@ -13,14 +13,19 @@ class Campaign
     /** @var string */
     private $name;
 
+    /** @var string */
+    private $email;
+
     /**
      * @param string $id
      * @param string $name
+     * @param string $email
      */
-    public function __construct($id, $name)
+    public function __construct($id, $name, $email)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->email = $email;
     }
 
     /**
@@ -38,4 +43,14 @@ class Campaign
     {
         return $this->name;
     }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+
 }

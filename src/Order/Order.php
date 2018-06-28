@@ -11,8 +11,8 @@ use GrShareCode\Validation\Assert\Assert;
  */
 class Order
 {
-    /** @var int */
-    private $orderId;
+    /** @var string */
+    private $externalOrderId;
 
     /** @var ProductsCollection */
     private $products;
@@ -32,8 +32,8 @@ class Order
     /** @var string */
     private $status;
 
-    /** @var int */
-    private $cartId;
+    /** @var string */
+    private $externalCartId;
 
     /** @var string */
     private $description;
@@ -54,14 +54,14 @@ class Order
     private $billingAddress;
 
     /**
-     * @param int $orderId
+     * @param string $externalOrderId
      * @param ProductsCollection $products
      * @param float $totalPrice
      * @param float $totalPriceTax
      * @param string $orderUrl
      * @param string $currency
      * @param string $status
-     * @param int $cartId
+     * @param string $externalCartId
      * @param string $description
      * @param float $shippingPrice
      * @param float $billingStatus
@@ -70,14 +70,14 @@ class Order
      * @param Address $billingAddress
      */
     public function __construct(
-        $orderId,
+        $externalOrderId,
         ProductsCollection $products,
         $totalPrice,
         $totalPriceTax,
         $orderUrl,
         $currency,
         $status,
-        $cartId,
+        $externalCartId,
         $description,
         $shippingPrice,
         $billingStatus,
@@ -86,14 +86,14 @@ class Order
         Address $billingAddress
     ) {
 
-        $this->setOrderId($orderId);
+        $this->setExternalOrderId($externalOrderId);
         $this->setProducts($products);
         $this->setTotalPrice($totalPrice);
         $this->setTotalPriceTax($totalPriceTax);
         $this->setOrderUrl($orderUrl);
         $this->setCurrency($currency);
         $this->setStatus($status);
-        $this->setCartId($cartId);
+        $this->setExternalCartId($externalCartId);
         $this->setDescription($description);
         $this->setShippingPrice($shippingPrice);
         $this->setBillingStatus($billingStatus);
@@ -105,10 +105,10 @@ class Order
     /**
      * @param int $orderId
      */
-    private function setOrderId($orderId)
+    private function setExternalOrderId($orderId)
     {
-        Assert::that($orderId)->notNull()->integer();
-        $this->orderId = $orderId;
+        Assert::that($orderId)->notBlank()->string();
+        $this->externalOrderId = $orderId;
     }
 
     /**
@@ -165,12 +165,12 @@ class Order
     }
 
     /**
-     * @param int $cartId
+     * @param string $cartId
      */
-    private function setCartId($cartId)
+    private function setExternalCartId($cartId)
     {
-        Assert::that($cartId)->notNull()->integer();
-        $this->cartId = $cartId;
+        Assert::that($cartId)->notBlank()->string();
+        $this->externalCartId = $cartId;
     }
 
     /**
@@ -228,9 +228,9 @@ class Order
     /**
      * @return int
      */
-    public function getOrderId()
+    public function getExternalOrderId()
     {
-        return $this->orderId;
+        return $this->externalOrderId;
     }
 
     /**
@@ -282,11 +282,11 @@ class Order
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getCartId()
+    public function getExternalCartId()
     {
-        return $this->cartId;
+        return $this->externalCartId;
     }
 
     /**
