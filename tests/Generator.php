@@ -144,6 +144,7 @@ class Generator
         return new ExportContactCommand(
             'adam.kowalski@getresponse.com',
             'Adam Kowalski',
+            'origin',
             $exportSettings,
             $customFieldsCollection,
             self::createHistoricalOrderCollection()
@@ -193,7 +194,8 @@ class Generator
             'Adam Kowalski',
             'contactListId',
             3,
-            $customFieldCollection
+            $customFieldCollection,
+            'origin'
         );
     }
 

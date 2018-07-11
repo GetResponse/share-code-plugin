@@ -2,7 +2,6 @@
 namespace GrShareCode\Export;
 
 use GrShareCode\Cart\AddCartCommand;
-use GrShareCode\Cart\CartFactory;
 use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\AddContactCommand;
 use GrShareCode\Contact\ContactNotFoundException;
@@ -73,7 +72,8 @@ class ExportContactService
                 $exportContactCommand->getName(),
                 $exportSettings->getContactListId(),
                 $exportSettings->getDayOfCycle(),
-                $exportContactCommand->getCustomFieldsCollection()
+                $exportContactCommand->getCustomFieldsCollection(),
+                $exportContactCommand->getOriginValue()
             );
 
             $this->contactService->createContact($addContactCommand);
