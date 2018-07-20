@@ -2,7 +2,7 @@
 namespace GrShareCode\Product;
 
 use GrShareCode\Product\Category\CategoryCollection;
-use GrShareCode\Product\Variant\Variant;
+use GrShareCode\Product\Variant\VariantsCollection;
 use GrShareCode\Validation\Assert\Assert;
 
 /**
@@ -17,8 +17,8 @@ class Product
     /** @var string */
     private $name;
 
-    /** @var Variant */
-    private $productVariant;
+    /** @var VariantsCollection */
+    private $variants;
 
     /** @var string */
     private $url;
@@ -35,14 +35,14 @@ class Product
     /**
      * @param int $externalId
      * @param string $name
-     * @param Variant $productVariant
+     * @param VariantsCollection $variants
      * @param CategoryCollection $categories
      */
-    public function __construct($externalId, $name, Variant $productVariant, CategoryCollection $categories)
+    public function __construct($externalId, $name, VariantsCollection $variants, CategoryCollection $categories)
     {
         $this->setExternalId($externalId);
         $this->setName($name);
-        $this->setProductVariant($productVariant);
+        $this->setVariants($variants);
         $this->setCategories($categories);
     }
 
@@ -65,11 +65,19 @@ class Product
     }
 
     /**
-     * @param Variant $productVariant
+     * @param VariantsCollection $variants
      */
-    private function setProductVariant(Variant $productVariant)
+    private function setVariants(VariantsCollection $variants)
     {
-        $this->productVariant = $productVariant;
+        $this->variants = $variants;
+    }
+
+    /**
+     * @return VariantsCollection
+     */
+    public function getVariants()
+    {
+        return $this->variants;
     }
 
     /**
@@ -86,14 +94,6 @@ class Product
     public function getExternalId()
     {
         return $this->externalId;
-    }
-
-    /**
-     * @return Variant
-     */
-    public function getProductVariant()
-    {
-        return $this->productVariant;
     }
 
     /**
@@ -171,13 +171,4 @@ class Product
     {
         return $this->name;
     }
-
-    /**
-     * @return Variant
-     */
-    public function getVariant()
-    {
-        return $this->productVariant;
-    }
-
 }

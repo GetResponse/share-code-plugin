@@ -50,7 +50,7 @@ class CartService
 
         $cart = $addCartCommand->getCart();
 
-        $variants = $this->productService->getProductVariants($cart->getProducts(), $addCartCommand->getShopId());
+        $variants = $this->productService->getProductsVariants($cart->getProducts(), $addCartCommand->getShopId());
 
         $createCartPayload = [
             'contactId' => $contact['contactId'],

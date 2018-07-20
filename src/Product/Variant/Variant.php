@@ -158,7 +158,8 @@ class Variant
             'name' => $this->getName(),
             'price' => $this->getPrice(),
             'priceTax' => $this->getPriceTax(),
-            'sku' => $this->getSku()
+            'sku' => $this->getSku(),
+            'externalId' => $this->externalId,
         ];
 
 

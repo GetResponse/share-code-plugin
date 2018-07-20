@@ -54,7 +54,7 @@ class OrderService
 
         $order = $addOrderCommand->getOrder();
 
-        $variants = $this->productService->getProductVariants($order->getProducts(), $addOrderCommand->getShopId());
+        $variants = $this->productService->getProductsVariants($order->getProducts(), $addOrderCommand->getShopId());
 
         $cartId = $this->dbRepository->getGrCartIdFromMapping($addOrderCommand->getShopId(), $order->getExternalCartId());
 
