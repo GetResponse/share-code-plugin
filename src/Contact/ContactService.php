@@ -183,4 +183,17 @@ class ContactService
 
         return $params;
     }
+
+    /**
+     * @param string $email
+     * @throws GetresponseApiException
+     */
+    public function unsubscribe($email)
+    {
+        $contacts = $this->getresponseApi->searchContacts($email);
+
+        foreach ($contacts as $contact) {
+            $this->getresponseApi->deleteContact($contact['contactId']);
+        }
+    }
 }

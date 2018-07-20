@@ -97,6 +97,26 @@ class GetresponseApi
     }
 
     /**
+     * @param string $email
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function searchContacts($email)
+    {
+        $params = ['query' => ['email' => $email]];
+        return $this->sendRequest('contacts?'.$this->setParams($params));
+    }
+
+    /**
+     * @param $contactId
+     * @throws GetresponseApiException
+     */
+    public function deleteContact($contactId)
+    {
+        $this->sendRequest('contacts/' . $contactId, 'DELETE');
+    }
+
+    /**
      * @param int $contactId
      * @param array $params
      * @return array
