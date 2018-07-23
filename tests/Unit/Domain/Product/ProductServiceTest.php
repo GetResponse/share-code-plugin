@@ -44,33 +44,59 @@ class ProductServiceTest extends TestCase
         $shopId = 1;
 
         $this->dbRepositoryMock
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(3))
             ->method('getProductMappingByProductId')
-            ->withConsecutive([$shopId, 1], [$shopId, 2])
+            ->withConsecutive([$shopId, 1], [$shopId, 1],[$shopId, 2])
             ->willReturnOnConsecutiveCalls(
                 $nullProductMapping,
-                $nullProductMapping
+                new ProductMapping(1, 'v1', $shopId, 'p1', 'v11'),
+                new ProductMapping(2, 'v2', $shopId, 'p2', 'v21')
             );
 
         $this->grApiMock
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(1))
             ->method('createProduct')
-            ->withConsecutive(
-                [$shopId, $this->buildProductParams($products->getIterator()[0])],
-                [$shopId, $this->buildProductParams($products->getIterator()[1])]
-            )
-            ->willReturnOnConsecutiveCalls(
-                ['productId' => 'p1', 'variants' => [['externalId' => 1, 'variantId' => 'v11'],['externalId' => 2, 'variantId' => 'v12']]],
-                ['productId' => 'p2', 'variants' => [['externalId' => 1, 'variantId' => 'v21'],['externalId' => 2, 'variantId' => 'v22']]]
+            ->with($shopId, $this->buildProductParams($products->getIterator()[0]))
+            ->willReturn(
+                ['productId' => 'p1', 'variants' => [['externalId' => 1, 'variantId' => 'v11'],['externalId' => 2, 'variantId' => 'v12']]]
             );
+
+        /** @var Product $product2 */
+        $product2 = $products->getIterator()[1];
+        /** @var Variant $variant22 */
+        $variant22 = $product2->getVariants()->getIterator()[1];
+
+
+        $this->grApiMock
+            ->expects(self::once())
+            ->method('createProductVariant')
+            ->with($shopId, 'p2', $variant22->toRequestArray())
+            ->willReturn($variant22->toRequestArrayWithVariantId('v22'));
+
 
         $this->dbRepositoryMock
             ->expects(self::exactly(4))
+            ->method('getProductMappingByVariantId')
+            ->withConsecutive(
+                [$shopId, 1, 1],
+                [$shopId, 1, 2],
+                [$shopId, 2, 1],
+                [$shopId, 2, 2]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new ProductMapping(1, 1, $shopId, 'p1', 'v11'),
+                new ProductMapping(1, 2, $shopId, 'p1', 'v12'),
+                new ProductMapping(2, 1, $shopId, 'p2', 'v21'),
+                $nullProductMapping
+            );
+
+
+        $this->dbRepositoryMock
+            ->expects(self::exactly(3))
             ->method('saveProductMapping')
             ->withConsecutive(
                 new ProductMapping(1, 1, $shopId, 'p1', 'v11'),
                 new ProductMapping(1, 2, $shopId, 'p1', 'v12'),
-                new ProductMapping(2, 1, $shopId, 'p2', 'v21'),
                 new ProductMapping(2, 2, $shopId, 'p2', 'v22')
             );
 
