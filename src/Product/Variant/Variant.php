@@ -155,11 +155,14 @@ class Variant
     public function toRequestArray()
     {
         $result = [
+            'externalId' => $this->getExternalId(),
             'name' => $this->getName(),
             'price' => $this->getPrice(),
             'priceTax' => $this->getPriceTax(),
             'sku' => $this->getSku(),
-            'externalId' => $this->externalId,
+            'quantity' => $this->getQuantity(),
+            'url' => $this->getUrl(),
+            'description' => $this->getDescription()
         ];
 
 

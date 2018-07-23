@@ -88,6 +88,7 @@ class ProductService
 
         $grProductParams = [
             'name' => $product->getName(),
+            'url' => $product->getUrl(),
             'externalId' => $product->getExternalId(),
             'categories' => $product->getCategories()->toRequestArray(),
             'variants' => $productVariants->toRequestArray(),
