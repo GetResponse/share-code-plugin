@@ -103,7 +103,7 @@ class ExportContactService
                 $exportSettings->getContactListId(),
                 $shopId
             );
-            $this->cartService->sendCart($addCartCommand);
+            $this->cartService->exportCart($addCartCommand);
 
             $addOrderCommand = new AddOrderCommand(
                 $historicalOrder,

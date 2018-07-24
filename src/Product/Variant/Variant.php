@@ -115,7 +115,7 @@ class Variant
      */
     public function setUrl($url)
     {
-        Assert::that($url)->notNull()->string();
+        Assert::that($url)->nullOr()->string();
         $this->url = $url;
 
         return $this;
@@ -160,7 +160,6 @@ class Variant
             'price' => $this->getPrice(),
             'priceTax' => $this->getPriceTax(),
             'sku' => $this->getSku(),
-            'quantity' => $this->getQuantity(),
             'url' => $this->getUrl(),
             'description' => $this->getDescription()
         ];
