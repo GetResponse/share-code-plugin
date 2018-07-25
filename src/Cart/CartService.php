@@ -121,9 +121,22 @@ class CartService
         $grCartId = $this->dbRepository->getGrCartIdFromMapping($grShopId, $externalCartId);
 
         if (empty($grCartId)) {
+
+            if (empty($createCartPayload['selectedVariants'])) {
+                return;
+            }
+
             $grCartId = $this->getresponseApi->createCart($grShopId, $createCartPayload);
             $this->dbRepository->saveCartMapping($grShopId, $externalCartId, $grCartId);
+
         } else {
+
+            if (empty($createCartPayload['selectedVariants'])) {
+                $this->dbRepository->removeCartMapping($grShopId, $externalCartId, $grCartId);
+                $this->getresponseApi->removeCart($grShopId, $grCartId);
+                return;
+            }
+
             $this->getresponseApi->updateCart($grShopId, $grCartId, $createCartPayload);
         }
     }

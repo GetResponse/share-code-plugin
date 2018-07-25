@@ -76,11 +76,17 @@ class OrderService
             $grOrder['shippingAddress'] = $this->buildAddress($order->getShippingAddress());
         }
 
-        $grOrderId = $this->dbRepository->getGrOrderIdFromMapping($addOrderCommand->getShopId(), $order->getExternalOrderId());
+        $grOrderId = $this->dbRepository->getGrOrderIdFromMapping(
+            $addOrderCommand->getShopId(),
+            $order->getExternalOrderId()
+        );
+
+        $payloadMd5 = md5(json_encode($grOrder));
 
         if (empty($grOrderId)) {
 
-            $cartId = $this->dbRepository->getGrCartIdFromMapping($addOrderCommand->getShopId(), $order->getExternalCartId());
+            $cartId = $this->dbRepository->getGrCartIdFromMapping($addOrderCommand->getShopId(),
+                $order->getExternalCartId());
 
             $grOrder['cartId'] = $cartId;
 
@@ -90,10 +96,13 @@ class OrderService
                 $addOrderCommand->skipAutomation()
             );
 
-            $this->dbRepository->saveOrderMapping($addOrderCommand->getShopId(), $order->getExternalOrderId(), $grOrderId);
             $this->getresponseApi->removeCart($addOrderCommand->getShopId(), $cartId);
 
         } else {
+
+            if ($this->hasPayloadChanged($addOrderCommand, $payloadMd5)) {
+                return;
+            }
 
             $this->getresponseApi->updateOrder(
                 $addOrderCommand->getShopId(),
@@ -102,6 +111,13 @@ class OrderService
                 $addOrderCommand->skipAutomation()
             );
         }
+
+        $this->dbRepository->saveOrderMapping(
+            $addOrderCommand->getShopId(),
+            $order->getExternalOrderId(),
+            $grOrderId,
+            $payloadMd5
+        );
     }
 
     /**
@@ -125,5 +141,20 @@ class OrderService
             'phone' => $address->getPhone(),
             'company' => $address->getCompany()
         ];
+    }
+
+    /**
+     * @param AddOrderCommand $addOrderCommand
+     * @param string $newPayloadMd5
+     * @return bool
+     */
+    private function hasPayloadChanged($addOrderCommand, $newPayloadMd5)
+    {
+        $oldPayloadMd5 = $this->dbRepository->getPayloadMd5FromOrderMapping(
+            $addOrderCommand->getShopId(),
+            $addOrderCommand->getOrder()->getExternalOrderId()
+        );
+
+        return $oldPayloadMd5 === $newPayloadMd5;
     }
 }
