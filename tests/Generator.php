@@ -20,6 +20,8 @@ use GrShareCode\Product\ProductsCollection;
 use GrShareCode\Product\Variant\Images\Image;
 use GrShareCode\Product\Variant\Images\ImagesCollection;
 use GrShareCode\Product\Variant\Variant;
+use GrShareCode\Product\Variant\VariantsCollection;
+use GrShareCode\ProductMapping\ProductMapping;
 
 /**
  * Class Faker
@@ -44,41 +46,86 @@ class Generator
     }
 
     /**
-     * @return ProductsCollection
+     * @return AddCartCommand
      */
-    public static function createProductsCollection()
+    public static function createAddCartCommandWithNoVariants()
+    {
+        $products = self::createProductsCollection(1,0);
+        $cart = new Cart('100001', $products, 'PLN', 10.00, 123.3);
+
+        return new AddCartCommand(
+            $cart,
+            'simple@example.com',
+            'listId',
+            'shopId'
+        );
+    }
+
+    /**
+     * @return CategoryCollection
+     */
+    public static function createCategoriesCollection()
     {
         $categoryCollection = new CategoryCollection();
         $categoryCollection->add(new Category('t-shirts'));
+        return $categoryCollection;
+    }
 
-        $product = new Product(1, 'simple product', self::createProductVariant(), $categoryCollection);
+    /**
+     * @param int $productsCount
+     * @param int $variantsCount
+     * @return ProductsCollection
+     */
+    public static function createProductsCollection($productsCount = 1, $variantsCount = 1)
+    {
+
         $products = new ProductsCollection();
-        $products->add($product);
+
+        for ($i = 0; $i < $productsCount; $i++) {
+
+            $products->add(
+                (new Product(
+                    $i+1,
+                    'simple product',
+                    self::createProductVariants($variantsCount),
+                    self::createCategoriesCollection()
+                ))->setUrl('getresponse.com')
+            );
+        }
 
         return $products;
     }
 
     /**
-     * @return Variant
+     * @param int $count - number of variants in collection
+     * @return VariantsCollection
      */
-    public static function createProductVariant()
+    public static function createProductVariants($count = 1)
     {
-        $imageCollection = new ImagesCollection();
-        $imageCollection->add(new Image('https://getresponse.com', 1));
+        $variants = new VariantsCollection();
 
-        $productVariant = new Variant(
-            1,
-            'simple product',
-            9.99,
-            12.00,
-            'simple-product'
-        );
+        for ($i = 0; $i < $count; $i++) {
+            $imageCollection = new ImagesCollection();
+            $imageCollection->add(new Image('https://getresponse.com', 1));
 
-        return $productVariant
-            ->setQuantity(1)
-            ->setUrl('https://getresponse.com')
-            ->setDescription('This is description')
-            ->setImages($imageCollection);
+            $productVariant = new Variant(
+                $i+1,
+                'simple product',
+                9.99,
+                12.00,
+                'simple-product'
+            );
+
+            $productVariant
+                ->setQuantity($i+1)
+                ->setUrl('https://getresponse.com')
+                ->setDescription('This is description')
+                ->setImages($imageCollection);
+
+            $variants->add($productVariant);
+        }
+
+        return $variants;
     }
 
     public static function createAddOrderCommand()
@@ -144,6 +191,7 @@ class Generator
         return new ExportContactCommand(
             'adam.kowalski@getresponse.com',
             'Adam Kowalski',
+            'origin',
             $exportSettings,
             $customFieldsCollection,
             self::createHistoricalOrderCollection()
@@ -193,8 +241,17 @@ class Generator
             'Adam Kowalski',
             'contactListId',
             3,
-            $customFieldCollection
+            $customFieldCollection,
+            'origin'
         );
+    }
+
+    /**
+     * @return ProductMapping
+     */
+    public static function createEmptyProductMapping()
+    {
+        return new ProductMapping(null, null, null, null, null);
     }
 
 }

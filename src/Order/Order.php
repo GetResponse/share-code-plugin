@@ -66,7 +66,7 @@ class Order
      * @param float $shippingPrice
      * @param float $billingStatus
      * @param string $processedAt
-     * @param Address $shippingAddress
+     * @param null|Address $shippingAddress
      * @param Address $billingAddress
      */
     public function __construct(
@@ -82,7 +82,7 @@ class Order
         $shippingPrice,
         $billingStatus,
         $processedAt,
-        Address $shippingAddress,
+        $shippingAddress,
         Address $billingAddress
     ) {
 
@@ -99,7 +99,7 @@ class Order
         $this->setBillingStatus($billingStatus);
         $this->setProcessedAt($processedAt);
         $this->setShippingAddress($shippingAddress);
-        $this->setBillingAddress($shippingAddress);
+        $this->setBillingAddress($billingAddress);
     }
 
     /**
@@ -210,10 +210,11 @@ class Order
     }
 
     /**
-     * @param Address $shippingAddress
+     * @param mixed $shippingAddress
      */
-    private function setShippingAddress(Address $shippingAddress)
+    private function setShippingAddress($shippingAddress)
     {
+        Assert::that($shippingAddress)->nullOr()->isInstanceOf(Address::class);
         $this->shippingAddress = $shippingAddress;
     }
 
@@ -223,6 +224,14 @@ class Order
     private function setBillingAddress(Address $billingAddress)
     {
         $this->billingAddress = $billingAddress;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasShippingAddress()
+    {
+        return null !== $this->shippingAddress;
     }
 
     /**

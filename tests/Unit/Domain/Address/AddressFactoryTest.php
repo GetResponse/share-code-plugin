@@ -10,8 +10,6 @@ use PHPUnit\Framework\TestCase;
 class AddressFactoryTest extends TestCase
 {
     /**
-     * Problem polega na tym, że substring na pustym stringu '' zwraca FALSE
-     * i walidujemy pole które jest wartością FALSE zamiast string
      * @test
      */
     public function shouldCreateValidAddressInstance()

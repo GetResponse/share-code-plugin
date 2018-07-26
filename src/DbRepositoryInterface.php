@@ -34,6 +34,13 @@ interface DbRepositoryInterface
 
     /**
      * @param string $grShopId
+     * @param int $externalCartId
+     * @param string $grCartId
+     */
+    public function removeCartMapping($grShopId, $externalCartId, $grCartId);
+
+    /**
+     * @param string $grShopId
      * @param int $externalOrderId
      */
     public function getGrOrderIdFromMapping($grShopId, $externalOrderId);
@@ -41,9 +48,17 @@ interface DbRepositoryInterface
     /**
      * @param string $grShopId
      * @param int $externalOrderId
-     * @param string $grOrderId
      */
-    public function saveOrderMapping($grShopId, $externalOrderId, $grOrderId);
+    public function getPayloadMd5FromOrderMapping($grShopId, $externalOrderId);
+
+    /**
+     * @param string $grShopId
+     * @param int $externalOrderId
+     * @param string $grOrderId
+     * @param string $payloadMd5
+     * @return
+     */
+    public function saveOrderMapping($grShopId, $externalOrderId, $grOrderId, $payloadMd5);
 
     /**
      * @param string $grShopId
@@ -71,4 +86,5 @@ interface DbRepositoryInterface
      * @param Job $job
      */
     public function deleteJob(Job $job);
+
 }

@@ -4,7 +4,10 @@ namespace GrShareCode\Tests\Unit\Domain\Cart;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
 use GrShareCode\Product\Product;
+use GrShareCode\Product\ProductsCollection;
 use GrShareCode\Product\ProductService;
+use GrShareCode\Product\Variant\Images\Image;
+use GrShareCode\Product\Variant\Variant;
 use GrShareCode\ProductMapping\ProductMapping;
 use GrShareCode\Tests\Generator;
 use PHPUnit\Framework\TestCase;
@@ -13,9 +16,10 @@ class ProductServiceTest extends TestCase
 {
     /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $dbRepositoryMock;
-
     /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
     private $grApiMock;
+    /** @var ProductService */
+    private $sut;
 
     public function setUp()
     {
@@ -26,6 +30,8 @@ class ProductServiceTest extends TestCase
         $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->sut = new ProductService($this->grApiMock, $this->dbRepositoryMock);
     }
 
     /**
@@ -33,179 +39,136 @@ class ProductServiceTest extends TestCase
      */
     public function shouldCreateProductAndVariant()
     {
-        $products = Generator::createProductsCollection();
-        $nullProductMapping = new ProductMapping(null, null, null, null, null);
+        $products = Generator::createProductsCollection(2, 2);
+        $nullProductMapping = Generator::createEmptyProductMapping();
         $shopId = 1;
 
-        /** @var Product $product */
-        foreach ($products as $product) {
-
-            $this->dbRepositoryMock
-                ->expects($this->once())
-                ->method('getProductMappingByVariantId')
-                ->with($shopId, $product->getExternalId(), $product->getVariant()->getExternalId())
-                ->willReturn($nullProductMapping);
-
-            $this->dbRepositoryMock
-                ->expects($this->once())
-                ->method('getProductMappingByProductId')
-                ->with($shopId, $product->getExternalId())
-                ->willReturn($nullProductMapping);
-
-            $grProductParams = [
-                'name' => $product->getName(),
-                'categories' => $product->getCategories()->toRequestArray(),
-                'variants' => [$product->getVariant()->toRequestArray()],
-            ];
-
-            $this->grApiMock
-                ->expects($this->once())
-                ->method('createProduct')
-                ->with($shopId, $grProductParams);
-
-            $productMapping = new ProductMapping(
-                $product->getExternalId(),
-                $product->getVariant()->getExternalId(),
-                $shopId,
-                null,
-                null
+        $this->dbRepositoryMock
+            ->expects(self::exactly(3))
+            ->method('getProductMappingByProductId')
+            ->withConsecutive([$shopId, 1], [$shopId, 1],[$shopId, 2])
+            ->willReturnOnConsecutiveCalls(
+                $nullProductMapping,
+                new ProductMapping(1, 'v1', $shopId, 'p1', 'v11'),
+                new ProductMapping(2, 'v2', $shopId, 'p2', 'v21')
             );
 
-            $this->dbRepositoryMock
-                ->expects($this->once())
-                ->method('saveProductMapping')
-                ->with($productMapping);
+        $this->grApiMock
+            ->expects(self::exactly(1))
+            ->method('createProduct')
+            ->with($shopId, $this->buildProductParams($products->getIterator()[0]))
+            ->willReturn(
+                ['productId' => 'p1', 'variants' => [['externalId' => 1, 'variantId' => 'v11'],['externalId' => 2, 'variantId' => 'v12']]]
+            );
 
-            $productService = new ProductService($this->grApiMock, $this->dbRepositoryMock);
+        /** @var Product $product2 */
+        $product2 = $products->getIterator()[1];
+        /** @var Variant $variant22 */
+        $variant22 = $product2->getVariants()->getIterator()[1];
 
-            $expected = [
-                'variantId' => null,
-                'price' => $product->getProductVariant()->getPrice(),
-                'priceTax' => $product->getProductVariant()->getPriceTax(),
-                'quantity' => $product->getProductVariant()->getQuantity(),
-                'images' => [
-                    0 => [
-                        'src' => $product->getProductVariant()->getImages()->getIterator()[0]->getSrc(),
-                        'position' => $product->getProductVariant()->getImages()->getIterator()[0]->getPosition()
-                    ]
-                ]
-            ];
 
-            $this->assertEquals([$expected], $productService->getProductVariants($products, $shopId));
-        }
+        $this->grApiMock
+            ->expects(self::once())
+            ->method('createProductVariant')
+            ->with($shopId, 'p2', $variant22->toRequestArray())
+            ->willReturn($variant22->toRequestArrayWithVariantId('v22'));
+
+
+        $this->dbRepositoryMock
+            ->expects(self::exactly(4))
+            ->method('getProductMappingByVariantId')
+            ->withConsecutive(
+                [$shopId, 1, 1],
+                [$shopId, 1, 2],
+                [$shopId, 2, 1],
+                [$shopId, 2, 2]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new ProductMapping(1, 1, $shopId, 'p1', 'v11'),
+                new ProductMapping(1, 2, $shopId, 'p1', 'v12'),
+                new ProductMapping(2, 1, $shopId, 'p2', 'v21'),
+                $nullProductMapping
+            );
+
+
+        $this->dbRepositoryMock
+            ->expects(self::exactly(3))
+            ->method('saveProductMapping')
+            ->withConsecutive(
+                new ProductMapping(1, 1, $shopId, 'p1', 'v11'),
+                new ProductMapping(1, 2, $shopId, 'p1', 'v12'),
+                new ProductMapping(2, 2, $shopId, 'p2', 'v22')
+            );
+
+        $this->dbRepositoryMock
+            ->expects(self::exactly(4))
+            ->method('getProductMappingByVariantId')
+            ->withConsecutive(
+                [$shopId, 1, 1],
+                [$shopId, 1, 2],
+                [$shopId, 2, 1],
+                [$shopId, 2, 2]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new ProductMapping(1, 1, $shopId, 'p1', 'v11'),
+                new ProductMapping(1, 2, $shopId, 'p1', 'v12'),
+                new ProductMapping(2, 1, $shopId, 'p2', 'v21'),
+                new ProductMapping(2, 2, $shopId, 'p2', 'v22')
+            );
+
+        $expected = [
+            $this->buildVariantResponse($products, 0, 0, 'v11'),
+            $this->buildVariantResponse($products, 0, 1, 'v12'),
+            $this->buildVariantResponse($products, 1, 0, 'v21'),
+            $this->buildVariantResponse($products, 1, 1, 'v22'),
+        ];
+
+        self::assertEquals($expected, $this->sut->getProductsVariants($products, $shopId));
     }
 
     /**
-     * @test
+     * @param Product $product
+     * @return array
      */
-    public function shouldCreateProductVariant()
+    private function buildProductParams(Product $product)
     {
-        $shopId = 1;
-        $grProductId = 13;
-        $grVariantId = null;
-        $products = Generator::createProductsCollection();
-        $nullProductMapping = new ProductMapping(null, null, null, null, null);
-        $productMapping = new ProductMapping(11, 12, $shopId, $grProductId, $grVariantId);
-
-        /** @var Product $product */
-        foreach ($products as $product) {
-
-            $this->dbRepositoryMock
-                ->expects($this->once())
-                ->method('getProductMappingByVariantId')
-                ->with($shopId, $product->getExternalId(), $product->getVariant()->getExternalId())
-                ->willReturn($nullProductMapping);
-
-            $this->dbRepositoryMock
-                ->expects($this->once())
-                ->method('getProductMappingByProductId')
-                ->with($shopId, $product->getExternalId())
-                ->willReturn($productMapping);
-
-            $this->grApiMock
-                ->expects($this->once())
-                ->method('createProductVariant');
-
-            $productMapping = new ProductMapping(
-                $product->getExternalId(),
-                $product->getVariant()->getExternalId(),
-                $shopId,
-                $grProductId,
-                $grVariantId
-            );
-
-            $this->dbRepositoryMock
-                ->expects($this->once())
-                ->method('saveProductMapping')
-                ->with($productMapping);
-
-            $productService = new ProductService($this->grApiMock, $this->dbRepositoryMock);
-
-            $expected = [
-                'variantId' => $grVariantId,
-                'price' => $product->getProductVariant()->getPrice(),
-                'priceTax' => $product->getProductVariant()->getPriceTax(),
-                'quantity' => $product->getProductVariant()->getQuantity(),
-                'images' => [
-                    0 => [
-                        'src' => $product->getProductVariant()->getImages()->getIterator()[0]->getSrc(),
-                        'position' => $product->getProductVariant()->getImages()->getIterator()[0]->getPosition()
-                    ]
-                ]
-            ];
-
-            $this->assertEquals([$expected], $productService->getProductVariants($products, $shopId));
-        }
+        return [
+            'name' => $product->getName(),
+            'externalId' => $product->getExternalId(),
+            'categories' => $product->getCategories()->toRequestArray(),
+            'variants' => $product->getVariants()->toRequestArray(),
+            'url' => 'getresponse.com'
+        ];
     }
 
+
     /**
-     * @test
+     * @param ProductsCollection $products
+     * @param int $productIndex
+     * @param int $variantIndex
+     * @param string $grVariantId
+     * @return array
      */
-    public function shouldReturnExistingProductVariant()
+    private function buildVariantResponse(ProductsCollection $products, $productIndex, $variantIndex, $grVariantId)
     {
-        $shopId = 1;
-        $grProductId = 13;
-        $grVariantId = 14;
-        $products = Generator::createProductsCollection();
-        $productMapping = new ProductMapping(11, 12, $shopId, $grProductId, $grVariantId);
-
         /** @var Product $product */
-        foreach ($products as $product) {
+        $product = $products->getIterator()[$productIndex];
+        /** @var Variant $variant */
+        $variant = $product->getVariants()->getIterator()[$variantIndex];
+        /** @var Image $image */
+        $image = $variant->getImages()->getIterator()[0];
 
-            $this->dbRepositoryMock
-                ->expects($this->once())
-                ->method('getProductMappingByVariantId')
-                ->with($shopId, $product->getExternalId(), $product->getVariant()->getExternalId())
-                ->willReturn($productMapping);
-
-            $this->grApiMock
-                ->expects($this->never())
-                ->method('createProduct');
-
-            $this->grApiMock
-                ->expects($this->never())
-                ->method('createProductVariant');
-
-            $this->dbRepositoryMock
-                ->expects($this->never())
-                ->method('saveProductMapping');
-
-            $productService = new ProductService($this->grApiMock, $this->dbRepositoryMock);
-
-            $expected = [
-                'variantId' => $grVariantId,
-                'price' => $product->getProductVariant()->getPrice(),
-                'priceTax' => $product->getProductVariant()->getPriceTax(),
-                'quantity' => $product->getProductVariant()->getQuantity(),
-                'images' => [
-                    0 => [
-                        'src' => $product->getProductVariant()->getImages()->getIterator()[0]->getSrc(),
-                        'position' => $product->getProductVariant()->getImages()->getIterator()[0]->getPosition()
-                    ]
+        return [
+            'variantId' => $grVariantId,
+            'price' => $variant->getPrice(),
+            'priceTax' => $variant->getPriceTax(),
+            'quantity' => $variant->getQuantity(),
+            'images' => [
+                [
+                    'src' => $image->getSrc(),
+                    'position' => $image->getPosition()
                 ]
-            ];
-
-            $this->assertEquals([$expected], $productService->getProductVariants($products, $shopId));
-        }
+            ]
+        ];
     }
 }

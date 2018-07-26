@@ -54,9 +54,10 @@ class OrderService
 
         $order = $addOrderCommand->getOrder();
 
-        $variants = $this->productService->getProductVariants($order->getProducts(), $addOrderCommand->getShopId());
-
-        $cartId = $this->dbRepository->getGrCartIdFromMapping($addOrderCommand->getShopId(), $order->getExternalCartId());
+        $variants = $this->productService->getProductsVariants(
+            $order->getProducts(),
+            $addOrderCommand->getShopId()
+        );
 
         $grOrder = [
             'contactId' => $contact['contactId'],
@@ -66,19 +67,33 @@ class OrderService
             'externalId' => $order->getExternalOrderId(),
             'currency' => $order->getCurrency(),
             'status' => $order->getStatus(),
-            'cartId' => $cartId,
             'description' => $order->getDescription(),
             'shippingPrice' => $order->getShippingPrice(),
             'billingPrice' => $order->getBillingStatus(),
             'processedAt' => $order->getProcessedAt(),
-            'shippingAddress' => $this->buildAddress($order->getShippingAddress()),
             'billingAddress' => $this->buildAddress($order->getBillingAddress()),
             'selectedVariants' => $variants,
         ];
 
-        $grOrderId = $this->dbRepository->getGrOrderIdFromMapping($addOrderCommand->getShopId(), $order->getExternalOrderId());
+        if ($order->hasShippingAddress()) {
+            $grOrder['shippingAddress'] = $this->buildAddress($order->getShippingAddress());
+        }
+
+        $grOrderId = $this->dbRepository->getGrOrderIdFromMapping(
+            $addOrderCommand->getShopId(),
+            $order->getExternalOrderId()
+        );
+
+        $payloadMd5 = md5(json_encode($grOrder));
 
         if (empty($grOrderId)) {
+
+            $cartId = $this->dbRepository->getGrCartIdFromMapping(
+                $addOrderCommand->getShopId(),
+                $order->getExternalCartId()
+            );
+
+            $grOrder['cartId'] = $cartId;
 
             $grOrderId = $this->getresponseApi->createOrder(
                 $addOrderCommand->getShopId(),
@@ -86,10 +101,14 @@ class OrderService
                 $addOrderCommand->skipAutomation()
             );
 
-            $this->dbRepository->saveOrderMapping($addOrderCommand->getShopId(), $order->getExternalOrderId(), $grOrderId);
             $this->getresponseApi->removeCart($addOrderCommand->getShopId(), $cartId);
 
         } else {
+
+            if ($this->hasPayloadChanged($addOrderCommand, $payloadMd5)) {
+                return;
+            }
+
             $this->getresponseApi->updateOrder(
                 $addOrderCommand->getShopId(),
                 $grOrderId,
@@ -97,6 +116,13 @@ class OrderService
                 $addOrderCommand->skipAutomation()
             );
         }
+
+        $this->dbRepository->saveOrderMapping(
+            $addOrderCommand->getShopId(),
+            $order->getExternalOrderId(),
+            $grOrderId,
+            $payloadMd5
+        );
     }
 
     /**
@@ -120,5 +146,20 @@ class OrderService
             'phone' => $address->getPhone(),
             'company' => $address->getCompany()
         ];
+    }
+
+    /**
+     * @param AddOrderCommand $addOrderCommand
+     * @param string $newPayloadMd5
+     * @return bool
+     */
+    private function hasPayloadChanged($addOrderCommand, $newPayloadMd5)
+    {
+        $oldPayloadMd5 = $this->dbRepository->getPayloadMd5FromOrderMapping(
+            $addOrderCommand->getShopId(),
+            $addOrderCommand->getOrder()->getExternalOrderId()
+        );
+
+        return $oldPayloadMd5 === $newPayloadMd5;
     }
 }
