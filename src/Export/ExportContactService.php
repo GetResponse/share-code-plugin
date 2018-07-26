@@ -17,7 +17,6 @@ use GrShareCode\Order\OrderService;
  */
 class ExportContactService
 {
-
     /** @var ContactService */
     private $contactService;
 

@@ -42,8 +42,10 @@ class CartService
      */
     public function exportCart(AddCartCommand $addCartCommand)
     {
-        $contact = $this->getresponseApi->getContactByEmail($addCartCommand->getEmail(),
-            $addCartCommand->getContactListId());
+        $contact = $this->getresponseApi->getContactByEmail(
+            $addCartCommand->getEmail(),
+            $addCartCommand->getContactListId()
+        );
 
         if (empty($contact)) {
             return;

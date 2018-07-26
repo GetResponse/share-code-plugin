@@ -54,7 +54,10 @@ class OrderService
 
         $order = $addOrderCommand->getOrder();
 
-        $variants = $this->productService->getProductsVariants($order->getProducts(), $addOrderCommand->getShopId());
+        $variants = $this->productService->getProductsVariants(
+            $order->getProducts(),
+            $addOrderCommand->getShopId()
+        );
 
         $grOrder = [
             'contactId' => $contact['contactId'],
@@ -85,8 +88,10 @@ class OrderService
 
         if (empty($grOrderId)) {
 
-            $cartId = $this->dbRepository->getGrCartIdFromMapping($addOrderCommand->getShopId(),
-                $order->getExternalCartId());
+            $cartId = $this->dbRepository->getGrCartIdFromMapping(
+                $addOrderCommand->getShopId(),
+                $order->getExternalCartId()
+            );
 
             $grOrder['cartId'] = $cartId;
 

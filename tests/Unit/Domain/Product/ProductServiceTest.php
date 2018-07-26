@@ -137,6 +137,7 @@ class ProductServiceTest extends TestCase
             'externalId' => $product->getExternalId(),
             'categories' => $product->getCategories()->toRequestArray(),
             'variants' => $product->getVariants()->toRequestArray(),
+            'url' => 'getresponse.com'
         ];
     }
 

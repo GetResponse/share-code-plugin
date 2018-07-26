@@ -171,4 +171,13 @@ class Product
     {
         return $this->name;
     }
+
+    /**
+     * @param VariantsCollection $variants
+     * @return Product
+     */
+    public function withVariants(VariantsCollection $variants)
+    {
+        return new self($this->getExternalId(), $this->getName(), $variants, $this->getCategories());
+    }
 }

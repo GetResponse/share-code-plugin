@@ -192,4 +192,232 @@ class CartServiceTest extends TestCase
 
         $this->sut->sendCart($command);
     }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldNotCreateNewCartIfVariantsCollectionIsEmpty()
+    {
+        $command = Generator::createAddCartCommandWithNoVariants();
+        $contact = ['contactId' => 1];
+        $variants = [];
+
+        $this->grApiMock
+            ->expects(self::once())
+            ->method('getContactByEmail')
+            ->with($command->getEmail(), $command->getContactListId())
+            ->willReturn($contact);
+
+        $this->productServiceMock
+            ->expects(self::once())
+            ->method('getProductsVariants')
+            ->with(
+                $command->getCart()->getProducts(),
+                $command->getShopId()
+            )->willReturn($variants);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getGrCartIdFromMapping')
+            ->with($command->getShopId(), $command->getCart()->getCartId())
+            ->willReturn(null);
+
+        $this->grApiMock
+            ->expects(self::never())
+            ->method('createCart');
+
+        $this->dbRepositoryMock
+            ->expects(self::never())
+            ->method('saveCartMapping');
+
+        $this->sut->sendCart($command);
+    }
+
+
+    /**
+     * Sytuacja ma miejsce, gdy klient w sklepie usuwa wszystkie produkty z koszyka.
+     *
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldRemoveCartWhichAlreadyExistIfVariantsCollectionIsEmpty()
+    {
+        $command = Generator::createAddCartCommandWithNoVariants();
+        $contact = ['contactId' => 1];
+        $variants = [];
+
+        $this->grApiMock
+            ->expects(self::once())
+            ->method('getContactByEmail')
+            ->with($command->getEmail(), $command->getContactListId())
+            ->willReturn($contact);
+
+        $this->productServiceMock
+            ->expects(self::once())
+            ->method('getProductsVariants')
+            ->with(
+                $command->getCart()->getProducts(),
+                $command->getShopId()
+            )->willReturn($variants);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getGrCartIdFromMapping')
+            ->with($command->getShopId(), $command->getCart()->getCartId())
+            ->willReturn('grCartId');
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('removeCartMapping')
+            ->with($command->getShopId(), $command->getCart()->getCartId(), 'grCartId');
+
+        $this->grApiMock
+            ->expects(self::once())
+            ->method('removeCart')
+            ->with($command->getShopId(), 'grCartId');
+
+        $this->grApiMock
+            ->expects(self::never())
+            ->method('updateCart');
+
+        $this->sut->sendCart($command);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotExportCartForContactThatNotExistsInGr()
+    {
+        $command = Generator::createAddCartCommand();
+
+        $this->grApiMock
+            ->expects($this->once())
+            ->method('getContactByEmail')
+            ->with($command->getEmail(), $command->getContactListId())
+            ->willReturn([]);
+
+        $this->productServiceMock
+            ->expects($this->never())
+            ->method('getProductsVariants');
+
+        $this->dbRepositoryMock
+            ->expects($this->never())
+            ->method('getGrCartIdFromMapping');
+
+        $this->grApiMock
+            ->expects($this->never())
+            ->method('createCart');
+
+        $this->grApiMock
+            ->expects($this->never())
+            ->method('updateCart');
+
+        $this->sut->exportCart($command);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotExportCartIfCartAlreadyExistsInGr()
+    {
+        $command = Generator::createAddCartCommand();
+        $contact = ['contactId' => 1];
+        $variants[] = [
+            'variantId' => 'abc',
+            'price' => 100,
+            'priceTax' => 120,
+            'quantity' => 1
+        ];
+
+        $this->grApiMock
+            ->expects(self::once())
+            ->method('getContactByEmail')
+            ->with($command->getEmail(), $command->getContactListId())
+            ->willReturn($contact);
+
+        $this->productServiceMock
+            ->expects(self::once())
+            ->method('getProductsVariants')
+            ->with(
+                $command->getCart()->getProducts(),
+                $command->getShopId()
+            )->willReturn($variants);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getGrCartIdFromMapping')
+            ->with($command->getShopId(), $command->getCart()->getCartId())
+            ->willReturn('grCartId');
+
+        $this->grApiMock
+            ->expects(self::never())
+            ->method('createCart');
+
+        $this->dbRepositoryMock
+            ->expects(self::never())
+            ->method('saveCartMapping');
+
+        $this->sut->exportCart($command);
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldExportCart()
+    {
+        $command = Generator::createAddCartCommand();
+        $contact = ['contactId' => 1];
+        $variants[] = [
+            'variantId' => 'abc',
+            'price' => 100,
+            'priceTax' => 120,
+            'quantity' => 1
+        ];
+
+        $createCartPayload = [
+            'contactId' => $contact['contactId'],
+            'currency' => $command->getCart()->getCurrency(),
+            'totalPrice' => $command->getCart()->getTotalPrice(),
+            'selectedVariants' => $variants,
+            'externalId' => $command->getCart()->getCartId(),
+            'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
+        ];
+
+        $this->grApiMock
+            ->expects(self::once())
+            ->method('getContactByEmail')
+            ->with($command->getEmail(), $command->getContactListId())
+            ->willReturn($contact);
+
+        $this->productServiceMock
+            ->expects(self::once())
+            ->method('getProductsVariants')
+            ->with(
+                $command->getCart()->getProducts(),
+                $command->getShopId()
+            )->willReturn($variants);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getGrCartIdFromMapping')
+            ->with($command->getShopId(), $command->getCart()->getCartId())
+            ->willReturn(null);
+
+        $this->grApiMock
+            ->expects(self::once())
+            ->method('createCart')
+            ->with($command->getShopId(), $createCartPayload)
+            ->willReturn('grCartId');
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('saveCartMapping')
+            ->with($command->getShopId(), $command->getCart()->getCartId(), 'grCartId');
+
+
+        $this->sut->exportCart($command);
+
+    }
 }

@@ -46,6 +46,22 @@ class Generator
     }
 
     /**
+     * @return AddCartCommand
+     */
+    public static function createAddCartCommandWithNoVariants()
+    {
+        $products = self::createProductsCollection(1,0);
+        $cart = new Cart('100001', $products, 'PLN', 10.00, 123.3);
+
+        return new AddCartCommand(
+            $cart,
+            'simple@example.com',
+            'listId',
+            'shopId'
+        );
+    }
+
+    /**
      * @return CategoryCollection
      */
     public static function createCategoriesCollection()
@@ -68,12 +84,12 @@ class Generator
         for ($i = 0; $i < $productsCount; $i++) {
 
             $products->add(
-                new Product(
+                (new Product(
                     $i+1,
                     'simple product',
                     self::createProductVariants($variantsCount),
                     self::createCategoriesCollection()
-                )
+                ))->setUrl('getresponse.com')
             );
         }
 
