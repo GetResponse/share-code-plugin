@@ -11,7 +11,7 @@ use GrShareCode\Order\OrderService;
 use GrShareCode\Tests\Generator;
 use PHPUnit\Framework\TestCase;
 
-class ExportCustomersServiceTest extends TestCase
+class ExportContactServiceTest extends TestCase
 {
 
     /** @var ContactService|\PHPUnit_Framework_MockObject_MockObject */
@@ -131,7 +131,7 @@ class ExportCustomersServiceTest extends TestCase
 
         $this->cartServiceMock
             ->expects($this->once())
-            ->method('sendCart');
+            ->method('exportCart');
 
         $this->orderServiceMock
             ->expects($this->once())

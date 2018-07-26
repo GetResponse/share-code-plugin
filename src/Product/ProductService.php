@@ -4,6 +4,7 @@ namespace GrShareCode\Product;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
+use GrShareCode\Product\Variant\Variant;
 use GrShareCode\ProductMapping\ProductMapping;
 
 /**
@@ -34,36 +35,45 @@ class ProductService
      * @return array
      * @throws GetresponseApiException
      */
-    public function getProductVariants(ProductsCollection $products, $grShopId)
+    public function getProductsVariants(ProductsCollection $products, $grShopId)
     {
         $variants = [];
 
         /** @var Product $product */
         foreach ($products as $product) {
 
-            $productVariant = $product->getVariant();
-
-            $productMapping = $this->dbRepository->getProductMappingByVariantId(
-                $grShopId,
-                $product->getExternalId(),
-                $productVariant->getExternalId()
-            );
-
-            if ($productMapping->variantExistsInGr()) {
-                $variants[] = $productVariant->toRequestArrayWithVariantId($productMapping->getGrVariantId());
-                continue;
-            }
-
             $productMapping = $this->dbRepository->getProductMappingByProductId($grShopId, $product->getExternalId());
 
             if (!$productMapping->productExistsInGr()) {
-                $variant = $this->createProductWithVariant($grShopId, $product);
-            } else {
-                $variant = $this->createProductVariant($grShopId, $productMapping->getGrProductId(), $product);
+                $this->createProductWithVariants($grShopId, $product);
+                $productMapping = $this->dbRepository->getProductMappingByProductId($grShopId, $product->getExternalId());
             }
 
-            $variants[] = $variant;
+            $productId = $productMapping->getGrProductId();
+            $productVariants = $product->getVariants();
 
+            /** @var Variant $productVariant */
+            foreach ($productVariants as $productVariant) {
+
+                $productMapping = $this->dbRepository->getProductMappingByVariantId(
+                    $grShopId,
+                    $product->getExternalId(),
+                    $productVariant->getExternalId()
+                );
+
+                if ($productMapping->variantExistsInGr()) {
+                    $variants[] = $productVariant->toRequestArrayWithVariantId($productMapping->getGrVariantId());
+                    continue;
+                }
+
+                $variant = $this->createProductVariant(
+                    $grShopId,
+                    $productId,
+                    $product->getExternalId(),
+                    $productVariant);
+
+                $variants[] = $variant;
+            }
         }
 
         return $variants;
@@ -72,48 +82,46 @@ class ProductService
     /**
      * @param string $grShopId
      * @param Product $product
-     * @return array
      * @throws GetresponseApiException
      */
-    private function createProductWithVariant($grShopId, Product $product)
+    private function createProductWithVariants($grShopId, Product $product)
     {
-        $productVariant = $product->getVariant();
+        $productVariants = $product->getVariants();
 
         $grProductParams = [
             'name' => $product->getName(),
+            'url' => $product->getUrl(),
+            'externalId' => $product->getExternalId(),
             'categories' => $product->getCategories()->toRequestArray(),
-            'variants' => [$productVariant->toRequestArray()],
+            'variants' => $productVariants->toRequestArray(),
         ];
 
         $grProduct = $this->getresponseApi->createProduct($grShopId, $grProductParams);
 
-        $grVariantId = $grProduct['variants'][0]['variantId'];
+        foreach ($grProduct['variants'] as $variant) {
 
-        $this->dbRepository->saveProductMapping(
-            new ProductMapping(
-                $product->getExternalId(),
-                $productVariant->getExternalId(),
-                $grShopId,
-                $grProduct['productId'],
-                $grVariantId
-            )
-        );
-
-        return $productVariant->toRequestArrayWithVariantId($grVariantId);
-
+            $this->dbRepository->saveProductMapping(
+                new ProductMapping(
+                    $product->getExternalId(),
+                    $variant['externalId'],
+                    $grShopId,
+                    $grProduct['productId'],
+                    $variant['variantId']
+                )
+            );
+        }
     }
 
     /**
      * @param string $grShopId
      * @param string $grProductId
-     * @param Product $product
+     * @param $externalProductId
+     * @param Variant $productVariant
      * @return array
      * @throws GetresponseApiException
      */
-    private function createProductVariant($grShopId, $grProductId, Product $product)
+    private function createProductVariant($grShopId, $grProductId, $externalProductId, Variant $productVariant)
     {
-        $productVariant = $product->getVariant();
-
         $grVariant = $this->getresponseApi->createProductVariant(
             $grShopId,
             $grProductId,
@@ -124,7 +132,7 @@ class ProductService
 
         $this->dbRepository->saveProductMapping(
             new ProductMapping(
-                $product->getExternalId(),
+                $externalProductId,
                 $productVariant->getExternalId(),
                 $grShopId,
                 $grProductId,

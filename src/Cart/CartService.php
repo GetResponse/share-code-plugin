@@ -40,9 +40,41 @@ class CartService
      * @param AddCartCommand $addCartCommand
      * @throws GetresponseApiException
      */
+    public function exportCart(AddCartCommand $addCartCommand)
+    {
+        $contact = $this->getresponseApi->getContactByEmail(
+            $addCartCommand->getEmail(),
+            $addCartCommand->getContactListId()
+        );
+
+        if (empty($contact)) {
+            return;
+        }
+
+        $grShopId = $addCartCommand->getShopId();
+        $cart = $addCartCommand->getCart();
+        $externalCartId = $cart->getCartId();
+
+        $createCartPayload = $this->getPayloadFromCart($cart, $grShopId, $contact['contactId']);
+
+        $grCartId = $this->dbRepository->getGrCartIdFromMapping($grShopId, $externalCartId);
+
+        if (empty($grCartId)) {
+            $grCartId = $this->getresponseApi->createCart($grShopId, $createCartPayload);
+            $this->dbRepository->saveCartMapping($grShopId, $externalCartId, $grCartId);
+        }
+    }
+
+    /**
+     * @param AddCartCommand $addCartCommand
+     * @throws GetresponseApiException
+     */
     public function sendCart(AddCartCommand $addCartCommand)
     {
-        $contact = $this->getresponseApi->getContactByEmail($addCartCommand->getEmail(), $addCartCommand->getContactListId());
+        $contact = $this->getresponseApi->getContactByEmail(
+            $addCartCommand->getEmail(),
+            $addCartCommand->getContactListId()
+        );
 
         if (empty($contact)) {
             return;
@@ -50,18 +82,34 @@ class CartService
 
         $cart = $addCartCommand->getCart();
 
-        $variants = $this->productService->getProductVariants($cart->getProducts(), $addCartCommand->getShopId());
+        $createCartPayload = $this->getPayloadFromCart($cart, $addCartCommand->getShopId(), $contact['contactId']);
 
-        $createCartPayload = [
-            'contactId' => $contact['contactId'],
+        $this->upsertCartToGr(
+            $addCartCommand->getShopId(),
+            $cart->getCartId(),
+            $createCartPayload
+        );
+    }
+
+    /**
+     * @param $cart
+     * @param $shopId
+     * @param $contactId
+     * @return array
+     * @throws GetresponseApiException
+     */
+    private function getPayloadFromCart($cart, $shopId, $contactId)
+    {
+        $variants = $this->productService->getProductsVariants($cart->getProducts(), $shopId);
+
+        return [
+            'contactId' => $contactId,
             'currency' => $cart->getCurrency(),
             'totalPrice' => $cart->getTotalPrice(),
             'selectedVariants' => $variants,
             'externalId' => $cart->getCartId(),
             'totalTaxPrice' => $cart->getTotalTaxPrice(),
         ];
-
-        $this->upsertCartToGr($addCartCommand->getShopId(), $cart->getCartId(), $createCartPayload);
     }
 
     /**
@@ -75,9 +123,22 @@ class CartService
         $grCartId = $this->dbRepository->getGrCartIdFromMapping($grShopId, $externalCartId);
 
         if (empty($grCartId)) {
+
+            if (empty($createCartPayload['selectedVariants'])) {
+                return;
+            }
+
             $grCartId = $this->getresponseApi->createCart($grShopId, $createCartPayload);
             $this->dbRepository->saveCartMapping($grShopId, $externalCartId, $grCartId);
+
         } else {
+
+            if (empty($createCartPayload['selectedVariants'])) {
+                $this->dbRepository->removeCartMapping($grShopId, $externalCartId, $grCartId);
+                $this->getresponseApi->removeCart($grShopId, $grCartId);
+                return;
+            }
+
             $this->getresponseApi->updateCart($grShopId, $grCartId, $createCartPayload);
         }
     }

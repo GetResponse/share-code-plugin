@@ -125,4 +125,41 @@ class OrderServiceTest extends TestCase
         $orderService->sendOrder($addOrderCommand);
 
     }
+
+    /**
+     * @test
+     */
+    public function shouldUpdateOrderIfPayloadNotChanged()
+    {
+        $addOrderCommand = Generator::createAddOrderCommand();
+
+        $contact = ['contactId' => 1];
+        $this->grApiMock
+            ->method('getContactByEmail')
+            ->willReturn($contact);
+
+        $this->dbRepositoryMock
+            ->expects($this->once())
+            ->method('getGrOrderIdFromMapping')
+            ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
+            ->willReturn(3);
+
+        $this->dbRepositoryMock
+            ->expects($this->once())
+            ->method('getPayloadMd5FromOrderMapping')
+            ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
+            ->willReturn('bcf9db4827ba8b3addbb64f76537598d');
+
+        $this->grApiMock
+            ->expects(self::never())
+            ->method('updateOrder');
+
+        $this->dbRepositoryMock
+            ->expects($this->never())
+            ->method('saveOrderMapping');
+
+        $orderService = new OrderService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
+        $orderService->sendOrder($addOrderCommand);
+    }
+
 }
