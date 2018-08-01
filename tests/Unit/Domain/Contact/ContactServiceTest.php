@@ -10,6 +10,10 @@ use GrShareCode\GetresponseApi;
 use GrShareCode\Tests\Generator;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class ContactServiceTest
+ * @package GrShareCode\Tests\Unit\Domain\Contact
+ */
 class ContactServiceTest extends TestCase
 {
 
@@ -122,6 +126,47 @@ class ContactServiceTest extends TestCase
 
         $contactService = new ContactService($this->getResponseApiMock);
         $contactService->createContact($addContactCommand);
+    }
 
+    /**
+     * @test
+     */
+    public function shouldUnsubscribeContact()
+    {
+        $email = 'test@test.com';
+        $origin = 'shopify';
+
+        $this->getResponseApiMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([['contactId' => 'xyd', 'origin' => $origin]]);
+        $this->getResponseApiMock->expects(self::once())->method('deleteContact');
+
+        $contactService = new ContactService($this->getResponseApiMock);
+        $contactService->unsubscribe($email, $origin);
+    }
+
+    /**
+     * @test
+     * @dataProvider invalidSubscriberParams
+     * @param string $email
+     * @param string $origin
+     * @param string $invalidOrigin
+     */
+    public function shouldNotUnsubscribeContact($email, $origin, $invalidOrigin)
+    {
+        $this->getResponseApiMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([['contactId' => 'xyd', 'origin' => $origin]]);
+        $this->getResponseApiMock->expects(self::never())->method('deleteContact');
+
+        $contactService = new ContactService($this->getResponseApiMock);
+        $contactService->unsubscribe($email, $invalidOrigin);
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidSubscriberParams()
+    {
+        return [
+            ['test@test.com', 'shopify', 'woocommerce'],
+            ['test@test.com', 'shopify', '']
+        ];
     }
 }
