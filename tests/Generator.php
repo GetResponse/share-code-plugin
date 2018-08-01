@@ -128,6 +128,9 @@ class Generator
         return $variants;
     }
 
+    /**
+     * @return AddOrderCommand
+     */
     public static function createAddOrderCommand()
     {
         return new AddOrderCommand(

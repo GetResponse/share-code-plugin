@@ -186,14 +186,18 @@ class ContactService
 
     /**
      * @param string $email
+     * @param string $originCustomName
      * @throws GetresponseApiException
      */
-    public function unsubscribe($email)
+    public function unsubscribe($email, $originCustomName)
     {
         $contacts = $this->getresponseApi->searchContacts($email);
 
         foreach ($contacts as $contact) {
-            $this->getresponseApi->deleteContact($contact['contactId']);
+
+            if (!empty($originCustomName) && $contact['origin'] === $originCustomName) {
+                $this->getresponseApi->deleteContact($contact['contactId']);
+            }
         }
     }
 }
