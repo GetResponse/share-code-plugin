@@ -87,6 +87,18 @@ class GetresponseApi
     }
 
     /**
+     * @param string $contactId
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getContactById($contactId)
+    {
+        $result = $this->sendRequest('contacts/' . $contactId);
+
+        return is_array($result) ? $result : [];
+    }
+
+    /**
      * @param $params
      * @return array
      * @throws GetresponseApiException
@@ -245,6 +257,16 @@ class GetresponseApi
     public function createCustomField($params)
     {
         return $this->sendRequest('custom-fields', 'POST', $params);
+    }
+
+    /**
+     * @param string $customFieldId
+     * @return string
+     * @throws GetresponseApiException
+     */
+    public function deleteCustomField($customFieldId)
+    {
+        return $this->sendRequest('custom-fields/' . $customFieldId, 'DELETE');
     }
 
     /**
@@ -463,7 +485,7 @@ class GetresponseApi
         ];
 
         // for GetResponse 360
-        if (!empty($this->apiType->isMx())) {
+        if ($this->apiType->isMx()) {
             $headers[] = 'X-Domain: ' . $this->apiType->getDomain();
         }
 

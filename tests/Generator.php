@@ -5,8 +5,8 @@ use GrShareCode\Address\Address;
 use GrShareCode\Cart\AddCartCommand;
 use GrShareCode\Cart\Cart;
 use GrShareCode\Contact\AddContactCommand;
-use GrShareCode\Contact\CustomField;
-use GrShareCode\Contact\CustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField;
+use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Export\ExportContactCommand;
 use GrShareCode\Export\HistoricalOrder\HistoricalOrder;
 use GrShareCode\Export\HistoricalOrder\HistoricalOrderCollection;
@@ -188,8 +188,8 @@ class Generator
      */
     public static function createExportContactCommandWithSettings(ExportSettings $exportSettings)
     {
-        $customFieldsCollection = new CustomFieldsCollection();
-        $customFieldsCollection->add(new CustomField('id1', 'company', 'country'));
+        $customFieldsCollection = new ContactCustomFieldsCollection();
+        $customFieldsCollection->add(new ContactCustomField('id1', 'company', 'country'));
 
         return new ExportContactCommand(
             'adam.kowalski@getresponse.com',
@@ -235,9 +235,9 @@ class Generator
      */
     public static function createAddContactCommand()
     {
-        $customFieldCollection = new CustomFieldsCollection();
-        $customFieldCollection->add(new CustomField('id_1', 'name_1', 'value_1'));
-        $customFieldCollection->add(new CustomField('id_2', 'name_2', 'value_2'));
+        $customFieldCollection = new ContactCustomFieldsCollection();
+        $customFieldCollection->add(new ContactCustomField('id_1',  'value_1'));
+        $customFieldCollection->add(new ContactCustomField('id_2', 'value_2'));
 
         return new AddContactCommand(
             'adam.kowalski@getresponse.com',
