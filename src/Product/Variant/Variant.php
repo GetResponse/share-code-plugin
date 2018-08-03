@@ -135,7 +135,7 @@ class Variant
      */
     public function setDescription($description)
     {
-        Assert::that($description)->notBlank()->string()->maxLength(self::DESCRIPTION_MAX_LENGTH);
+        Assert::that($description)->nullOr()->string()->maxLength(self::DESCRIPTION_MAX_LENGTH);
         $this->description = $description;
 
         return $this;
