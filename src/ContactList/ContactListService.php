@@ -130,12 +130,12 @@ class ContactListService
     {
         $collection = new AutorespondersCollection();
 
-        $autoresponders = $this->getresponseApi->getAutoresponders(array(), 1, self::PER_PAGE);
+        $autoresponders = $this->getresponseApi->getAutoresponders(1, self::PER_PAGE);
 
         $headers = $this->getresponseApi->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getAutoresponders(array(), $page, self::PER_PAGE));
+            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getAutoresponders($page, self::PER_PAGE));
         }
 
         foreach ($autoresponders as $field) {
@@ -161,12 +161,12 @@ class ContactListService
     {
         $collection = new AutorespondersCollection();
 
-        $autoresponders = $this->getresponseApi->getAutoresponders(['campaignId' => $campaignId], 1, self::PER_PAGE);
+        $autoresponders = $this->getresponseApi->getCampaignAutoresponders($campaignId, 1, self::PER_PAGE);
 
         $headers = $this->getresponseApi->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getAutoresponders(['campaignId' => $campaignId], $page, self::PER_PAGE));
+            $autoresponders = array_merge($autoresponders,  $this->getresponseApi->getCampaignAutoresponders($campaignId, $page, self::PER_PAGE));
         }
 
         foreach ($autoresponders as $field) {

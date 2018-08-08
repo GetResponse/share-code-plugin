@@ -1,7 +1,6 @@
 <?php
 namespace GrShareCode\Contact;
 
-use GrShareCode\CustomField\CustomFieldCollection;
 use GrShareCode\Export\ExportContactCommand;
 use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiException;
