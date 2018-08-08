@@ -48,7 +48,8 @@ class WebForm
      */
     private function setStatus($status)
     {
-        Assert::that($status)->choice([self::STATUS_DISABLED, self::STATUS_ENABLED]);
+        $message = 'Status in WebForm should be valid';
+        Assert::that($status, $message)->choice([self::STATUS_DISABLED, self::STATUS_ENABLED]);
         $this->status = $status;
     }
 
