@@ -51,7 +51,8 @@ class AddOrderCommand
      */
     private function setEmail($email)
     {
-        Assert::that($email)->email();
+        $message = 'Email in AddOrderCommand should be valid';
+        Assert::that($email, $message)->email();
         $this->email = $email;
     }
 
@@ -60,7 +61,8 @@ class AddOrderCommand
      */
     private function setContactListId($contactListId)
     {
-        Assert::that($contactListId)->notBlank()->string();
+        $message = 'Contact list ID in AddOrderCommand should be a not blank string';
+        Assert::that($contactListId, $message)->notBlank()->string();
         $this->contactListId = $contactListId;
     }
 
@@ -69,7 +71,8 @@ class AddOrderCommand
      */
     private function setShopId($shopId)
     {
-        Assert::that($shopId)->notBlank()->string();
+        $message = 'Shop ID in AddOrderCommand should be a not blank string';
+        Assert::that($shopId, $message)->notBlank()->string();
         $this->shopId = $shopId;
     }
 
