@@ -1,0 +1,7 @@
+<?php
+
+return [
+    'apiKey' => 'XXXxXXXXXXXXXXXXXXXXXXXXXXXXX',
+    'xappId' => 'FAKE_XAPP_ID_FOR_TEST_PURPOSES',
+    'contactListId' => 'XXXXXX'
+];

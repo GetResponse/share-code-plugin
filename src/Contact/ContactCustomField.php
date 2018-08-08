@@ -2,29 +2,24 @@
 namespace GrShareCode\Contact;
 
 /**
- * Class CustomField
+ * Class ContactCustomField
  * @package GrShareCode\Contact
  */
-class CustomField
+class ContactCustomField
 {
     /** @var string */
     private $id;
-
-    /** @var string */
-    private $name;
 
     /** @var string */
     private $value;
 
     /**
      * @param string $id
-     * @param $name
      * @param string $value
      */
-    public function __construct($id, $name, $value = null)
+    public function __construct($id, $value)
     {
         $this->id = $id;
-        $this->name = $name;
         $this->value = $value;
     }
 
@@ -44,11 +39,4 @@ class CustomField
         return $this->value;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
 }
