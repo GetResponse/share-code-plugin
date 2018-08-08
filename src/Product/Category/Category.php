@@ -37,7 +37,8 @@ class Category
      */
     private function setName($name)
     {
-        Assert::that($name)->notBlank()->string();
+        $message = 'Name in Category should be a not blank string';
+        Assert::that($name, $message)->notBlank()->string();
         $this->name = $name;
     }
 
@@ -47,7 +48,8 @@ class Category
      */
     public function setDefault($default)
     {
-        Assert::that($default)->nullOr()->boolean();
+        $message = 'Default in Category should be null or boolean';
+        Assert::that($default, $message)->nullOr()->boolean();
         $this->isDefault = $default;
 
         return $this;
@@ -83,7 +85,8 @@ class Category
      */
     public function setParentId($parentId)
     {
-        Assert::that($parentId)->nullOr()->string();
+        $message = 'Parent ID in Category should be null or string';
+        Assert::that($parentId, $message)->nullOr()->string();
         $this->parentId = $parentId;
 
         return $this;
@@ -103,7 +106,8 @@ class Category
      */
     public function setExternalId($externalId)
     {
-        Assert::that($externalId)->nullOr()->string();
+        $message = 'External ID in Category should be null or string';
+        Assert::that($externalId, $message)->nullOr()->string();
         $this->externalId = $externalId;
 
         return $this;
@@ -123,9 +127,9 @@ class Category
      */
     public function setUrl($url)
     {
-        Assert::that($url)->nullOr()->string();
+        $message = 'URL in Category should be null or string';
+        Assert::that($url, $message)->nullOr()->string();
         $this->url = $url;
-
         return $this;
     }
 

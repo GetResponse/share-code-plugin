@@ -56,7 +56,8 @@ class AddContactListCommand
      */
     private function setContactListName($contactListName)
     {
-        Assert::that($contactListName)->notBlank()->string();
+        $message = 'Contact list name in AddContactListCommand should be a not blank string';
+        Assert::that($contactListName, $message)->notBlank()->string();
         $this->contactListName = $contactListName;
     }
 

@@ -61,7 +61,8 @@ class Variant
      */
     private function setExternalId($externalId)
     {
-        Assert::that($externalId)->notNull()->integer();
+        $message = 'External ID in Variant should be a not null integer';
+        Assert::that($externalId, $message)->notNull()->integer();
         $this->externalId = $externalId;
     }
 
@@ -70,7 +71,8 @@ class Variant
      */
     private function setName($name)
     {
-        Assert::that($name)->notBlank()->string();
+        $message = 'Name in Variant should be a not blank string';
+        Assert::that($name, $message)->notBlank()->string();
         $this->name = $name;
     }
 
@@ -79,7 +81,8 @@ class Variant
      */
     private function setPrice($price)
     {
-        Assert::that($price)->notNull()->float();
+        $message = 'Price in Variant should be a not null float';
+        Assert::that($price, $message)->notNull()->float();
         $this->price = $price;
     }
 
@@ -88,7 +91,8 @@ class Variant
      */
     private function setPriceTax($priceTax)
     {
-        Assert::that($priceTax)->notNull()->float();
+        $message = 'Price tax in Variant should be a not null float';
+        Assert::that($priceTax, $message)->notNull()->float();
         $this->priceTax = $priceTax;
     }
 
@@ -97,7 +101,8 @@ class Variant
      */
     private function setSku($sku)
     {
-        Assert::that($sku)->notBlank()->string();
+        $message = 'SKU in Variant should be a not blank string';
+        Assert::that($sku, $message)->notBlank()->string();
         $this->sku = $sku;
     }
 
@@ -115,7 +120,8 @@ class Variant
      */
     public function setUrl($url)
     {
-        Assert::that($url)->nullOr()->string();
+        $message = 'Url in Variant should be null or string';
+        Assert::that($url, $message)->nullOr()->string();
         $this->url = $url;
 
         return $this;
@@ -135,7 +141,8 @@ class Variant
      */
     public function setDescription($description)
     {
-        Assert::that($description)->nullOr()->string()->maxLength(self::DESCRIPTION_MAX_LENGTH);
+        $message = 'Description in Variant should be null or string not longer than ' . self::DESCRIPTION_MAX_LENGTH . ' chars';
+        Assert::that($description, $message)->nullOr()->string()->maxLength(self::DESCRIPTION_MAX_LENGTH);
         $this->description = $description;
 
         return $this;
@@ -267,7 +274,8 @@ class Variant
      */
     public function setQuantity($quantity)
     {
-        Assert::that($quantity)->notNull()->integer();
+        $message = 'Quantity in Variant should be a not null integer';
+        Assert::that($quantity, $message)->notNull()->integer();
         $this->quantity = $quantity;
 
         return $this;
