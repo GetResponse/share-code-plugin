@@ -2,11 +2,11 @@
 namespace GrShareCode\Tests\Unit\Domain\Contact;
 
 use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldMerger;
+use GrShareCode\Contact\ContactCustomFieldBuilder;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
 use PHPUnit\Framework\TestCase;
 
-class ContactCustomFieldMergerTest extends TestCase
+class ContactCustomFieldBuilderTest extends TestCase
 {
     /**
      * @test
@@ -25,7 +25,7 @@ class ContactCustomFieldMergerTest extends TestCase
             ['id' => 'grId5', 'value' => 'grValue5']
         ]);
 
-        $customFieldMerger = new ContactCustomFieldMerger(
+        $customFieldMerger = new ContactCustomFieldBuilder(
             $contactCustomFieldsCollection,
             $newContactCustomFieldsCollection
         );

@@ -5,7 +5,7 @@ namespace GrShareCode\Contact;
  * Class ContactCustomFieldMerger
  * @package GrShareCode\Contact
  */
-class ContactCustomFieldMerger
+class ContactCustomFieldBuilder
 {
     /** @var ContactCustomFieldsCollection */
     private $contactCustomFieldCollection;
