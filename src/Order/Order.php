@@ -107,7 +107,8 @@ class Order
      */
     private function setExternalOrderId($orderId)
     {
-        Assert::that($orderId)->notBlank()->string();
+        $message = 'External order ID in Order should be a not blank string';
+        Assert::that($orderId, $message)->notBlank()->string();
         $this->externalOrderId = $orderId;
     }
 
@@ -124,7 +125,8 @@ class Order
      */
     private function setTotalPrice($totalPrice)
     {
-        Assert::that($totalPrice)->notNull()->float();
+        $message = 'Total price in Order should be a not null float';
+        Assert::that($totalPrice, $message)->notNull()->float();
         $this->totalPrice = $totalPrice;
     }
 
@@ -133,7 +135,8 @@ class Order
      */
     private function setTotalPriceTax($totalPriceTax)
     {
-        Assert::that($totalPriceTax)->nullOr()->float();
+        $message = 'Total price tax in Order should be null or float';
+        Assert::that($totalPriceTax, $message)->nullOr()->float();
         $this->totalPriceTax = $totalPriceTax;
     }
 
@@ -142,7 +145,8 @@ class Order
      */
     private function setOrderUrl($orderUrl)
     {
-        Assert::that($orderUrl)->nullOr()->string();
+        $message = 'Order URL in Order should be null or string';
+        Assert::that($orderUrl, $message)->nullOr()->string();
         $this->orderUrl = $orderUrl;
     }
 
@@ -151,7 +155,8 @@ class Order
      */
     private function setCurrency($currency)
     {
-        Assert::that($currency)->notBlank()->string()->length(3);
+        $message = 'Currency in Order should be a not blank string (3 chars)';
+        Assert::that($currency, $message)->notBlank()->string()->length(3);
         $this->currency = $currency;
     }
 
@@ -160,7 +165,8 @@ class Order
      */
     private function setStatus($status)
     {
-        Assert::that($status)->nullOr()->string();
+        $message = 'Status in Order should be null or string';
+        Assert::that($status, $message)->nullOr()->string();
         $this->status = $status;
     }
 
@@ -169,7 +175,8 @@ class Order
      */
     private function setExternalCartId($cartId)
     {
-        Assert::that($cartId)->notBlank()->string();
+        $message = 'External cart ID in Order should be a not blank string';
+        Assert::that($cartId, $message)->notBlank()->string();
         $this->externalCartId = $cartId;
     }
 
@@ -178,7 +185,8 @@ class Order
      */
     private function setDescription($description)
     {
-        Assert::that($description)->nullOr()->string();
+        $message = 'Description in Order should be null or string';
+        Assert::that($description, $message)->nullOr()->string();
         $this->description = $description;
     }
 
@@ -187,7 +195,8 @@ class Order
      */
     private function setShippingPrice($shippingPrice)
     {
-        Assert::that($shippingPrice)->nullOr()->float();
+        $message = 'Shipping price in Order should be null or float';
+        Assert::that($shippingPrice, $message)->nullOr()->float();
         $this->shippingPrice = $shippingPrice;
     }
 
@@ -196,7 +205,8 @@ class Order
      */
     private function setBillingStatus($billingStatus)
     {
-        Assert::that($billingStatus)->nullOr()->string();
+        $message = 'Billing status in Order should be null or string';
+        Assert::that($billingStatus, $message)->nullOr()->string();
         $this->billingStatus = $billingStatus;
     }
 
@@ -205,7 +215,8 @@ class Order
      */
     private function setProcessedAt($processedAt)
     {
-        Assert::that($processedAt)->date(\DateTime::ISO8601);
+        $message = 'Processed at in Order should be a ISO8601 date time';
+        Assert::that($processedAt, $message)->date(\DateTime::ISO8601);
         $this->processedAt = $processedAt;
     }
 
@@ -214,7 +225,8 @@ class Order
      */
     private function setShippingAddress($shippingAddress)
     {
-        Assert::that($shippingAddress)->nullOr()->isInstanceOf(Address::class);
+        $message = 'Shipping address in Order should be null or Address instance';
+        Assert::that($shippingAddress, $message)->nullOr()->isInstanceOf(Address::class);
         $this->shippingAddress = $shippingAddress;
     }
 

@@ -18,6 +18,10 @@ class ExportContact
     /** @var DbRepositoryInterface */
     private $dbRepository;
 
+    /**
+     * @param GetresponseApi $api
+     * @param DbRepositoryInterface $dbRepository
+     */
     public function __construct(GetresponseApi $api, DbRepositoryInterface $dbRepository)
     {
         $this->api = $api;
@@ -32,12 +36,10 @@ class ExportContact
     {
         if ($exportContactCommand->getExportSettings()->isJobSchedulerEnabled()) {
             $this->dbRepository->addJob(JobFactory::createForContactExportCommand($exportContactCommand));
-
             return;
         }
 
         $exportService = ExportContactServiceFactory::create($this->api, $this->dbRepository);
         $exportService->exportContact($exportContactCommand);
-
     }
 }

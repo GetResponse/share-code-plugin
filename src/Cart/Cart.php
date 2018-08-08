@@ -46,7 +46,8 @@ class Cart
      */
     private function setCartId($cartId)
     {
-        Assert::that($cartId)->notNull()->string();
+        $message = 'Cart ID in Cart should be a not null string';
+        Assert::that($cartId, $message)->notNull()->string();
         $this->cartId = $cartId;
     }
 
@@ -63,7 +64,8 @@ class Cart
      */
     private function setCurrency($currency)
     {
-        Assert::that($currency)->notBlank()->string()->length(3);
+        $message = 'Currency in Cart should be a not blank string (3 chars)';
+        Assert::that($currency, $message)->notBlank()->string()->length(3);
         $this->currency = $currency;
     }
 
@@ -72,7 +74,8 @@ class Cart
      */
     private function setTotalPrice($totalPrice)
     {
-        Assert::that($totalPrice)->notNull()->float();
+        $message = 'Total price in Cart should be a not null float';
+        Assert::that($totalPrice, $message)->notNull()->float();
         $this->totalPrice = $totalPrice;
     }
 
@@ -81,7 +84,8 @@ class Cart
      */
     private function setTotalTaxPrice($totalTaxPrice)
     {
-        Assert::that($totalTaxPrice)->nullOr()->float();
+        $message = 'Total tax price in Cart should be null or float';
+        Assert::that($totalTaxPrice, $message)->nullOr()->float();
         $this->totalTaxPrice = $totalTaxPrice;
     }
 

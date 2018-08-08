@@ -59,7 +59,8 @@ class CustomFieldMapping
      */
     private function setExternalCustomFieldName($externalCustomFieldName)
     {
-        Assert::that($externalCustomFieldName)->choice(self::FIELDS_ALL);
+        $message = 'External custom field name in CustomFieldMapping has invalid value - ' . $externalCustomFieldName;
+        Assert::that($externalCustomFieldName, $message)->choice(self::FIELDS_ALL);
         $this->externalCustomFieldName = $externalCustomFieldName;
     }
 
@@ -68,7 +69,8 @@ class CustomFieldMapping
      */
     private function setExternalCustomFieldValue($externalCustomFieldValue)
     {
-        Assert::that($externalCustomFieldValue)->notBlank()->string();
+        $message = 'External custom field value should be a not blank string';
+        Assert::that($externalCustomFieldValue, $message)->notBlank()->string();
         $this->externalCustomFieldValue = $externalCustomFieldValue;
     }
 
@@ -77,7 +79,8 @@ class CustomFieldMapping
      */
     private function setGrCustomFieldId($grCustomFieldId)
     {
-        Assert::that($grCustomFieldId)->notNull()->integer();
+        $message = 'Gr custom field ID should be a not null string';
+        Assert::that($grCustomFieldId, $message)->notNull()->string();
         $this->grCustomFieldId = $grCustomFieldId;
     }
 

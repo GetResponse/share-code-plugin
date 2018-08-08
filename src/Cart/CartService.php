@@ -92,13 +92,13 @@ class CartService
     }
 
     /**
-     * @param $cart
+     * @param Cart $cart
      * @param $shopId
      * @param $contactId
      * @return array
      * @throws GetresponseApiException
      */
-    private function getPayloadFromCart($cart, $shopId, $contactId)
+    private function getPayloadFromCart(Cart $cart, $shopId, $contactId)
     {
         $variants = $this->productService->getProductsVariants($cart->getProducts(), $shopId);
 
