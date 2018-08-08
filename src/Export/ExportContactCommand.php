@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Export;
 
-use GrShareCode\Contact\CustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Export\HistoricalOrder\HistoricalOrderCollection;
 use GrShareCode\Export\Settings\ExportSettings;
 
@@ -23,7 +23,7 @@ class ExportContactCommand
     /** @var ExportSettings */
     private $exportSettings;
 
-    /** @var CustomFieldsCollection */
+    /** @var ContactCustomFieldsCollection */
     private $customFieldsCollection;
 
     /** @var HistoricalOrderCollection */
@@ -34,7 +34,7 @@ class ExportContactCommand
      * @param string $name
      * @param string $originValue
      * @param ExportSettings $exportSettings
-     * @param CustomFieldsCollection $customFieldsCollection
+     * @param ContactCustomFieldsCollection $customFieldsCollection
      * @param HistoricalOrderCollection $historicalOrderCollection
      */
     public function __construct(
@@ -42,7 +42,7 @@ class ExportContactCommand
         $name,
         $originValue,
         ExportSettings $exportSettings,
-        CustomFieldsCollection $customFieldsCollection,
+        ContactCustomFieldsCollection $customFieldsCollection,
         HistoricalOrderCollection $historicalOrderCollection
     ) {
         $this->email = $email;
@@ -86,7 +86,7 @@ class ExportContactCommand
     }
 
     /**
-     * @return CustomFieldsCollection
+     * @return ContactCustomFieldsCollection
      */
     public function getCustomFieldsCollection()
     {

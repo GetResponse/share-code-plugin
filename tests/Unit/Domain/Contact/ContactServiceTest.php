@@ -4,8 +4,6 @@ namespace GrShareCode\Tests\Unit\Domain\Contact;
 use GrShareCode\Contact\Contact;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\Contact\CustomField;
-use GrShareCode\Contact\CustomFieldsCollection;
 use GrShareCode\GetresponseApi;
 use GrShareCode\Tests\Generator;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +14,6 @@ use PHPUnit\Framework\TestCase;
  */
 class ContactServiceTest extends TestCase
 {
-
     /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
     private $getResponseApiMock;
 
@@ -74,35 +71,6 @@ class ContactServiceTest extends TestCase
     /**
      * @test
      */
-    public function shouldReturnAllCustomFields()
-    {
-        $this->getResponseApiMock
-            ->expects($this->exactly(3))
-            ->method('getCustomFields')
-            ->willReturnOnConsecutiveCalls(
-                [['name' => 'customFieldName1', 'customFieldId' => 'grCustomFieldId1']],
-                [['name' => 'customFieldName2', 'customFieldId' => 'grCustomFieldId2']],
-                [['name' => 'customFieldName3', 'customFieldId' => 'grCustomFieldId3']]
-            );
-
-        $this->getResponseApiMock
-            ->expects($this->once())
-            ->method('getHeaders')
-            ->willReturn(['TotalPages' => '3']);
-
-
-        $customFieldCollection = new CustomFieldsCollection();
-        $customFieldCollection->add(new CustomField('grCustomFieldId1', 'customFieldName1'));
-        $customFieldCollection->add(new CustomField('grCustomFieldId2', 'customFieldName2'));
-        $customFieldCollection->add(new CustomField('grCustomFieldId3', 'customFieldName3'));
-
-        $contactService = new ContactService($this->getResponseApiMock);
-        $this->assertEquals($customFieldCollection, $contactService->getAllCustomFields());
-    }
-
-    /**
-     * @test
-     */
     public function shouldCreateContact()
     {
         $params = [
@@ -136,7 +104,12 @@ class ContactServiceTest extends TestCase
         $email = 'test@test.com';
         $origin = 'shopify';
 
-        $this->getResponseApiMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([['contactId' => 'xyd', 'origin' => $origin]]);
+        $this->getResponseApiMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([
+            [
+                'contactId' => 'xyd',
+                'origin' => $origin
+            ]
+        ]);
         $this->getResponseApiMock->expects(self::once())->method('deleteContact');
 
         $contactService = new ContactService($this->getResponseApiMock);
@@ -152,7 +125,12 @@ class ContactServiceTest extends TestCase
      */
     public function shouldNotUnsubscribeContact($email, $origin, $invalidOrigin)
     {
-        $this->getResponseApiMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([['contactId' => 'xyd', 'origin' => $origin]]);
+        $this->getResponseApiMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([
+            [
+                'contactId' => 'xyd',
+                'origin' => $origin
+            ]
+        ]);
         $this->getResponseApiMock->expects(self::never())->method('deleteContact');
 
         $contactService = new ContactService($this->getResponseApiMock);

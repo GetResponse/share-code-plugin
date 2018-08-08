@@ -19,7 +19,7 @@ class AddContactCommand
     /** @var int */
     private $dayOfCycle;
 
-    /** @var CustomFieldsCollection */
+    /** @var ContactCustomFieldsCollection */
     private $customFieldsCollection;
 
     /** @var string */
@@ -30,7 +30,7 @@ class AddContactCommand
      * @param string $name
      * @param string $contactListId
      * @param int $dayOfCycle
-     * @param CustomFieldsCollection $customFieldsCollection
+     * @param ContactCustomFieldsCollection $customFieldsCollection
      * @param string $originValue
      */
     public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $originValue)
@@ -68,7 +68,7 @@ class AddContactCommand
     }
 
     /**
-     * @return CustomFieldsCollection
+     * @return ContactCustomFieldsCollection
      */
     public function getCustomFieldsCollection()
     {
@@ -92,9 +92,9 @@ class AddContactCommand
     }
 
     /**
-     * @param CustomField $customField
+     * @param ContactCustomField $customField
      */
-    public function addCustomField(CustomField $customField)
+    public function addCustomField(ContactCustomField $customField)
     {
         $this->customFieldsCollection->add($customField);
     }
