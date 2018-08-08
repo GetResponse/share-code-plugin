@@ -141,8 +141,8 @@ class Variant
      */
     public function setDescription($description)
     {
-        $message = 'Description in Variant should be a not blank string not longer than ' . self::DESCRIPTION_MAX_LENGTH . ' chars';
-        Assert::that($description, $message)->notBlank()->string()->maxLength(self::DESCRIPTION_MAX_LENGTH);
+        $message = 'Description in Variant should be null or string not longer than ' . self::DESCRIPTION_MAX_LENGTH . ' chars';
+        Assert::that($description, $message)->nullOr()->string()->maxLength(self::DESCRIPTION_MAX_LENGTH);
         $this->description = $description;
 
         return $this;
