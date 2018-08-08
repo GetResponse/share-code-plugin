@@ -153,7 +153,7 @@ class ContactService
         $grCustomFields = $this->getContactCustomFields($contactId);
         $newCustomFields = $addContactCommand->getCustomFieldsCollection();
 
-        $customFieldsMerger = new ContactCustomFieldMerger($grCustomFields, $newCustomFields);
+        $customFieldsMerger = new ContactCustomFieldBuilder($grCustomFields, $newCustomFields);
         $customFieldCollection = $customFieldsMerger->getMergedCustomFieldsCollection();
 
         $params = $this->prepareParams($addContactCommand, $customFieldCollection);
