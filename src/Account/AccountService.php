@@ -2,6 +2,7 @@
 namespace GrShareCode\Account;
 
 use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
 /**
@@ -10,7 +11,7 @@ use GrShareCode\GetresponseApiException;
  */
 class AccountService
 {
-    /** @var GetresponseApi */
+    /** @var GetresponseApiClient */
     private $getresponseApi;
 
     /**

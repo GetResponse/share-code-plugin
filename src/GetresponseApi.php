@@ -27,6 +27,9 @@ class GetresponseApi
     /** @var UserAgentHeader */
     private $userAgentHeader;
 
+    /** @var array */
+    private $unauthorizedResponseCodes = [1014, 1018, 1017];
+
     /**
      * @param string $apiKey
      * @param ApiType $apiType
@@ -60,6 +63,7 @@ class GetresponseApi
     /**
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getAccountInfo()
     {
@@ -71,6 +75,7 @@ class GetresponseApi
      * @param string $listId
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getContactByEmail($email, $listId)
     {
@@ -90,6 +95,7 @@ class GetresponseApi
      * @param string $contactId
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getContactById($contactId)
     {
@@ -102,6 +108,7 @@ class GetresponseApi
      * @param $params
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function createContact($params)
     {
@@ -112,6 +119,7 @@ class GetresponseApi
      * @param string $email
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function searchContacts($email)
     {
@@ -122,6 +130,7 @@ class GetresponseApi
     /**
      * @param $contactId
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function deleteContact($contactId)
     {
@@ -133,6 +142,7 @@ class GetresponseApi
      * @param array $params
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function updateContact($contactId, $params)
     {
@@ -144,6 +154,7 @@ class GetresponseApi
      * @param array $product
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function createProduct($shopId, $product)
     {
@@ -156,6 +167,7 @@ class GetresponseApi
      * @param array $params
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function updateProduct($shopId, $productId, $params)
     {
@@ -167,6 +179,7 @@ class GetresponseApi
      * @param array $params
      * @return string
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function createCart($shopId, $params)
     {
@@ -181,6 +194,7 @@ class GetresponseApi
      * @param array $params
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function updateCart($shopId, $cartId, $params)
     {
@@ -193,6 +207,7 @@ class GetresponseApi
      * @param bool $skipAutomation
      * @return string
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function createOrder($shopId, $params, $skipAutomation = false)
     {
@@ -214,6 +229,7 @@ class GetresponseApi
      * @param bool $skipAutomation
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function updateOrder($shopId, $orderId, $params, $skipAutomation = false)
     {
@@ -226,11 +242,13 @@ class GetresponseApi
         return $this->sendRequest($url, 'POST', $params);
 
     }
+
     /**
      * @param string $shopId
      * @param string $cartId
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function removeCart($shopId, $cartId)
     {
@@ -243,6 +261,7 @@ class GetresponseApi
      *
      * @return array|mixed
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getCustomFields($page, $perPage)
     {
@@ -253,6 +272,7 @@ class GetresponseApi
      * @param array $params
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function createCustomField($params)
     {
@@ -263,6 +283,7 @@ class GetresponseApi
      * @param string $customFieldId
      * @return string
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function deleteCustomField($customFieldId)
     {
@@ -275,6 +296,7 @@ class GetresponseApi
      *
      * @return array|mixed
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getWebForms($page, $perPage)
     {
@@ -285,6 +307,7 @@ class GetresponseApi
      * @param string $lang
      * @return array|mixed
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getSubscriptionConfirmationSubject($lang = 'EN')
     {
@@ -295,6 +318,7 @@ class GetresponseApi
      * @param string $lang
      * @return array|mixed
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getSubscriptionConfirmationBody($lang = 'EN')
     {
@@ -307,6 +331,7 @@ class GetresponseApi
      *
      * @return array|mixed
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getFromFields($page, $perPage)
     {
@@ -319,6 +344,7 @@ class GetresponseApi
      *
      * @return array|mixed
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getForms($page, $perPage)
     {
@@ -330,6 +356,7 @@ class GetresponseApi
      *
      * @return mixed|null
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getCustomFieldByName($name)
     {
@@ -350,6 +377,7 @@ class GetresponseApi
      *
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getContactList($page, $perPage)
     {
@@ -361,6 +389,7 @@ class GetresponseApi
      * @param array $params
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function createContactList(array $params)
     {
@@ -372,6 +401,7 @@ class GetresponseApi
      * @param int $perPage
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getAutoresponders($page, $perPage)
     {
@@ -384,6 +414,7 @@ class GetresponseApi
      * @param int $perPage
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getCampaignAutoresponders($campaignId, $page, $perPage)
     {
@@ -394,6 +425,7 @@ class GetresponseApi
      * @param int $id
      * @return array|mixed
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getAutoresponderById($id)
     {
@@ -404,6 +436,7 @@ class GetresponseApi
      * @param array $params
      * @return string
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function createShop($params)
     {
@@ -415,6 +448,7 @@ class GetresponseApi
      * @param string $shopId
      * @return string
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function deleteShop($shopId)
     {
@@ -427,6 +461,7 @@ class GetresponseApi
      *
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getShops($page, $perPage)
     {
@@ -439,6 +474,7 @@ class GetresponseApi
      * @param array $params
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function createProductVariant($shopId, $productId, $params)
     {
@@ -448,6 +484,7 @@ class GetresponseApi
     /**
      * @return array
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getAccountFeatures()
     {
@@ -457,6 +494,7 @@ class GetresponseApi
     /**
      * @return string
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function getTrackingCodeSnippet()
     {
@@ -473,6 +511,7 @@ class GetresponseApi
      * @param bool $withHeaders
      * @return array|mixed
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     private function sendRequest($apiMethod, $method = 'GET', $params = [], $withHeaders = false)
     {
@@ -539,6 +578,11 @@ class GetresponseApi
 
         curl_close($curl);
         if (isset($response['httpStatus']) && 400 <= $response['httpStatus']) {
+
+            if (isset($response['code']) && in_array($response['code'], $this->unauthorizedResponseCodes)) {
+                throw new AccountNotExistsException($response['message'], $response['code']);
+            }
+
             throw GetresponseApiException::createForInvalidApiResponseCode(
                 $response['message'],
                 $response['httpStatus']
