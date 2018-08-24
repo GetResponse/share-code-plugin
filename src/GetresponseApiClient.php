@@ -673,6 +673,14 @@ class GetresponseApiClient
         }
     }
 
+    /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->grApi->getHeaders();
+    }
+
     private function removeAccountIfRequired()
     {
         $firstOccurrence = $this->dbRepository->getInvalidAccountFirstOccurrenceDate();

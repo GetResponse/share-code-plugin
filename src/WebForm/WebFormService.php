@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\WebForm;
 
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
 /**
@@ -12,15 +12,15 @@ class WebFormService
 {
     const PER_PAGE = 100;
 
-    /** @var GetresponseApi */
-    private $getresponseApi;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      */
-    public function __construct(GetresponseApi $getresponseApi)
+    public function __construct(GetresponseApiClient $getresponseApiClient)
     {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
     }
 
     /**
@@ -42,11 +42,11 @@ class WebFormService
      */
     private function addWebForms(WebFormCollection $collection)
     {
-        $webForms[] = $this->getresponseApi->getWebForms(1, self::PER_PAGE);
-        $headers = $this->getresponseApi->getHeaders();
+        $webForms[] = $this->getresponseApiClient->getWebForms(1, self::PER_PAGE);
+        $headers = $this->getresponseApiClient->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $webForms[] = $this->getresponseApi->getWebForms($page, self::PER_PAGE);
+            $webForms[] = $this->getresponseApiClient->getWebForms($page, self::PER_PAGE);
         }
 
         $webFormsList = call_user_func_array('array_merge', $webForms);
@@ -69,11 +69,11 @@ class WebFormService
      */
     private function addForms(WebFormCollection $collection)
     {
-        $forms[] = $this->getresponseApi->getForms(1, self::PER_PAGE);
-        $headers = $this->getresponseApi->getHeaders();
+        $forms[] = $this->getresponseApiClient->getForms(1, self::PER_PAGE);
+        $headers = $this->getresponseApiClient->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $forms[] = $this->getresponseApi->getForms($page, self::PER_PAGE);
+            $forms[] = $this->getresponseApiClient->getForms($page, self::PER_PAGE);
         }
 
         $formsList = call_user_func_array('array_merge', $forms);

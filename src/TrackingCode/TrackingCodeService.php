@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\TrackingCode;
 
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
 /**
@@ -10,15 +10,15 @@ use GrShareCode\GetresponseApiException;
  */
 class TrackingCodeService
 {
-    /** @var GetresponseApi */
-    private $getresponseApi;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      */
-    public function __construct(GetresponseApi $getresponseApi)
+    public function __construct(GetresponseApiClient $getresponseApiClient)
     {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
     }
 
     /**
@@ -27,9 +27,9 @@ class TrackingCodeService
      */
     public function getTrackingCode()
     {
-        $accountFeatures = $this->getresponseApi->getAccountFeatures();
+        $accountFeatures = $this->getresponseApiClient->getAccountFeatures();
         $featureEnabled = $this->isTackingFeatureEnabled($accountFeatures);
-        $trackingCodeSnippet = $this->getresponseApi->getTrackingCodeSnippet();
+        $trackingCodeSnippet = $this->getresponseApiClient->getTrackingCodeSnippet();
 
         return new TrackingCode($featureEnabled, $trackingCodeSnippet);
     }
