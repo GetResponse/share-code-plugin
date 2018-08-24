@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\WebForm;
 
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\WebForm\WebForm;
 use GrShareCode\WebForm\WebFormCollection;
 use GrShareCode\WebForm\WebFormService;
@@ -9,12 +9,12 @@ use PHPUnit\Framework\TestCase;
 
 class WebFormServiceTest extends TestCase
 {
-    /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiMock;
+    /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
+    private $grApiClientMock;
 
     public function setUp()
     {
-        $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)
+        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -24,7 +24,7 @@ class WebFormServiceTest extends TestCase
      */
     public function shouldReturnWebFormCollection()
     {
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->exactly(3))
             ->method('getWebForms')
             ->withConsecutive([1, 100], [2, 100], [3, 100])
@@ -58,7 +58,7 @@ class WebFormServiceTest extends TestCase
                 ]
             );
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->exactly(3))
             ->method('getForms')
             ->withConsecutive([1, 100], [2, 100], [3, 100])
@@ -92,7 +92,7 @@ class WebFormServiceTest extends TestCase
                 ]
             );
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->exactly(2))
             ->method('getHeaders')
             ->willReturn(['TotalPages' => '3']);
@@ -151,7 +151,7 @@ class WebFormServiceTest extends TestCase
             )
         );
 
-        $shopService = new WebFormService($this->grApiMock);
+        $shopService = new WebFormService($this->grApiClientMock);
         $this->assertEquals($webFormCollection, $shopService->getAllWebForms());
     }
 

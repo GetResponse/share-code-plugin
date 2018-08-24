@@ -3,7 +3,7 @@ namespace GrShareCode\Tests\Unit\Domain\Job;
 
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\Export\Settings\ExportSettingsFactory;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\Job\Job;
 use GrShareCode\Job\JobCollection;
 use GrShareCode\Job\JobException;
@@ -17,8 +17,8 @@ class RunCommandTest extends TestCase
     /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $dbRepositoryMock;
 
-    /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiMock;
+    /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
+    private $grApiClientMock;
 
     public function setUp()
     {
@@ -26,7 +26,7 @@ class RunCommandTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)
+        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -63,7 +63,7 @@ class RunCommandTest extends TestCase
             ->method('getJobsToProcess')
             ->willReturn($jobCollection);
 
-        $command = new RunCommand($this->grApiMock, $this->dbRepositoryMock);
+        $command = new RunCommand($this->grApiClientMock, $this->dbRepositoryMock);
         $command->execute();
     }
 
@@ -93,7 +93,7 @@ class RunCommandTest extends TestCase
             ->method('getJobsToProcess')
             ->willReturn($jobCollection);
 
-        $command = new RunCommand($this->grApiMock, $this->dbRepositoryMock);
+        $command = new RunCommand($this->grApiClientMock, $this->dbRepositoryMock);
         $command->execute();
     }
 
