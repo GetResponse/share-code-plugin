@@ -1,7 +1,6 @@
 <?php
 namespace GrShareCode\Account;
 
-use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
@@ -12,14 +11,14 @@ use GrShareCode\GetresponseApiException;
 class AccountService
 {
     /** @var GetresponseApiClient */
-    private $getresponseApi;
+    private $getresponseApiClient;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      */
-    public function __construct(GetresponseApi $getresponseApi)
+    public function __construct(GetresponseApiClient $getresponseApiClient)
     {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
     }
 
     /**
@@ -28,7 +27,7 @@ class AccountService
      */
     public function getAccount()
     {
-        $accountInfo = $this->getresponseApi->getAccountInfo();
+        $accountInfo = $this->getresponseApiClient->getAccountInfo();
 
         return new Account(
             $accountInfo['firstName'],
@@ -48,7 +47,7 @@ class AccountService
     public function isConnectionAvailable()
     {
         try {
-            $this->getresponseApi->checkConnection();
+            $this->getresponseApiClient->checkConnection();
         } catch (GetresponseApiException $e) {
             return false;
         }
