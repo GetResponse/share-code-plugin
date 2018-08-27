@@ -88,14 +88,23 @@ interface DbRepositoryInterface
      */
     public function deleteJob(Job $job);
 
-    public function markAccountAsInvalid();
-
-    public function markAccountAsValid();
+    /**
+     * @param int $accountId
+     */
+    public function markAccountAsInvalid($accountId);
 
     /**
-     * @return DateTime
+     * @param $accountId
      */
-    public function getInvalidAccountFirstOccurrenceDate();
+    public function markAccountAsValid($accountId);
 
-    public function uninstallPlugin();
+    /**
+     * @param int $accountId
+     */
+    public function getInvalidAccountFirstOccurrenceDate($accountId);
+
+    /**
+     * @param int $accountId
+     */
+    public function disconnectAccount($accountId);
 }

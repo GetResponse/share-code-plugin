@@ -45,6 +45,7 @@ class GetresponseApi
     }
 
     /**
+     * @throws AccountNotExistsException
      * @throws GetresponseApiException
      */
     public function checkConnection()
@@ -55,6 +56,8 @@ class GetresponseApi
             if (!isset($account['accountId'])) {
                 throw GetresponseApiException::createForInvalidApiKey();
             }
+        } catch (AccountNotExistsException $e) {
+            throw $e;
         } catch (\Exception $e) {
             throw GetresponseApiException::createForInvalidApiKey();
         }
@@ -629,5 +632,13 @@ class GetresponseApi
     public function getHeaders()
     {
         return $this->headers;
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
     }
 }
