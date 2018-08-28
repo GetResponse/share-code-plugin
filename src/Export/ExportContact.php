@@ -2,7 +2,7 @@
 namespace GrShareCode\Export;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Job\JobFactory;
 
@@ -12,19 +12,19 @@ use GrShareCode\Job\JobFactory;
  */
 class ExportContact
 {
-    /** @var GetresponseApi */
-    private $api;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /** @var DbRepositoryInterface */
     private $dbRepository;
 
     /**
-     * @param GetresponseApi $api
+     * @param GetresponseApiClient $getresponseApiClient
      * @param DbRepositoryInterface $dbRepository
      */
-    public function __construct(GetresponseApi $api, DbRepositoryInterface $dbRepository)
+    public function __construct(GetresponseApiClient $getresponseApiClient, DbRepositoryInterface $dbRepository)
     {
-        $this->api = $api;
+        $this->getresponseApiClient = $getresponseApiClient;
         $this->dbRepository = $dbRepository;
     }
 
@@ -39,7 +39,7 @@ class ExportContact
             return;
         }
 
-        $exportService = ExportContactServiceFactory::create($this->api, $this->dbRepository);
+        $exportService = ExportContactServiceFactory::create($this->getresponseApiClient, $this->dbRepository);
         $exportService->exportContact($exportContactCommand);
     }
 }

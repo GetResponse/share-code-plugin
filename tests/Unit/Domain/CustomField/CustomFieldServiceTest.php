@@ -1,12 +1,10 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\CustomField;
 
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\CustomField\CustomField;
 use GrShareCode\CustomField\CustomFieldCollection;
 use GrShareCode\CustomField\CustomFieldService;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,12 +13,12 @@ use PHPUnit\Framework\TestCase;
  */
 class CustomFieldServiceTest extends TestCase
 {
-    /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
-    private $getResponseApiMock;
+    /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
+    private $getResponseApiClientMock;
 
     public function setUp()
     {
-        $this->getResponseApiMock = $this->getMockBuilder(GetresponseApi::class)
+        $this->getResponseApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -30,7 +28,7 @@ class CustomFieldServiceTest extends TestCase
      */
     public function shouldReturnAllCustomFields()
     {
-        $this->getResponseApiMock
+        $this->getResponseApiClientMock
             ->expects($this->exactly(3))
             ->method('getCustomFields')
             ->willReturnOnConsecutiveCalls(
@@ -39,7 +37,7 @@ class CustomFieldServiceTest extends TestCase
                 [['name' => 'customFieldName3', 'customFieldId' => 'grCustomFieldId3']]
             );
 
-        $this->getResponseApiMock
+        $this->getResponseApiClientMock
             ->expects($this->once())
             ->method('getHeaders')
             ->willReturn(['TotalPages' => '3']);
@@ -50,7 +48,7 @@ class CustomFieldServiceTest extends TestCase
         $customFieldCollection->add(new CustomField('grCustomFieldId2', 'customFieldName2'));
         $customFieldCollection->add(new CustomField('grCustomFieldId3', 'customFieldName3'));
 
-        $contactService = new CustomFieldService($this->getResponseApiMock);
+        $contactService = new CustomFieldService($this->getResponseApiClientMock);
         $this->assertEquals($customFieldCollection, $contactService->getAllCustomFields());
     }
 }

@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode;
 
+use DateTime;
 use GrShareCode\Job\Job;
 use GrShareCode\Job\JobCollection;
 use GrShareCode\ProductMapping\ProductMapping;
@@ -87,4 +88,23 @@ interface DbRepositoryInterface
      */
     public function deleteJob(Job $job);
 
+    /**
+     * @param int $accountId
+     */
+    public function markAccountAsInvalid($accountId);
+
+    /**
+     * @param $accountId
+     */
+    public function markAccountAsValid($accountId);
+
+    /**
+     * @param int $accountId
+     */
+    public function getInvalidAccountFirstOccurrenceDate($accountId);
+
+    /**
+     * @param int $accountId
+     */
+    public function disconnectAccount($accountId);
 }

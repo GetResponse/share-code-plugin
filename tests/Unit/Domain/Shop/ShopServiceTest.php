@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Shop\ShopServiceTest;
 
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\Shop\Shop;
 use GrShareCode\Shop\ShopsCollection;
 use GrShareCode\Shop\ShopService;
@@ -9,12 +9,12 @@ use PHPUnit\Framework\TestCase;
 
 class ShopServiceTest extends TestCase
 {
-    /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiMock;
+    /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
+    private $grApiClientMock;
 
     public function setUp()
     {
-        $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)
+        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -24,7 +24,7 @@ class ShopServiceTest extends TestCase
      */
     public function shouldReturnShopCollection()
     {
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->exactly(3))
             ->method('getShops')
             ->withConsecutive([1,100],[2,100],[3,100])
@@ -34,7 +34,7 @@ class ShopServiceTest extends TestCase
                 [['shopId' => 'shopId_3', 'name' => 'shopName_3']]
             );
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->once())
             ->method('getHeaders')
             ->willReturn(['TotalPages' => '3']);
@@ -44,7 +44,7 @@ class ShopServiceTest extends TestCase
         $shopCollection->add(new Shop('shopId_2', 'shopName_2'));
         $shopCollection->add(new Shop('shopId_3', 'shopName_3'));
 
-        $shopService = new ShopService($this->grApiMock);
+        $shopService = new ShopService($this->grApiClientMock);
         $this->assertEquals($shopCollection, $shopService->getAllShops());
     }
 

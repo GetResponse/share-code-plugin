@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\CustomField;
 
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
 /**
@@ -12,15 +12,15 @@ class CustomFieldService
 {
     const PER_PAGE = 100;
 
-    /** @var GetresponseApi */
-    private $getresponseApi;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      */
-    public function __construct(GetresponseApi $getresponseApi)
+    public function __construct(GetresponseApiClient $getresponseApiClient)
     {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
     }
 
     /**
@@ -29,12 +29,12 @@ class CustomFieldService
      */
     public function getAllCustomFields()
     {
-        $customFields = $this->getresponseApi->getCustomFields(1, self::PER_PAGE);
+        $customFields = $this->getresponseApiClient->getCustomFields(1, self::PER_PAGE);
 
-        $headers = $this->getresponseApi->getHeaders();
+        $headers = $this->getresponseApiClient->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $customFields = array_merge($customFields, $this->getresponseApi->getCustomFields($page, self::PER_PAGE));
+            $customFields = array_merge($customFields, $this->getresponseApiClient->getCustomFields($page, self::PER_PAGE));
         }
 
         $collection = new CustomFieldCollection();
@@ -59,7 +59,7 @@ class CustomFieldService
      */
     public function createCustomField($name, $value, $type = 'text', $hidden = false)
     {
-        return $this->getresponseApi->createCustomField([
+        return $this->getresponseApiClient->createCustomField([
             'name' => $name,
             'type' => $type,
             'hidden' => $hidden,
@@ -74,7 +74,7 @@ class CustomFieldService
      */
     public function deleteCustomFieldById($customFieldId)
     {
-        return $this->getresponseApi->deleteCustomField($customFieldId);
+        return $this->getresponseApiClient->deleteCustomField($customFieldId);
     }
 
     /**
@@ -84,6 +84,6 @@ class CustomFieldService
      */
     public function getCustomFieldByName($customFieldName)
     {
-        return $this->getresponseApi->getCustomFieldByName($customFieldName);
+        return $this->getresponseApiClient->getCustomFieldByName($customFieldName);
     }
 }
