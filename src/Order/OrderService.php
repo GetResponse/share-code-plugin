@@ -3,7 +3,7 @@ namespace GrShareCode\Order;
 
 use GrShareCode\Address\Address;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Product\ProductService;
 
@@ -13,8 +13,8 @@ use GrShareCode\Product\ProductService;
  */
 class OrderService
 {
-    /** @var GetresponseApi */
-    private $getresponseApi;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /** @var DbRepositoryInterface */
     private $dbRepository;
@@ -23,16 +23,16 @@ class OrderService
     private $productService;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      * @param DbRepositoryInterface $dbRepository
      * @param ProductService $productService
      */
     public function __construct(
-        GetresponseApi $getresponseApi,
+        GetresponseApiClient $getresponseApiClient,
         DbRepositoryInterface $dbRepository,
         ProductService $productService
     ) {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
         $this->dbRepository = $dbRepository;
         $this->productService = $productService;
     }
@@ -43,7 +43,7 @@ class OrderService
      */
     public function sendOrder(AddOrderCommand $addOrderCommand)
     {
-        $contact = $this->getresponseApi->getContactByEmail(
+        $contact = $this->getresponseApiClient->getContactByEmail(
             $addOrderCommand->getEmail(),
             $addOrderCommand->getContactListId()
         );
@@ -95,13 +95,13 @@ class OrderService
 
             $grOrder['cartId'] = $cartId;
 
-            $grOrderId = $this->getresponseApi->createOrder(
+            $grOrderId = $this->getresponseApiClient->createOrder(
                 $addOrderCommand->getShopId(),
                 $grOrder,
                 $addOrderCommand->skipAutomation()
             );
 
-            $this->getresponseApi->removeCart($addOrderCommand->getShopId(), $cartId);
+            $this->getresponseApiClient->removeCart($addOrderCommand->getShopId(), $cartId);
 
         } else {
 
@@ -109,7 +109,7 @@ class OrderService
                 return;
             }
 
-            $this->getresponseApi->updateOrder(
+            $this->getresponseApiClient->updateOrder(
                 $addOrderCommand->getShopId(),
                 $grOrderId,
                 $grOrder,

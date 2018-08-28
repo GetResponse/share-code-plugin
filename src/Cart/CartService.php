@@ -2,7 +2,7 @@
 namespace GrShareCode\Cart;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Product\ProductService;
 
@@ -12,8 +12,8 @@ use GrShareCode\Product\ProductService;
  */
 class CartService
 {
-    /** @var GetresponseApi */
-    private $getresponseApi;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /** @var DbRepositoryInterface */
     private $dbRepository;
@@ -22,16 +22,16 @@ class CartService
     private $productService;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      * @param DbRepositoryInterface $dbRepository
      * @param ProductService $productService
      */
     public function __construct(
-        GetresponseApi $getresponseApi,
+        GetresponseApiClient $getresponseApiClient,
         DbRepositoryInterface $dbRepository,
         ProductService $productService
     ) {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
         $this->dbRepository = $dbRepository;
         $this->productService = $productService;
     }
@@ -42,7 +42,7 @@ class CartService
      */
     public function exportCart(AddCartCommand $addCartCommand)
     {
-        $contact = $this->getresponseApi->getContactByEmail(
+        $contact = $this->getresponseApiClient->getContactByEmail(
             $addCartCommand->getEmail(),
             $addCartCommand->getContactListId()
         );
@@ -60,7 +60,7 @@ class CartService
         $grCartId = $this->dbRepository->getGrCartIdFromMapping($grShopId, $externalCartId);
 
         if (empty($grCartId)) {
-            $grCartId = $this->getresponseApi->createCart($grShopId, $createCartPayload);
+            $grCartId = $this->getresponseApiClient->createCart($grShopId, $createCartPayload);
             $this->dbRepository->saveCartMapping($grShopId, $externalCartId, $grCartId);
         }
     }
@@ -71,7 +71,7 @@ class CartService
      */
     public function sendCart(AddCartCommand $addCartCommand)
     {
-        $contact = $this->getresponseApi->getContactByEmail(
+        $contact = $this->getresponseApiClient->getContactByEmail(
             $addCartCommand->getEmail(),
             $addCartCommand->getContactListId()
         );
@@ -128,18 +128,18 @@ class CartService
                 return;
             }
 
-            $grCartId = $this->getresponseApi->createCart($grShopId, $createCartPayload);
+            $grCartId = $this->getresponseApiClient->createCart($grShopId, $createCartPayload);
             $this->dbRepository->saveCartMapping($grShopId, $externalCartId, $grCartId);
 
         } else {
 
             if (empty($createCartPayload['selectedVariants'])) {
                 $this->dbRepository->removeCartMapping($grShopId, $externalCartId, $grCartId);
-                $this->getresponseApi->removeCart($grShopId, $grCartId);
+                $this->getresponseApiClient->removeCart($grShopId, $grCartId);
                 return;
             }
 
-            $this->getresponseApi->updateCart($grShopId, $grCartId, $createCartPayload);
+            $this->getresponseApiClient->updateCart($grShopId, $grCartId, $createCartPayload);
         }
     }
 }

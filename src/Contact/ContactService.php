@@ -2,7 +2,7 @@
 namespace GrShareCode\Contact;
 
 use GrShareCode\Export\ExportContactCommand;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
 /**
@@ -13,15 +13,15 @@ class ContactService
 {
     const PER_PAGE = 100;
 
-    /** @var GetresponseApi */
-    private $getresponseApi;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      */
-    public function __construct(GetresponseApi $getresponseApi)
+    public function __construct(GetresponseApiClient $getresponseApiClient)
     {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
     }
 
     /**
@@ -52,7 +52,7 @@ class ContactService
                 'value' => [$customField->getValue()]
             ];
         }
-        $this->getresponseApi->updateContact($contactId, $params);
+        $this->getresponseApiClient->updateContact($contactId, $params);
     }
 
     /**
@@ -66,10 +66,10 @@ class ContactService
             $this->updateContact($contact->getContactId(), $addContactCommand);
         } catch (ContactNotFoundException $e) {
 
-            $origin = $this->getresponseApi->getCustomFieldByName('origin');
+            $origin = $this->getresponseApiClient->getCustomFieldByName('origin');
 
             if (empty($origin)) {
-                $origin = $this->getresponseApi->createCustomField([
+                $origin = $this->getresponseApiClient->createCustomField([
                     'name' => 'origin',
                     'type' => 'text',
                     'hidden' => false,
@@ -94,7 +94,7 @@ class ContactService
      */
     public function getContactByEmail($email, $listId)
     {
-        $response = $this->getresponseApi->getContactByEmail($email, $listId);
+        $response = $this->getresponseApiClient->getContactByEmail($email, $listId);
 
         if (empty($response)) {
             throw new ContactNotFoundException();
@@ -115,7 +115,7 @@ class ContactService
      */
     public function getContactCustomFields($contactId)
     {
-        $response = $this->getresponseApi->getContactById($contactId);
+        $response = $this->getresponseApiClient->getContactById($contactId);
 
         if (empty($response)) {
             throw new ContactNotFoundException(sprintf('Contact with Id %s not found.', $contactId));
@@ -139,7 +139,7 @@ class ContactService
     public function createContact(AddContactCommand $addContactCommand)
     {
         $params = $this->prepareParams($addContactCommand, $addContactCommand->getCustomFieldsCollection());
-        $this->getresponseApi->createContact($params);
+        $this->getresponseApiClient->createContact($params);
     }
 
     /**
@@ -157,7 +157,7 @@ class ContactService
         $customFieldCollection = $customFieldsMerger->getMergedCustomFieldsCollection();
 
         $params = $this->prepareParams($addContactCommand, $customFieldCollection);
-        $this->getresponseApi->updateContact($contactId, $params);
+        $this->getresponseApiClient->updateContact($contactId, $params);
     }
 
     /**
@@ -197,12 +197,12 @@ class ContactService
      */
     public function unsubscribe($email, $originCustomName)
     {
-        $contacts = $this->getresponseApi->searchContacts($email);
+        $contacts = $this->getresponseApiClient->searchContacts($email);
 
         foreach ($contacts as $contact) {
 
             if (!empty($originCustomName) && $contact['origin'] === $originCustomName) {
-                $this->getresponseApi->deleteContact($contact['contactId']);
+                $this->getresponseApiClient->deleteContact($contact['contactId']);
             }
         }
     }

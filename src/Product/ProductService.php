@@ -2,7 +2,7 @@
 namespace GrShareCode\Product;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Product\Variant\Variant;
 use GrShareCode\ProductMapping\ProductMapping;
@@ -13,19 +13,19 @@ use GrShareCode\ProductMapping\ProductMapping;
  */
 class ProductService
 {
-    /** @var GetresponseApi */
-    private $getresponseApi;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /** @var DbRepositoryInterface */
     private $dbRepository;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      * @param DbRepositoryInterface $dbRepository
      */
-    public function __construct(GetresponseApi $getresponseApi, DbRepositoryInterface $dbRepository)
+    public function __construct(GetresponseApiClient $getresponseApiClient, DbRepositoryInterface $dbRepository)
     {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
         $this->dbRepository = $dbRepository;
     }
 
@@ -96,7 +96,7 @@ class ProductService
             'variants' => $productVariants->toRequestArray(),
         ];
 
-        $grProduct = $this->getresponseApi->createProduct($grShopId, $grProductParams);
+        $grProduct = $this->getresponseApiClient->createProduct($grShopId, $grProductParams);
 
         foreach ($grProduct['variants'] as $variant) {
 
@@ -122,7 +122,7 @@ class ProductService
      */
     private function createProductVariant($grShopId, $grProductId, $externalProductId, Variant $productVariant)
     {
-        $grVariant = $this->getresponseApi->createProductVariant(
+        $grVariant = $this->getresponseApiClient->createProductVariant(
             $grShopId,
             $grProductId,
             $productVariant->toRequestArray()
