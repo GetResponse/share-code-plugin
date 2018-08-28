@@ -2,7 +2,7 @@
 namespace GrShareCode\Tests\Unit\Domain\Order;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Product\ProductService;
 use GrShareCode\Tests\Generator;
@@ -13,8 +13,8 @@ class OrderServiceTest extends TestCase
     /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $dbRepositoryMock;
 
-    /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiMock;
+    /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
+    private $grApiClientMock;
 
     /** @var ProductService|\PHPUnit_Framework_MockObject_MockObject */
     private $productServiceMock;
@@ -25,7 +25,7 @@ class OrderServiceTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)
+        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -42,7 +42,7 @@ class OrderServiceTest extends TestCase
         $addOrderCommand = Generator::createAddOrderCommand();
 
         $contact = ['contactId' => 1];
-        $this->grApiMock
+        $this->grApiClientMock
             ->method('getContactByEmail')
             ->willReturn($contact);
 
@@ -52,11 +52,11 @@ class OrderServiceTest extends TestCase
             ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
             ->willReturn([]);
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->once())
             ->method('createOrder');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->once())
             ->method('removeCart');
 
@@ -64,7 +64,7 @@ class OrderServiceTest extends TestCase
             ->expects($this->once())
             ->method('saveOrderMapping');
 
-        $orderService = new OrderService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
+        $orderService = new OrderService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock);
         $orderService->sendOrder($addOrderCommand);
     }
 
@@ -76,7 +76,7 @@ class OrderServiceTest extends TestCase
         $addOrderCommand = Generator::createAddOrderCommand();
 
         $contact = ['contactId' => 1];
-        $this->grApiMock
+        $this->grApiClientMock
             ->method('getContactByEmail')
             ->willReturn($contact);
 
@@ -86,11 +86,11 @@ class OrderServiceTest extends TestCase
             ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
             ->willReturn(3);
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->once())
             ->method('updateOrder');
 
-        $orderService = new OrderService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
+        $orderService = new OrderService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock);
         $orderService->sendOrder($addOrderCommand);
     }
 
@@ -101,19 +101,19 @@ class OrderServiceTest extends TestCase
     {
         $addOrderCommand = Generator::createAddOrderCommand();
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->method('getContactByEmail')
             ->willReturn([]);
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->never())
             ->method('updateOrder');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->never())
             ->method('createOrder');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->never())
             ->method('removeCart');
 
@@ -121,7 +121,7 @@ class OrderServiceTest extends TestCase
             ->expects($this->never())
             ->method('saveOrderMapping');
 
-        $orderService = new OrderService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
+        $orderService = new OrderService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock);
         $orderService->sendOrder($addOrderCommand);
 
     }
@@ -134,7 +134,7 @@ class OrderServiceTest extends TestCase
         $addOrderCommand = Generator::createAddOrderCommand();
 
         $contact = ['contactId' => 1];
-        $this->grApiMock
+        $this->grApiClientMock
             ->method('getContactByEmail')
             ->willReturn($contact);
 
@@ -150,7 +150,7 @@ class OrderServiceTest extends TestCase
             ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
             ->willReturn('bcf9db4827ba8b3addbb64f76537598d');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::never())
             ->method('updateOrder');
 
@@ -158,7 +158,7 @@ class OrderServiceTest extends TestCase
             ->expects($this->never())
             ->method('saveOrderMapping');
 
-        $orderService = new OrderService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
+        $orderService = new OrderService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock);
         $orderService->sendOrder($addOrderCommand);
     }
 

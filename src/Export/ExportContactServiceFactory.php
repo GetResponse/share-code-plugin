@@ -4,7 +4,7 @@ namespace GrShareCode\Export;
 use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Product\ProductService;
 
@@ -15,18 +15,18 @@ use GrShareCode\Product\ProductService;
 class ExportContactServiceFactory
 {
     /**
-     * @param GetresponseApi $api
+     * @param GetresponseApiClient $getresponseApiClient
      * @param DbRepositoryInterface $dbRepository
      * @return ExportContactService
      */
-    public static function create(GetresponseApi $api, DbRepositoryInterface $dbRepository)
+    public static function create(GetresponseApiClient $getresponseApiClient, DbRepositoryInterface $dbRepository)
     {
-        $productService = new ProductService($api, $dbRepository);
+        $productService = new ProductService($getresponseApiClient, $dbRepository);
 
         return new ExportContactService(
-            new ContactService($api),
-            new CartService($api, $dbRepository, $productService),
-            new OrderService($api, $dbRepository, $productService)
+            new ContactService($getresponseApiClient),
+            new CartService($getresponseApiClient, $dbRepository, $productService),
+            new OrderService($getresponseApiClient, $dbRepository, $productService)
         );
     }
 }
