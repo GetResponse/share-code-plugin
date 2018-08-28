@@ -4,7 +4,7 @@ namespace GrShareCode\Tests\Unit\Domain\Contact;
 use GrShareCode\Contact\Contact;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\Tests\Generator;
 use PHPUnit\Framework\TestCase;
 
@@ -14,12 +14,12 @@ use PHPUnit\Framework\TestCase;
  */
 class ContactServiceTest extends TestCase
 {
-    /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
-    private $getResponseApiMock;
+    /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
+    private $getResponseApiClientMock;
 
     public function setUp()
     {
-        $this->getResponseApiMock = $this->getMockBuilder(GetresponseApi::class)
+        $this->getResponseApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -34,7 +34,7 @@ class ContactServiceTest extends TestCase
 
         $contact = new Contact('grContactId', 'Adam Kowalski', $email);
 
-        $this->getResponseApiMock
+        $this->getResponseApiClientMock
             ->expects($this->once())
             ->method('getContactByEmail')
             ->with($email, $contactListId)
@@ -44,7 +44,7 @@ class ContactServiceTest extends TestCase
                 'email' => $email
             ]);
 
-        $contactService = new ContactService($this->getResponseApiMock);
+        $contactService = new ContactService($this->getResponseApiClientMock);
         $this->assertEquals($contact, $contactService->getContactByEmail($email, $contactListId));
     }
 
@@ -56,7 +56,7 @@ class ContactServiceTest extends TestCase
         $email = 'adam.kowalski@getresponse.com';
         $contactListId = 'grListId';
 
-        $this->getResponseApiMock
+        $this->getResponseApiClientMock
             ->expects($this->once())
             ->method('getContactByEmail')
             ->with($email, $contactListId)
@@ -64,7 +64,7 @@ class ContactServiceTest extends TestCase
 
         $this->expectException(ContactNotFoundException::class);
 
-        $contactService = new ContactService($this->getResponseApiMock);
+        $contactService = new ContactService($this->getResponseApiClientMock);
         $contactService->getContactByEmail($email, $contactListId);
     }
 
@@ -85,14 +85,14 @@ class ContactServiceTest extends TestCase
                 ['customFieldId' => 'id_2', 'value' => ['value_2']]
             ]
         ];
-        $this->getResponseApiMock
+        $this->getResponseApiClientMock
             ->expects($this->once())
             ->method('createContact')
             ->with($params);
 
         $addContactCommand = Generator::createAddContactCommand();
 
-        $contactService = new ContactService($this->getResponseApiMock);
+        $contactService = new ContactService($this->getResponseApiClientMock);
         $contactService->createContact($addContactCommand);
     }
 
@@ -104,15 +104,15 @@ class ContactServiceTest extends TestCase
         $email = 'test@test.com';
         $origin = 'shopify';
 
-        $this->getResponseApiMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([
+        $this->getResponseApiClientMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([
             [
                 'contactId' => 'xyd',
                 'origin' => $origin
             ]
         ]);
-        $this->getResponseApiMock->expects(self::once())->method('deleteContact');
+        $this->getResponseApiClientMock->expects(self::once())->method('deleteContact');
 
-        $contactService = new ContactService($this->getResponseApiMock);
+        $contactService = new ContactService($this->getResponseApiClientMock);
         $contactService->unsubscribe($email, $origin);
     }
 
@@ -125,15 +125,15 @@ class ContactServiceTest extends TestCase
      */
     public function shouldNotUnsubscribeContact($email, $origin, $invalidOrigin)
     {
-        $this->getResponseApiMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([
+        $this->getResponseApiClientMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([
             [
                 'contactId' => 'xyd',
                 'origin' => $origin
             ]
         ]);
-        $this->getResponseApiMock->expects(self::never())->method('deleteContact');
+        $this->getResponseApiClientMock->expects(self::never())->method('deleteContact');
 
-        $contactService = new ContactService($this->getResponseApiMock);
+        $contactService = new ContactService($this->getResponseApiClientMock);
         $contactService->unsubscribe($email, $invalidOrigin);
     }
 

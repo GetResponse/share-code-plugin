@@ -2,7 +2,7 @@
 namespace GrShareCode\Tests\Unit\Domain\Cart;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\Product\Product;
 use GrShareCode\Product\ProductsCollection;
 use GrShareCode\Product\ProductService;
@@ -16,8 +16,8 @@ class ProductServiceTest extends TestCase
 {
     /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $dbRepositoryMock;
-    /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiMock;
+    /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
+    private $grApiClientMock;
     /** @var ProductService */
     private $sut;
 
@@ -27,11 +27,11 @@ class ProductServiceTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)
+        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->sut = new ProductService($this->grApiMock, $this->dbRepositoryMock);
+        $this->sut = new ProductService($this->grApiClientMock, $this->dbRepositoryMock);
     }
 
     /**
@@ -53,7 +53,7 @@ class ProductServiceTest extends TestCase
                 new ProductMapping(2, 'v2', $shopId, 'p2', 'v21')
             );
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::exactly(1))
             ->method('createProduct')
             ->with($shopId, $this->buildProductParams($products->getIterator()[0]))
@@ -67,7 +67,7 @@ class ProductServiceTest extends TestCase
         $variant22 = $product2->getVariants()->getIterator()[1];
 
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('createProductVariant')
             ->with($shopId, 'p2', $variant22->toRequestArray())

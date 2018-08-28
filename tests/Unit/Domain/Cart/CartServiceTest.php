@@ -3,7 +3,7 @@ namespace GrShareCode\Tests\Unit\Domain\Cart;
 
 use GrShareCode\Cart\CartService;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Product\ProductService;
 use GrShareCode\Tests\Generator;
@@ -17,8 +17,8 @@ class CartServiceTest extends TestCase
 {
     /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $dbRepositoryMock;
-    /** @var GetresponseApi|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiMock;
+    /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
+    private $grApiClientMock;
     /** @var ProductService|\PHPUnit_Framework_MockObject_MockObject */
     private $productServiceMock;
     /** @var CartService */
@@ -30,7 +30,7 @@ class CartServiceTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->grApiMock = $this->getMockBuilder(GetresponseApi::class)
+        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -38,7 +38,7 @@ class CartServiceTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->sut = new CartService($this->grApiMock, $this->dbRepositoryMock, $this->productServiceMock);
+        $this->sut = new CartService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock);
     }
 
     /**
@@ -66,7 +66,7 @@ class CartServiceTest extends TestCase
             'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
         ];
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
@@ -86,7 +86,7 @@ class CartServiceTest extends TestCase
             ->with($command->getShopId(), $command->getCart()->getCartId())
             ->willReturn(null);
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('createCart')
             ->with($command->getShopId(), $createCartPayload)
@@ -125,7 +125,7 @@ class CartServiceTest extends TestCase
             'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
         ];
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
@@ -145,7 +145,7 @@ class CartServiceTest extends TestCase
             ->with($command->getShopId(), $command->getCart()->getCartId())
             ->willReturn('grCartId');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::never())
             ->method('createCart');
 
@@ -153,7 +153,7 @@ class CartServiceTest extends TestCase
             ->expects(self::never())
             ->method('saveCartMapping');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('updateCart')
             ->with($command->getShopId(), 'grCartId', $createCartPayload);
@@ -168,7 +168,7 @@ class CartServiceTest extends TestCase
     {
         $command = Generator::createAddCartCommand();
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
@@ -182,11 +182,11 @@ class CartServiceTest extends TestCase
             ->expects($this->never())
             ->method('getGrCartIdFromMapping');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->never())
             ->method('createCart');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->never())
             ->method('updateCart');
 
@@ -203,7 +203,7 @@ class CartServiceTest extends TestCase
         $contact = ['contactId' => 1];
         $variants = [];
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
@@ -223,7 +223,7 @@ class CartServiceTest extends TestCase
             ->with($command->getShopId(), $command->getCart()->getCartId())
             ->willReturn(null);
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::never())
             ->method('createCart');
 
@@ -247,7 +247,7 @@ class CartServiceTest extends TestCase
         $contact = ['contactId' => 1];
         $variants = [];
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
@@ -272,12 +272,12 @@ class CartServiceTest extends TestCase
             ->method('removeCartMapping')
             ->with($command->getShopId(), $command->getCart()->getCartId(), 'grCartId');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('removeCart')
             ->with($command->getShopId(), 'grCartId');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::never())
             ->method('updateCart');
 
@@ -291,7 +291,7 @@ class CartServiceTest extends TestCase
     {
         $command = Generator::createAddCartCommand();
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
@@ -305,11 +305,11 @@ class CartServiceTest extends TestCase
             ->expects($this->never())
             ->method('getGrCartIdFromMapping');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->never())
             ->method('createCart');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects($this->never())
             ->method('updateCart');
 
@@ -330,7 +330,7 @@ class CartServiceTest extends TestCase
             'quantity' => 1
         ];
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
@@ -350,7 +350,7 @@ class CartServiceTest extends TestCase
             ->with($command->getShopId(), $command->getCart()->getCartId())
             ->willReturn('grCartId');
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::never())
             ->method('createCart');
 
@@ -385,7 +385,7 @@ class CartServiceTest extends TestCase
             'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
         ];
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
@@ -405,7 +405,7 @@ class CartServiceTest extends TestCase
             ->with($command->getShopId(), $command->getCart()->getCartId())
             ->willReturn(null);
 
-        $this->grApiMock
+        $this->grApiClientMock
             ->expects(self::once())
             ->method('createCart')
             ->with($command->getShopId(), $createCartPayload)

@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Shop;
 
-use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
 /**
@@ -12,15 +12,15 @@ class ShopService
 {
     const PER_PAGE = 100;
 
-    /** @var GetresponseApi */
-    private $getresponseApi;
+    /** @var GetresponseApiClient */
+    private $getresponseApiClient;
 
     /**
-     * @param GetresponseApi $getresponseApi
+     * @param GetresponseApiClient $getresponseApiClient
      */
-    public function __construct(GetresponseApi $getresponseApi)
+    public function __construct(GetresponseApiClient $getresponseApiClient)
     {
-        $this->getresponseApi = $getresponseApi;
+        $this->getresponseApiClient = $getresponseApiClient;
     }
 
     /**
@@ -29,12 +29,12 @@ class ShopService
      */
     public function getAllShops()
     {
-        $shops = $this->getresponseApi->getShops(1, self::PER_PAGE);
+        $shops = $this->getresponseApiClient->getShops(1, self::PER_PAGE);
 
-        $headers = $this->getresponseApi->getHeaders();
+        $headers = $this->getresponseApiClient->getHeaders();
 
         for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $shops = array_merge($shops,  $this->getresponseApi->getShops($page, self::PER_PAGE));
+            $shops = array_merge($shops,  $this->getresponseApiClient->getShops($page, self::PER_PAGE));
         }
 
         $collection = new ShopsCollection();
@@ -56,7 +56,7 @@ class ShopService
      */
     public function addShop(AddShopCommand $addShopCommand)
     {
-        return $this->getresponseApi->createShop([
+        return $this->getresponseApiClient->createShop([
             'name' => $addShopCommand->getName(),
             'locale' => $addShopCommand->getLocale(),
             'currency' => $addShopCommand->getCurrency()
@@ -69,6 +69,6 @@ class ShopService
      */
     public function deleteShop($shopId)
     {
-        $this->getresponseApi->deleteShop($shopId);
+        $this->getresponseApiClient->deleteShop($shopId);
     }
 }

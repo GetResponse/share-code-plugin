@@ -1,5 +1,6 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Address;
+use GrShareCode\Address\Address;
 use GrShareCode\Address\AddressFactory;
 use PHPUnit\Framework\TestCase;
 
@@ -27,5 +28,7 @@ class AddressFactoryTest extends TestCase
             '', // to pole może być puste
             '' // to pole może być puste
         );
+
+        self::assertInstanceOf(Address::class, $address);
     }
 }
