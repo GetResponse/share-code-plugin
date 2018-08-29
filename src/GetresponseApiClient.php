@@ -31,6 +31,9 @@ class GetresponseApiClient
     public function checkConnection()
     {
         try {
+            if (empty($this->grApi->getApiKey())) {
+                throw GetresponseApiException::createForInvalidApiKey();
+            }
             $this->grApi->checkConnection();
             $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
         } catch (AccountNotExistsException $e) {
