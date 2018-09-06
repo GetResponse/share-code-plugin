@@ -3,6 +3,8 @@ namespace GrShareCode\Tests\Unit\Domain\Api;
 
 use GrShareCode\Api\ApiType;
 use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Authorization;
+use GrShareCode\Api\OauthAuthorization;
 use GrShareCode\Api\UserAgentHeader;
 use GrShareCode\GetresponseApi;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +22,6 @@ class ApiTypeTest extends TestCase
     public function shouldThrowExceptionWhenInvalidApiType($type)
     {
         $this->expectException(ApiTypeException::class);
-        new ApiType($type);
     }
 
     /**
@@ -33,7 +34,7 @@ class ApiTypeTest extends TestCase
      */
     public function shouldReturnValidApiUrl($type, $domain, $url)
     {
-        $apiType = new ApiType($type, $domain);
+        $apiType = new OauthAuthorization('', '', $type, $domain);
         self::assertEquals($url, $apiType->getApiUrl());
     }
 
@@ -58,7 +59,7 @@ class ApiTypeTest extends TestCase
     public function shouldValidateApiType($type)
     {
         $userAgentHeader = new UserAgentHeader('shopify', '3.9', '234');
-        new GetresponseApi('api key', $type, 'x app id', $userAgentHeader);
+        new GetresponseApi( $type, 'x app id', $userAgentHeader);
     }
 
     /**
@@ -68,9 +69,9 @@ class ApiTypeTest extends TestCase
     public function validApiTypeProvider()
     {
         return [
-            [ApiType::createForMxPl('https://example.com')],
-            [ApiType::createForMxUs('https://example.com')],
-            [ApiType::createForSMB()]
+            [new OauthAuthorization('', '', '', Authorization::SMB)],
+            [new OauthAuthorization('', '', '', Authorization::MX_US)],
+            [new OauthAuthorization('', '', '', Authorization::MX_PL)],
         ];
     }
 
@@ -80,9 +81,9 @@ class ApiTypeTest extends TestCase
     public function apiUrlProvider()
     {
         return [
-            [ApiType::SMB, null, ApiType::API_URL_SMB],
-            [ApiType::MX_US, 'https://example.com', ApiType::API_URL_MX_US],
-            [ApiType::MX_PL, 'https://example.com', ApiType::API_URL_MX_PL],
+            [Authorization::SMB, null, Authorization::API_URL_SMB],
+            [Authorization::MX_US, 'https://example.com', Authorization::API_URL_MX_US],
+            [Authorization::MX_PL, 'https://example.com', Authorization::API_URL_MX_PL],
         ];
     }
 }

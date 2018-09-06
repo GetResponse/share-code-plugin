@@ -1,8 +1,9 @@
 <?php
 namespace GrShareCode\Tests\Integration;
 
-use GrShareCode\Api\ApiType;
+use GrShareCode\Api\Authorization;
 use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\OauthAuthorization;
 use GrShareCode\Api\UserAgentHeader;
 use GrShareCode\GetresponseApi;
 use PHPUnit_Framework_TestCase;
@@ -38,11 +39,11 @@ abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
      */
     public function getGetresponseApi()
     {
-        $apiType = ApiType::createForSMB();
+        $authorization = new OauthAuthorization('', '', '', Authorization::SMB);
         $userAgentHeader = new UserAgentHeader('ShareCode', 'ShareCode', 'ShareCode');
 
         return new GetresponseApi(
-            $this->config['apiKey'], $apiType, $this->config['xappId'], $userAgentHeader
+            $authorization, $this->config['xappId'], $userAgentHeader
         );
     }
 
