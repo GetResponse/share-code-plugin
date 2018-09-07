@@ -72,7 +72,7 @@ class GetresponseApiClient
      */
     public function getContactByEmail($email, $listId)
     {
-        $this->authorizationKey = $this->grApi->getApiType()->getAuthorization()->getAuthorizationKey();
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
 
         try {
             $response = $this->grApi->getContactByEmail($email, $listId);
@@ -92,7 +92,7 @@ class GetresponseApiClient
      */
     public function getContactById($contactId)
     {
-        $this->authorizationKey = $this->grApi->getApiType()->getAuthorization()->getAuthorizationKey();
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
 
         try {
             $response = $this->grApi->getContactById($contactId);
@@ -112,7 +112,7 @@ class GetresponseApiClient
      */
     public function createContact($params)
     {
-        $this->authorizationKey = $this->grApi->getApiType()->getAuthorization()->getAuthorizationKey();
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
 
         try {
             $response = $this->grApi->createContact($params);
