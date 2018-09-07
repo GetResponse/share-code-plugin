@@ -44,7 +44,7 @@ class OauthAuthorization extends Authorization implements AuthorizationInterface
     /**
      * @return string
      */
-    public function getAuthorizationKey()
+    public function getAccessToken()
     {
         return $this->accessToken;
     }
@@ -63,5 +63,13 @@ class OauthAuthorization extends Authorization implements AuthorizationInterface
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefreshToken()
+    {
+        return $this->refreshToken;
     }
 }

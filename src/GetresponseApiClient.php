@@ -26,7 +26,7 @@ class GetresponseApiClient
     {
         $this->grApi = $grApi;
         $this->dbRepository = $dbRepository;
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAuthorizationKey();
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
     }
 
     /**

@@ -7,6 +7,7 @@ use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\CustomField\CustomFieldService;
 use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
 /**
@@ -15,8 +16,8 @@ use GrShareCode\GetresponseApiException;
  */
 class ContactTest extends BaseCaseTest
 {
-    /** @var GetresponseApi */
-    private $getResponseApi;
+    /** @var GetresponseApiClient */
+    private $getResponseApiClient;
 
     /** @var string */
     private $customFieldId1;
@@ -47,11 +48,11 @@ class ContactTest extends BaseCaseTest
 
     public function setUp()
     {
-        $this->getResponseApi = $this->getGetresponseApi();
+        $this->getResponseApiClient = $this->getGetresponseApiClient();
 
-        $this->contactService = new ContactService($this->getResponseApi);
+        $this->contactService = new ContactService($this->getResponseApiClient);
 
-        $this->customFieldsService = new CustomFieldService($this->getResponseApi);
+        $this->customFieldsService = new CustomFieldService($this->getResponseApiClient);
         $this->customFieldId1 = $this->customFieldsService->createCustomField('share_code_test1', 'shareCodeTest1')['customFieldId'];
         $this->customFieldId2 = $this->customFieldsService->createCustomField('share_code_test2', 'shareCodeTest2')['customFieldId'];
         $this->customFieldId3 = $this->customFieldsService->createCustomField('share_code_test3', 'shareCodeTest3')['customFieldId'];
@@ -127,7 +128,7 @@ class ContactTest extends BaseCaseTest
 
         $addContactCommand = new AddContactCommand($this->email, 'tester', $this->getConfig()['contactListId'], null, $customFields, 'shareCode');
 
-        $contactService = new ContactService($this->getResponseApi);
+        $contactService = new ContactService($this->getResponseApiClient);
         $contactService->upsertContact($addContactCommand);
     }
 }

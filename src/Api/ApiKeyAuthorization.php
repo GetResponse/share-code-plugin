@@ -12,10 +12,18 @@ class ApiKeyAuthorization extends Authorization implements AuthorizationInterfac
 
     /**
      * @param string $apiKey
+     * @param string $domain
+     * @param string $type
+     * @throws ApiTypeException
      */
-    public function __construct($apiKey)
+    public function __construct($apiKey, $domain, $type)
     {
+        $this->validateApiType($type);
+        $this->validateApiDomain($type, $domain);
+
         $this->apiKey = $apiKey;
+        $this->domain = $domain;
+        $this->type = $type;
     }
 
     /**
@@ -29,7 +37,7 @@ class ApiKeyAuthorization extends Authorization implements AuthorizationInterfac
     /**
      * @return string
      */
-    public function getAuthorizationKey()
+    public function getAccessToken()
     {
         return $this->apiKey;
     }
