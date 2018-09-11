@@ -1,10 +1,13 @@
 <?php
 namespace GrShareCode\Tests\Integration;
 
-use GrShareCode\Api\ApiType;
+use GrShareCode\Api\Authorization;
 use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\OauthAuthorization;
 use GrShareCode\Api\UserAgentHeader;
+use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApi;
+use GrShareCode\GetresponseApiClient;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -13,15 +16,20 @@ use PHPUnit_Framework_TestCase;
  */
 abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
 {
-
     /** @var array */
     private $config;
+
+    /** @var DbRepositoryInterface */
+    protected $dbRepositoryMock;
+
 
     public function __construct()
     {
         define('ROOT_DIR', __DIR__ . '/../../');
-        require_once ROOT_DIR . 'vendor/autoload.php';
-        $this->config = include 'config.php';
+//        require_once ROOT_DIR . 'vendor/autoload.php';
+//        $this->config = include 'config.php';
+
+        parent::__construct();
     }
 
     /**
@@ -33,16 +41,17 @@ abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return GetresponseApi
+     * @return GetresponseApiClient
      * @throws ApiTypeException
      */
-    public function getGetresponseApi()
+    public function getGetresponseApiClient()
     {
-        $apiType = ApiType::createForSMB();
+        $authorization = new OauthAuthorization('', '', '', Authorization::SMB);
         $userAgentHeader = new UserAgentHeader('ShareCode', 'ShareCode', 'ShareCode');
 
-        return new GetresponseApi(
-            $this->config['apiKey'], $apiType, $this->config['xappId'], $userAgentHeader
+        return new GetresponseApiClient(
+            new GetresponseApi($authorization, $this->config['xappId'], $userAgentHeader),
+            $this->dbRepositoryMock
         );
     }
 

@@ -29,8 +29,8 @@ class GetresponseApiException extends GrShareCodeException
     /**
      * @return GetresponseApiException
      */
-    public static function createForInvalidApiKey()
+    public static function createForInvalidAuthentication()
     {
-        return new self('Invalid API Key', self::INVALID_API_KEY);
+        return new self('Invalid Authentication params', self::INVALID_AUTHENTICATION);
     }
 }
