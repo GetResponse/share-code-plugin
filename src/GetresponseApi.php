@@ -1,7 +1,9 @@
 <?php
 namespace GrShareCode;
 
-use GrShareCode\Api\ApiType;
+use GrShareCode\Api\ApiKeyAuthorization;
+use GrShareCode\Api\Authorization;
+use GrShareCode\Api\OauthAuthorization;
 use GrShareCode\Api\UserAgentHeader;
 
 /**
@@ -13,13 +15,10 @@ class GetresponseApi
     const TIMEOUT = 8;
 
     /** @var string */
-    private $apiKey;
-
-    /** @var string */
     private $xAppId;
 
-    /** @var ApiType */
-    private $apiType;
+    /** @var OauthAuthorization|ApiKeyAuthorization */
+    private $authorization;
 
     /** @var array */
     private $headers;
@@ -31,15 +30,13 @@ class GetresponseApi
     private $unauthorizedResponseCodes = [1014, 1018, 1017];
 
     /**
-     * @param string $apiKey
-     * @param ApiType $apiType
+     * @param Authorization $authorization
      * @param string $xAppId
      * @param UserAgentHeader $userAgentHeader
      */
-    public function __construct($apiKey, ApiType $apiType, $xAppId, UserAgentHeader $userAgentHeader)
+    public function __construct(Authorization $authorization, $xAppId, UserAgentHeader $userAgentHeader)
     {
-        $this->apiKey = $apiKey;
-        $this->apiType = $apiType;
+        $this->authorization = $authorization;
         $this->xAppId = $xAppId;
         $this->userAgentHeader = $userAgentHeader;
     }
@@ -54,12 +51,12 @@ class GetresponseApi
             $account = $this->sendRequest('accounts');
 
             if (!isset($account['accountId'])) {
-                throw GetresponseApiException::createForInvalidApiKey();
+                throw GetresponseApiException::createForInvalidAuthentication();
             }
         } catch (AccountNotExistsException $e) {
             throw $e;
         } catch (\Exception $e) {
-            throw GetresponseApiException::createForInvalidApiKey();
+            throw GetresponseApiException::createForInvalidAuthentication();
         }
     }
 
@@ -528,18 +525,19 @@ class GetresponseApi
         }
 
         $json_params = json_encode($params);
-        $apiMethod = $this->apiType->getApiUrl().$apiMethod;
+        $apiMethod = $this->authorization->getApiUrl() . $apiMethod;
 
         $headers = [
-            'X-Auth-Token: api-key ' . $this->apiKey,
             'Content-Type: application/json',
             'User-Agent: ' . $this->userAgentHeader->getUserAgentInfo(),
             'X-APP-ID: ' . $this->xAppId,
         ];
 
+        $headers[] = $this->authorization->getAuthorizationHeader();
+
         // for GetResponse 360
-        if ($this->apiType->isMx()) {
-            $headers[] = 'X-Domain: ' . $this->apiType->getDomain();
+        if ($this->authorization->isMx()) {
+            $headers[] = 'X-Domain: ' . $this->authorization->getDomain();
         }
 
         //also as get method
@@ -635,10 +633,10 @@ class GetresponseApi
     }
 
     /**
-     * @return string
+     * @return OauthAuthorization|ApiKeyAuthorization
      */
-    public function getApiKey()
+    public function getAuthorization()
     {
-        return $this->apiKey;
+        return $this->authorization;
     }
 }
