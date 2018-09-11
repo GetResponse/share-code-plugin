@@ -15,6 +15,9 @@ class GetresponseApiClient
     /** @var DbRepositoryInterface */
     private $dbRepository;
 
+    /** @var string */
+    private $authorizationKey;
+
     /**
      * @param GetresponseApi $grApi
      * @param DbRepositoryInterface $dbRepository
@@ -23,6 +26,7 @@ class GetresponseApiClient
     {
         $this->grApi = $grApi;
         $this->dbRepository = $dbRepository;
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
     }
 
     /**
@@ -31,13 +35,13 @@ class GetresponseApiClient
     public function checkConnection()
     {
         try {
-            if (empty($this->grApi->getApiKey())) {
-                throw GetresponseApiException::createForInvalidApiKey();
+            if (empty($this->authorizationKey)) {
+                throw GetresponseApiException::createForInvalidAuthentication();
             }
             $this->grApi->checkConnection();
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -51,10 +55,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getAccountInfo();
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -68,12 +72,14 @@ class GetresponseApiClient
      */
     public function getContactByEmail($email, $listId)
     {
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
+
         try {
             $response = $this->grApi->getContactByEmail($email, $listId);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -86,12 +92,14 @@ class GetresponseApiClient
      */
     public function getContactById($contactId)
     {
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
+
         try {
             $response = $this->grApi->getContactById($contactId);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -104,12 +112,14 @@ class GetresponseApiClient
      */
     public function createContact($params)
     {
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
+
         try {
             $response = $this->grApi->createContact($params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -124,10 +134,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->searchContacts($email);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -141,9 +151,9 @@ class GetresponseApiClient
     {
         try {
             $this->grApi->deleteContact($contactId);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -159,10 +169,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->updateContact($contactId, $params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -178,10 +188,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->createProduct($shopId, $product);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -198,10 +208,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->updateProduct($shopId, $productId, $params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -217,10 +227,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->createCart($shopId, $params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -237,10 +247,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->updateCart($shopId, $cartId, $params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -257,10 +267,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->createOrder($shopId, $params, $skipAutomation);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -278,10 +288,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->updateOrder($shopId, $orderId, $params, $skipAutomation);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -297,10 +307,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->removeCart($shopId, $cartId);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -317,10 +327,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getCustomFields($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -335,10 +345,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->createCustomField($params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -353,10 +363,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->deleteCustomField($customFieldId);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -373,10 +383,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getWebForms($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -391,10 +401,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getSubscriptionConfirmationSubject($lang);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -409,10 +419,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getSubscriptionConfirmationBody($lang);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -429,10 +439,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getFromFields($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -449,10 +459,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getForms($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -468,10 +478,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getCustomFieldByName($name);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -488,10 +498,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getContactList($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -507,10 +517,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->createContactList($params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -526,10 +536,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getAutoresponders($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -546,10 +556,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getCampaignAutoresponders($campaignId, $page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -564,10 +574,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getAutoresponderById($id);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -582,10 +592,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->createShop($params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -600,10 +610,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->deleteShop($shopId);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -620,10 +630,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getShops($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -640,10 +650,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->createProductVariant($shopId, $productId, $params);
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -657,10 +667,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getAccountFeatures();
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -674,10 +684,10 @@ class GetresponseApiClient
     {
         try {
             $response = $this->grApi->getTrackingCodeSnippet();
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
             return $response;
         } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->grApi->getApiKey());
+            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
             throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
         }
@@ -693,11 +703,11 @@ class GetresponseApiClient
 
     private function removeAccountIfRequired()
     {
-        $firstOccurrence = $this->dbRepository->getInvalidAccountFirstOccurrenceDate($this->grApi->getApiKey());
+        $firstOccurrence = $this->dbRepository->getInvalidAccountFirstOccurrenceDate($this->authorizationKey);
 
         if (!empty($firstOccurrence) && (new DateTime('now'))->diff((new DateTime($firstOccurrence)))->days > 1) {
-            $this->dbRepository->disconnectAccount($this->grApi->getApiKey());
-            $this->dbRepository->markAccountAsValid($this->grApi->getApiKey());
+            $this->dbRepository->disconnectAccount($this->authorizationKey);
+            $this->dbRepository->markAccountAsValid($this->authorizationKey);
         }
     }
 }
