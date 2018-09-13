@@ -19,7 +19,7 @@ abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
     /** @var array */
     private $config;
 
-    /** @var DbRepositoryInterface */
+    /** @var DbRepositoryInterface|\PHPUNIT_ */
     protected $dbRepositoryMock;
 
 
@@ -44,9 +44,9 @@ abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
      * @return GetresponseApiClient
      * @throws ApiTypeException
      */
-    public function getGetresponseApiClient()
+    public function getApiClient()
     {
-        $authorization = new OauthAuthorization('', '', '', Authorization::SMB);
+        $authorization = new OauthAuthorization('accessToken', 'refreshToken', Authorization::SMB, '');
         $userAgentHeader = new UserAgentHeader('ShareCode', 'ShareCode', 'ShareCode');
 
         return new GetresponseApiClient(
