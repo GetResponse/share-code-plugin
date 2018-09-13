@@ -17,4 +17,7 @@ class GrShareCodeException extends Exception
     const INVALID_VARIANT = 10006;
     const INVALID_PRODUCT = 10007;
     const INVALID_ADD_CART_COMMAND = 10008;
+    const INVALID_ACCESS_TOKEN = 10009;
+    const INVALID_REFRESH_TOKEN = 10010;
+    const INVALID_API_KEY = 10011;
 }

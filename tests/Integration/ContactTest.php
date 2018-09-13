@@ -48,7 +48,7 @@ class ContactTest extends BaseCaseTest
 
     public function setUp()
     {
-        $this->getResponseApiClient = $this->getGetresponseApiClient();
+        $this->getResponseApiClient = $this->getApiClient();
 
         $this->contactService = new ContactService($this->getResponseApiClient);
 
