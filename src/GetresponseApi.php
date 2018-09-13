@@ -405,7 +405,7 @@ class GetresponseApi
      */
     public function getAutoresponders($page, $perPage)
     {
-        return $this->sendRequest('autoresponders?' . $this->setParams(['query' => ['page' => $page, 'perPage' => $perPage]]), 'GET', [], true);
+        return $this->sendRequest('autoresponders?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
     }
 
     /**
