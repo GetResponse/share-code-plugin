@@ -4,8 +4,6 @@ namespace GrShareCode\Tests\Unit\Domain\Api;
 use GrShareCode\Api\ApiTypeException;
 use GrShareCode\Api\Authorization;
 use GrShareCode\Api\ApiKeyAuthorization;
-use GrShareCode\Api\UserAgentHeader;
-use GrShareCode\GetresponseApi;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,6 +12,31 @@ use PHPUnit\Framework\TestCase;
  */
 class ApiKeyAuthorizationTest extends TestCase
 {
+    /**
+     * @test
+     * @dataProvider incorrectAuthorizationParams
+     * @param $apiKey
+     * @param $type
+     * @param $domain
+     */
+    public function shouldThrowExceptionWhenIncorrectParam($apiKey, $type, $domain)
+    {
+        $this->expectException(ApiTypeException::class);
+        new ApiKeyAuthorization($apiKey, $type, $domain);
+    }
+
+    /**
+     * @return array
+     */
+    public function incorrectAuthorizationParams()
+    {
+        return [
+            ['', Authorization::SMB, 'domain.com'],
+            ['accessToken', '', 'domain.com'],
+            ['accessToken', Authorization::MX_US, '']
+        ];
+    }
+
     /**
      * @test
      * @dataProvider GetInvalidApiTypeProvider
@@ -47,7 +70,7 @@ class ApiKeyAuthorizationTest extends TestCase
      */
     public function shouldReturnValidApiUrl($type, $domain, $url)
     {
-        $apiType = new ApiKeyAuthorization('', $type, $domain);
+        $apiType = new ApiKeyAuthorization('apiKey', $type, $domain);
         self::assertEquals($url, $apiType->getApiUrl());
     }
 
@@ -60,31 +83,6 @@ class ApiKeyAuthorizationTest extends TestCase
             [Authorization::SMB, null, Authorization::API_URL_SMB],
             [Authorization::MX_US, 'https://example.com', Authorization::API_URL_MX_US],
             [Authorization::MX_PL, 'https://example.com', Authorization::API_URL_MX_PL],
-        ];
-    }
-
-
-    /**
-     * @test
-     * @dataProvider validApiTypeProvider
-     * @param $authorization
-     */
-    public function shouldValidateApiType($authorization)
-    {
-        $userAgentHeader = new UserAgentHeader('shopify', '3.9', '234');
-        new GetresponseApi($authorization, 'x app id', $userAgentHeader);
-    }
-
-    /**
-     * @return array
-     * @throws ApiTypeException
-     */
-    public function validApiTypeProvider()
-    {
-        return [
-            [new ApiKeyAuthorization('', Authorization::SMB)],
-            [new ApiKeyAuthorization('', Authorization::MX_US, 'domain.com')],
-            [new ApiKeyAuthorization('', Authorization::MX_PL, 'domain.pl')],
         ];
     }
 
@@ -106,9 +104,9 @@ class ApiKeyAuthorizationTest extends TestCase
     public function isMxAccountProvider()
     {
         return [
-            [false, new ApiKeyAuthorization('', Authorization::SMB, 'example.com')],
-            [true, new ApiKeyAuthorization('', Authorization::MX_US, 'example.com')],
-            [true, new ApiKeyAuthorization('', Authorization::MX_PL, 'example.com')]
+            [false, new ApiKeyAuthorization('apiKey', Authorization::SMB)],
+            [true, new ApiKeyAuthorization('apiKey', Authorization::MX_US, 'example.com')],
+            [true, new ApiKeyAuthorization('apiKey', Authorization::MX_PL, 'example.com')]
         ];
     }
 }

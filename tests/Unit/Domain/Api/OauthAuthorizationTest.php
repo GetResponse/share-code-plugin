@@ -16,6 +16,35 @@ class OauthAuthorizationTest extends TestCase
 {
     /**
      * @test
+     * @dataProvider incorrectAuthorizationParams
+     * @param $accessToken
+     * @param $refreshToken
+     * @param $type
+     * @param $domain
+     * @throws ApiTypeException
+     */
+    public function shouldThrowExceptionWhenIncorrectParam($accessToken, $refreshToken, $type, $domain)
+    {
+        $this->expectException(ApiTypeException::class);
+
+        new OauthAuthorization($accessToken, $refreshToken, $type, $domain);
+    }
+
+    /**
+     * @return array
+     */
+    public function incorrectAuthorizationParams()
+    {
+        return [
+            ['', 'refreshToken', Authorization::SMB, 'domain.com'],
+            ['accessToken', '', Authorization::SMB, 'domain.com'],
+            ['accessToken', 'refreshToken', '', 'domain.com'],
+            ['accessToken', 'refreshToken', Authorization::MX_US, '']
+        ];
+    }
+
+    /**
+     * @test
      */
     public static function shouldCreateValidAuthorizationInstance()
     {
@@ -24,7 +53,7 @@ class OauthAuthorizationTest extends TestCase
         $domain = 'example.com';
         $type = Authorization::MX_US;
 
-        $auth = new OauthAuthorization($accessToken, $refreshToken, $domain, $type);
+        $auth = new OauthAuthorization($accessToken, $refreshToken, $type, $domain);
 
         self::assertEquals($accessToken, $auth->getAccessToken());
         self::assertEquals($refreshToken, $auth->getRefreshToken());
@@ -40,7 +69,7 @@ class OauthAuthorizationTest extends TestCase
         $accessToken = 'TokEn';
         $header = 'Authorization: Bearer ' . $accessToken;
 
-        $auth = new OauthAuthorization($accessToken, 'RefREsh', 'example.com', Authorization::MX_US);
+        $auth = new OauthAuthorization($accessToken, 'RefREsh', Authorization::MX_US,  'example.com');
 
         self::assertEquals($header, $auth->getAuthorizationHeader());
     }
@@ -53,7 +82,7 @@ class OauthAuthorizationTest extends TestCase
     public function shouldThrowExceptionWhenInvalidApiType($type)
     {
         $this->expectException(ApiTypeException::class);
-        $authorization = new OauthAuthorization('xyz', 'rsd', 'domain.com', $type);
+        $authorization = new OauthAuthorization('xyz', 'rsd', $type, 'domain.com');
     }
 
     /**
@@ -78,7 +107,7 @@ class OauthAuthorizationTest extends TestCase
      */
     public function shouldReturnValidApiUrl($type, $domain, $url)
     {
-        $apiType = new OauthAuthorization('', '', $domain, $type);
+        $apiType = new OauthAuthorization('accessToken', 'refreshToken', $type, $domain);
         self::assertEquals($url, $apiType->getApiUrl());
     }
 
@@ -94,35 +123,11 @@ class OauthAuthorizationTest extends TestCase
         ];
     }
 
-
-    /**
-     * @test
-     * @dataProvider validApiTypeProvider
-     * @param $authorization
-     */
-    public function shouldValidateApiType($authorization)
-    {
-        $userAgentHeader = new UserAgentHeader('shopify', '3.9', '234');
-        new GetresponseApi($authorization, 'x app id', $userAgentHeader);
-    }
-
-    /**
-     * @return array
-     * @throws ApiTypeException
-     */
-    public function validApiTypeProvider()
-    {
-        return [
-            [new OauthAuthorization('', '', '', Authorization::SMB)],
-            [new OauthAuthorization('', '', 'domain.com', Authorization::MX_US)],
-            [new OauthAuthorization('', '', 'domain.pl', Authorization::MX_PL)],
-        ];
-    }
-
     /**
      * @test
      * @dataProvider isMxAccountProvider
-     * @param $authorization
+     * @param $isMx
+     * @param Authorization $authorization
      */
     public function shouldCheckIfAccountIsMx($isMx, Authorization $authorization)
     {
@@ -136,9 +141,9 @@ class OauthAuthorizationTest extends TestCase
     public function isMxAccountProvider()
     {
         return [
-            [false, new OauthAuthorization('', '', 'example.com', Authorization::SMB)],
-            [true, new OauthAuthorization('', '', 'example.com', Authorization::MX_US)],
-            [true, new OauthAuthorization('', '', 'example.com', Authorization::MX_PL)]
+            [false, new OauthAuthorization('accessToken', 'refreshToken', Authorization::SMB, 'example.com')],
+            [true, new OauthAuthorization('accessToken', 'refreshToken', Authorization::MX_US, 'example.com')],
+            [true, new OauthAuthorization('accessToken', 'refreshToken', Authorization::MX_PL, 'example.com')]
         ];
     }
 }

@@ -17,11 +17,11 @@ class OauthAuthorization extends Authorization implements AuthorizationInterface
     /**
      * @param string $accessToken
      * @param string $refreshToken
-     * @param string $domain
      * @param string $type
+     * @param string $domain
      * @throws ApiTypeException
      */
-    public function __construct($accessToken, $refreshToken, $domain, $type)
+    public function __construct($accessToken, $refreshToken, $type, $domain = '')
     {
         $this->setType($type);
         $this->setDomain($domain);
