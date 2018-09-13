@@ -1,4 +1,5 @@
 <?php
+
 namespace GrShareCode;
 
 use DateTime;
@@ -34,16 +35,26 @@ class GetresponseApiClient
      */
     public function checkConnection()
     {
-        try {
-            if (empty($this->authorizationKey)) {
-                throw GetresponseApiException::createForInvalidAuthentication();
-            }
+        $this->execute(function () {
             $this->grApi->checkConnection();
+        });
+    }
+
+    /**
+     * @param callable $action
+     * @return array|string|int
+     * @throws GetresponseApiException
+     */
+    private function execute(callable $action)
+    {
+        try {
+            $result = $action();
             $this->dbRepository->markAccountAsValid($this->authorizationKey);
+            return $result;
         } catch (AccountNotExistsException $e) {
             $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
             $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
+            throw GetresponseApiException::createFromPreviousException($e);
         }
     }
 
@@ -53,15 +64,9 @@ class GetresponseApiClient
      */
     public function getAccountInfo()
     {
-        try {
-            $response = $this->grApi->getAccountInfo();
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () {
+            return $this->grApi->getAccountInfo();
+        });
     }
 
     /**
@@ -73,16 +78,9 @@ class GetresponseApiClient
     public function getContactByEmail($email, $listId)
     {
         $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-
-        try {
-            $response = $this->grApi->getContactByEmail($email, $listId);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($email, $listId) {
+            return $this->grApi->getContactByEmail($email, $listId);
+        });
     }
 
     /**
@@ -93,16 +91,9 @@ class GetresponseApiClient
     public function getContactById($contactId)
     {
         $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-
-        try {
-            $response = $this->grApi->getContactById($contactId);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($contactId) {
+            return $this->grApi->getContactById($contactId);
+        });
     }
 
     /**
@@ -113,16 +104,9 @@ class GetresponseApiClient
     public function createContact($params)
     {
         $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-
-        try {
-            $response = $this->grApi->createContact($params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($params) {
+            return $this->grApi->createContact($params);
+        });
     }
 
     /**
@@ -132,15 +116,9 @@ class GetresponseApiClient
      */
     public function searchContacts($email)
     {
-        try {
-            $response = $this->grApi->searchContacts($email);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($email) {
+            return $this->grApi->searchContacts($email);
+        });
     }
 
     /**
@@ -149,14 +127,9 @@ class GetresponseApiClient
      */
     public function deleteContact($contactId)
     {
-        try {
-            $this->grApi->deleteContact($contactId);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        $this->execute(function () use ($contactId) {
+             $this->grApi->deleteContact($contactId);
+        });
     }
 
     /**
@@ -167,15 +140,9 @@ class GetresponseApiClient
      */
     public function updateContact($contactId, $params)
     {
-        try {
-            $response = $this->grApi->updateContact($contactId, $params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($contactId, $params) {
+            return $this->grApi->updateContact($contactId, $params);
+        });
     }
 
     /**
@@ -186,15 +153,9 @@ class GetresponseApiClient
      */
     public function createProduct($shopId, $product)
     {
-        try {
-            $response = $this->grApi->createProduct($shopId, $product);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($shopId, $product) {
+            return $this->grApi->createProduct($shopId, $product);
+        });
     }
 
     /**
@@ -206,15 +167,9 @@ class GetresponseApiClient
      */
     public function updateProduct($shopId, $productId, $params)
     {
-        try {
-            $response = $this->grApi->updateProduct($shopId, $productId, $params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($shopId, $productId, $params) {
+            return $this->grApi->updateProduct($shopId, $productId, $params);
+        });
     }
 
     /**
@@ -225,15 +180,9 @@ class GetresponseApiClient
      */
     public function createCart($shopId, $params)
     {
-        try {
-            $response = $this->grApi->createCart($shopId, $params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($shopId, $params) {
+            return $this->grApi->createCart($shopId, $params);
+        });
     }
 
     /**
@@ -245,15 +194,9 @@ class GetresponseApiClient
      */
     public function updateCart($shopId, $cartId, $params)
     {
-        try {
-            $response = $this->grApi->updateCart($shopId, $cartId, $params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($shopId, $cartId, $params) {
+            return $this->grApi->updateCart($shopId, $cartId, $params);
+        });
     }
 
     /**
@@ -265,15 +208,9 @@ class GetresponseApiClient
      */
     public function createOrder($shopId, $params, $skipAutomation = false)
     {
-        try {
-            $response = $this->grApi->createOrder($shopId, $params, $skipAutomation);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($shopId, $params, $skipAutomation) {
+            return $this->grApi->createOrder($shopId, $params, $skipAutomation);
+        });
     }
 
     /**
@@ -286,17 +223,11 @@ class GetresponseApiClient
      */
     public function updateOrder($shopId, $orderId, $params, $skipAutomation = false)
     {
-        try {
-            $response = $this->grApi->updateOrder($shopId, $orderId, $params, $skipAutomation);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
-
+        return $this->execute(function () use ($shopId, $orderId, $params, $skipAutomation) {
+            return $this->grApi->updateOrder($shopId, $orderId, $params, $skipAutomation);
+        });
     }
+
     /**
      * @param string $shopId
      * @param string $cartId
@@ -305,15 +236,9 @@ class GetresponseApiClient
      */
     public function removeCart($shopId, $cartId)
     {
-        try {
-            $response = $this->grApi->removeCart($shopId, $cartId);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($shopId, $cartId) {
+            return $this->grApi->removeCart($shopId, $cartId);
+        });
     }
 
     /**
@@ -325,15 +250,9 @@ class GetresponseApiClient
      */
     public function getCustomFields($page, $perPage)
     {
-        try {
-            $response = $this->grApi->getCustomFields($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($page, $perPage) {
+            return $this->grApi->getCustomFields($page, $perPage);
+        });
     }
 
     /**
@@ -343,15 +262,9 @@ class GetresponseApiClient
      */
     public function createCustomField($params)
     {
-        try {
-            $response = $this->grApi->createCustomField($params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($params) {
+            return $this->grApi->createCustomField($params);
+        });
     }
 
     /**
@@ -361,15 +274,9 @@ class GetresponseApiClient
      */
     public function deleteCustomField($customFieldId)
     {
-        try {
-            $response = $this->grApi->deleteCustomField($customFieldId);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($customFieldId) {
+            return $this->grApi->deleteCustomField($customFieldId);
+        });
     }
 
     /**
@@ -381,15 +288,9 @@ class GetresponseApiClient
      */
     public function getWebForms($page, $perPage)
     {
-        try {
-            $response = $this->grApi->getWebForms($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($page, $perPage) {
+            return $this->grApi->getWebForms($page, $perPage);
+        });
     }
 
     /**
@@ -399,15 +300,9 @@ class GetresponseApiClient
      */
     public function getSubscriptionConfirmationSubject($lang = 'EN')
     {
-        try {
-            $response = $this->grApi->getSubscriptionConfirmationSubject($lang);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($lang) {
+            return $this->grApi->getSubscriptionConfirmationSubject($lang);
+        });
     }
 
     /**
@@ -417,15 +312,9 @@ class GetresponseApiClient
      */
     public function getSubscriptionConfirmationBody($lang = 'EN')
     {
-        try {
-            $response = $this->grApi->getSubscriptionConfirmationBody($lang);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($lang) {
+            return $this->grApi->getSubscriptionConfirmationBody($lang);
+        });
     }
 
     /**
@@ -437,15 +326,9 @@ class GetresponseApiClient
      */
     public function getFromFields($page, $perPage)
     {
-        try {
-            $response = $this->grApi->getFromFields($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($page, $perPage) {
+            return $this->grApi->getFromFields($page, $perPage);
+        });
     }
 
     /**
@@ -457,15 +340,9 @@ class GetresponseApiClient
      */
     public function getForms($page, $perPage)
     {
-        try {
-            $response = $this->grApi->getForms($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($page, $perPage) {
+            return $this->grApi->getForms($page, $perPage);
+        });
     }
 
     /**
@@ -476,15 +353,9 @@ class GetresponseApiClient
      */
     public function getCustomFieldByName($name)
     {
-        try {
-            $response = $this->grApi->getCustomFieldByName($name);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($name) {
+            return $this->grApi->getCustomFieldByName($name);
+        });
     }
 
     /**
@@ -496,15 +367,9 @@ class GetresponseApiClient
      */
     public function getContactList($page, $perPage)
     {
-        try {
-            $response = $this->grApi->getContactList($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($page, $perPage) {
+            return $this->grApi->getContactList($page, $perPage);
+        });
     }
 
 
@@ -515,15 +380,9 @@ class GetresponseApiClient
      */
     public function createContactList(array $params)
     {
-        try {
-            $response = $this->grApi->createContactList($params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($params) {
+            return $this->grApi->createContactList($params);
+        });
     }
 
     /**
@@ -534,15 +393,9 @@ class GetresponseApiClient
      */
     public function getAutoresponders($page, $perPage)
     {
-        try {
-            $response = $this->grApi->getAutoresponders($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($page, $perPage) {
+            return $this->grApi->getAutoresponders($page, $perPage);
+        });
     }
 
     /**
@@ -554,15 +407,9 @@ class GetresponseApiClient
      */
     public function getCampaignAutoresponders($campaignId, $page, $perPage)
     {
-        try {
-            $response = $this->grApi->getCampaignAutoresponders($campaignId, $page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($campaignId, $page, $perPage) {
+            return $this->grApi->getCampaignAutoresponders($campaignId, $page, $perPage);
+        });
     }
 
     /**
@@ -572,15 +419,9 @@ class GetresponseApiClient
      */
     public function getAutoresponderById($id)
     {
-        try {
-            $response = $this->grApi->getAutoresponderById($id);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($id) {
+            return $this->grApi->getAutoresponderById($id);
+        });
     }
 
     /**
@@ -590,15 +431,9 @@ class GetresponseApiClient
      */
     public function createShop($params)
     {
-        try {
-            $response = $this->grApi->createShop($params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($params) {
+            return $this->grApi->createShop($params);
+        });
     }
 
     /**
@@ -608,15 +443,9 @@ class GetresponseApiClient
      */
     public function deleteShop($shopId)
     {
-        try {
-            $response = $this->grApi->deleteShop($shopId);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($shopId) {
+            return $this->grApi->deleteShop($shopId);
+        });
     }
 
     /**
@@ -628,15 +457,9 @@ class GetresponseApiClient
      */
     public function getShops($page, $perPage)
     {
-        try {
-            $response = $this->grApi->getShops($page, $perPage);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($page, $perPage) {
+            return $this->grApi->getShops($page, $perPage);
+        });
     }
 
     /**
@@ -648,15 +471,9 @@ class GetresponseApiClient
      */
     public function createProductVariant($shopId, $productId, $params)
     {
-        try {
-            $response = $this->grApi->createProductVariant($shopId, $productId, $params);
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () use ($shopId, $productId, $params) {
+            return $this->grApi->createProductVariant($shopId, $productId, $params);
+        });
     }
 
     /**
@@ -665,15 +482,9 @@ class GetresponseApiClient
      */
     public function getAccountFeatures()
     {
-        try {
-            $response = $this->grApi->getAccountFeatures();
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () {
+            return $this->grApi->getAccountFeatures();
+        });
     }
 
     /**
@@ -682,15 +493,9 @@ class GetresponseApiClient
      */
     public function getTrackingCodeSnippet()
     {
-        try {
-            $response = $this->grApi->getTrackingCodeSnippet();
-            $this->dbRepository->markAccountAsValid($this->authorizationKey);
-            return $response;
-        } catch (AccountNotExistsException $e) {
-            $this->dbRepository->markAccountAsInvalid($this->authorizationKey);
-            $this->removeAccountIfRequired();
-            throw new GetresponseApiException($e->getMessage(), $e->getCode(), $e);
-        }
+        return $this->execute(function () {
+            return $this->grApi->getTrackingCodeSnippet();
+        });
     }
 
     /**

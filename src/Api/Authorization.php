@@ -16,6 +16,11 @@ abstract class Authorization
     const MX_PL = 'mx_pl';
 
     const API_TYPES = [self::SMB, self::MX_PL, self::MX_US];
+    const SMB_API_DOMAIN = 'https://app.getresponse.com';
+
+    const SMB_TOKEN_URL = 'https://api.getresponse.com/v3/token';
+    const MX_US_TOKEN_URL = 'https://api3.getresponse360.com/v3/token';
+    const MX_PL_TOKEN_URL = 'https://api3.getresponse360.pl/v3/token';
 
     /** @var string */
     protected $domain;
@@ -24,26 +29,29 @@ abstract class Authorization
     protected $type;
 
     /**
-     * @param string $apiType
+     * @param string $type
      * @throws ApiTypeException
      */
-    protected function validateApiType($apiType)
+    protected function setType($type)
     {
-        if (!in_array($apiType, self::API_TYPES, true)) {
+        if (!in_array($type, self::API_TYPES, true)) {
             throw ApiTypeException::createForInvalidApiType();
         }
+
+        $this->type = $type;
     }
 
     /**
-     * @param string $type
      * @param string $domain
      * @throws ApiTypeException
      */
-    protected function validateApiDomain($type, $domain)
+    protected function setDomain($domain)
     {
-        if (empty($domain) && in_array($type, [self::MX_US, self::MX_PL], true)) {
+        if (empty($domain) && in_array($this->type, [self::MX_US, self::MX_PL], true)) {
             throw ApiTypeException::createForInvalidApiType();
         }
+
+        $this->domain = $domain;
     }
 
     /**
@@ -85,7 +93,7 @@ abstract class Authorization
     public static function getAuthorizationUrl($type, $domain, $clientId, $shop)
     {
         if ($type === self::SMB) {
-            $domain = 'https://app.getresponse.com';
+            $domain = self::SMB_API_DOMAIN;
         } else {
             $domain = 'https://' . $domain;
         }
@@ -107,13 +115,13 @@ abstract class Authorization
     {
         switch ($type) {
             case self::SMB:
-                return 'https://api.getresponse.com/v3/token';
+                return self::SMB_TOKEN_URL;
                 break;
             case self::MX_US:
-                return 'https://api3.getresponse360.com/v3/token';
+                return self::MX_US_TOKEN_URL;
                 break;
             default:
-                return 'https://api3.getresponse360.pl/v3/token';
+                return self::MX_PL_TOKEN_URL;
         }
     }
 }
