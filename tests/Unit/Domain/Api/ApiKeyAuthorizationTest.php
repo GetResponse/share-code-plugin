@@ -22,7 +22,7 @@ class ApiKeyAuthorizationTest extends TestCase
     public function shouldThrowExceptionWhenInvalidApiType($type)
     {
         $this->expectException(ApiTypeException::class);
-        $authorization = new ApiKeyAuthorization('xyz', 'domain.com', $type);
+        new ApiKeyAuthorization('xyz', $type, 'domain.com');
     }
 
     /**
@@ -47,7 +47,7 @@ class ApiKeyAuthorizationTest extends TestCase
      */
     public function shouldReturnValidApiUrl($type, $domain, $url)
     {
-        $apiType = new ApiKeyAuthorization('', $domain, $type);
+        $apiType = new ApiKeyAuthorization('', $type, $domain);
         self::assertEquals($url, $apiType->getApiUrl());
     }
 
@@ -82,9 +82,9 @@ class ApiKeyAuthorizationTest extends TestCase
     public function validApiTypeProvider()
     {
         return [
-            [new ApiKeyAuthorization('', '', Authorization::SMB)],
-            [new ApiKeyAuthorization('', 'domain.com', Authorization::MX_US)],
-            [new ApiKeyAuthorization('', 'domain.pl', Authorization::MX_PL)],
+            [new ApiKeyAuthorization('', Authorization::SMB)],
+            [new ApiKeyAuthorization('', Authorization::MX_US, 'domain.com')],
+            [new ApiKeyAuthorization('', Authorization::MX_PL, 'domain.pl')],
         ];
     }
 
@@ -106,9 +106,9 @@ class ApiKeyAuthorizationTest extends TestCase
     public function isMxAccountProvider()
     {
         return [
-            [false, new ApiKeyAuthorization('', 'example.com', Authorization::SMB)],
-            [true, new ApiKeyAuthorization('', 'example.com', Authorization::MX_US)],
-            [true, new ApiKeyAuthorization('', 'example.com', Authorization::MX_PL)]
+            [false, new ApiKeyAuthorization('', Authorization::SMB, 'example.com')],
+            [true, new ApiKeyAuthorization('', Authorization::MX_US, 'example.com')],
+            [true, new ApiKeyAuthorization('', Authorization::MX_PL, 'example.com')]
         ];
     }
 }

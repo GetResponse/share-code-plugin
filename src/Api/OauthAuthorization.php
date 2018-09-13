@@ -23,13 +23,10 @@ class OauthAuthorization extends Authorization implements AuthorizationInterface
      */
     public function __construct($accessToken, $refreshToken, $domain, $type)
     {
-        $this->validateApiType($type);
-        $this->validateApiDomain($type, $domain);
-
-        $this->accessToken = $accessToken;
-        $this->refreshToken = $refreshToken;
-        $this->domain = $domain;
-        $this->type = $type;
+        $this->setType($type);
+        $this->setDomain($domain);
+        $this->setAccessToken($accessToken);
+        $this->setRefreshToken($refreshToken);
     }
 
 
@@ -71,5 +68,31 @@ class OauthAuthorization extends Authorization implements AuthorizationInterface
     public function getRefreshToken()
     {
         return $this->refreshToken;
+    }
+
+    /**
+     * @param string $accessToken
+     * @throws ApiTypeException
+     */
+    private function setAccessToken($accessToken)
+    {
+        if (0 === strlen(trim($accessToken))) {
+            throw ApiTypeException::createForInvalidAccessToken();
+        }
+
+        $this->accessToken = $accessToken;
+    }
+
+    /**
+     * @param string $refreshToken
+     * @throws ApiTypeException
+     */
+    private function setRefreshToken($refreshToken)
+    {
+        if (0 === strlen(trim($refreshToken))) {
+            throw ApiTypeException::createForInvalidRefreshToken();
+        }
+
+        $this->refreshToken = $refreshToken;
     }
 }

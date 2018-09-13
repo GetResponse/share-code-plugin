@@ -1,6 +1,8 @@
 <?php
 namespace GrShareCode;
 
+use Exception;
+
 /**
  * Class GetresponseApiException
  * @package GrShareCode
@@ -32,5 +34,14 @@ class GetresponseApiException extends GrShareCodeException
     public static function createForInvalidAuthentication()
     {
         return new self('Invalid Authentication params', self::INVALID_AUTHENTICATION);
+    }
+
+    /**
+     * @param Exception $e
+     * @return GetresponseApiException
+     */
+    public static function createFromPreviousException(Exception $e)
+    {
+        return new self($e->getMessage(), $e->getCode(), $e);
     }
 }

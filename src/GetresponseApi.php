@@ -42,8 +42,8 @@ class GetresponseApi
     }
 
     /**
-     * @throws AccountNotExistsException
      * @throws GetresponseApiException
+     * @throws AccountNotExistsException
      */
     public function checkConnection()
     {
