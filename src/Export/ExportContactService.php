@@ -96,14 +96,6 @@ class ExportContactService
 
             $shopId = $exportSettings->getEcommerceConfig()->getShopId();
 
-            $addCartCommand = new AddCartCommand(
-                $historicalOrder->getCart(),
-                $exportContactCommand->getEmail(),
-                $exportSettings->getContactListId(),
-                $shopId
-            );
-            $this->cartService->exportCart($addCartCommand);
-
             $addOrderCommand = new AddOrderCommand(
                 $historicalOrder,
                 $exportContactCommand->getEmail(),
