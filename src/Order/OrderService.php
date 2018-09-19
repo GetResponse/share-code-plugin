@@ -88,6 +88,16 @@ class OrderService
 
         if (empty($grOrderId)) {
 
+            $cartId = $this->dbRepository->getGrCartIdFromMapping(
+                $addOrderCommand->getShopId(),
+                $order->getExternalCartId()
+            );
+
+            if (!empty($cartId)) {
+                $grOrder['cartId'] = $cartId;
+                $this->getresponseApiClient->removeCart($addOrderCommand->getShopId(), $cartId);
+            }
+
             $grOrderId = $this->getresponseApiClient->createOrder(
                 $addOrderCommand->getShopId(),
                 $grOrder,
