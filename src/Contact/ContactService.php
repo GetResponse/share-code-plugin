@@ -65,22 +65,6 @@ class ContactService
             $contact = $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
             $this->updateContact($contact->getContactId(), $addContactCommand);
         } catch (ContactNotFoundException $e) {
-
-            $origin = $this->getresponseApiClient->getCustomFieldByName('origin');
-
-            if (empty($origin)) {
-                $origin = $this->getresponseApiClient->createCustomField([
-                    'name' => 'origin',
-                    'type' => 'text',
-                    'hidden' => false,
-                    'values' => [$addContactCommand->getOriginValue()]
-                ]);
-            }
-
-            $addContactCommand->addCustomField(new ContactCustomField(
-                $origin['customFieldId'],
-                $addContactCommand->getOriginValue()
-            ));
             $this->createContact($addContactCommand);
         }
     }
@@ -139,6 +123,7 @@ class ContactService
     public function createContact(AddContactCommand $addContactCommand)
     {
         $params = $this->prepareParams($addContactCommand, $addContactCommand->getCustomFieldsCollection());
+
         $this->getresponseApiClient->createContact($params);
     }
 
@@ -164,9 +149,26 @@ class ContactService
      * @param AddContactCommand $addContactCommand
      * @param ContactCustomFieldsCollection $customFieldCollection
      * @return array
+     * @throws GetresponseApiException
      */
     private function prepareParams(AddContactCommand $addContactCommand, ContactCustomFieldsCollection $customFieldCollection)
     {
+        $origin = $this->getresponseApiClient->getCustomFieldByName('origin');
+
+        if (empty($origin)) {
+            $origin = $this->getresponseApiClient->createCustomField([
+                'name' => 'origin',
+                'type' => 'text',
+                'hidden' => false,
+                'values' => [$addContactCommand->getOriginValue()]
+            ]);
+        }
+
+        $addContactCommand->addCustomField(new ContactCustomField(
+            $origin['customFieldId'],
+            $addContactCommand->getOriginValue()
+        ));
+
         $params = [
             'name' => $addContactCommand->getName(),
             'email' => $addContactCommand->getEmail(),
@@ -175,7 +177,7 @@ class ContactService
             ]
         ];
 
-        if (null !== $addContactCommand->getDayOfCycle()) {
+        if (!empty($addContactCommand->getDayOfCycle())) {
             $params['dayOfCycle'] = $addContactCommand->getDayOfCycle();
         }
 
