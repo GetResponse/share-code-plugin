@@ -82,7 +82,8 @@ class ContactServiceTest extends TestCase
             'dayOfCycle' => 3,
             'customFieldValues' => [
                 ['customFieldId' => 'id_1', 'value' => ['value_1']],
-                ['customFieldId' => 'id_2', 'value' => ['value_2']]
+                ['customFieldId' => 'id_2', 'value' => ['value_2']],
+                ['customFieldId' => '', 'value' => ['origin']]
             ]
         ];
         $this->getResponseApiClientMock
