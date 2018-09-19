@@ -19,7 +19,7 @@ abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
     /** @var array */
     private $config;
 
-    /** @var DbRepositoryInterface|\PHPUNIT_ */
+    /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
     protected $dbRepositoryMock;
 
 

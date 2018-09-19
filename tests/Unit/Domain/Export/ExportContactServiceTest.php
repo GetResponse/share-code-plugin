@@ -130,7 +130,7 @@ class ExportContactServiceTest extends TestCase
             ->willReturn(new Contact(1, 'Adam Kowalski', 'adam.kowalski@getresponse.com'));
 
         $this->cartServiceMock
-            ->expects($this->once())
+            ->expects($this->never())
             ->method('exportCart');
 
         $this->orderServiceMock
