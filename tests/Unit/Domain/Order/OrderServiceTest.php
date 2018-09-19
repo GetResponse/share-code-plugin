@@ -52,6 +52,12 @@ class OrderServiceTest extends TestCase
             ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
             ->willReturn([]);
 
+        $this->dbRepositoryMock
+            ->expects($this->once())
+            ->method('getGrCartIdFromMapping')
+            ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalCartId())
+            ->willReturn(10);
+
         $this->grApiClientMock
             ->expects($this->once())
             ->method('createOrder');
