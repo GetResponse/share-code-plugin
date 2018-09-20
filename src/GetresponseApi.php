@@ -384,6 +384,17 @@ class GetresponseApi
         return $this->sendRequest('campaigns?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
     }
 
+    /**
+     * @param string $id
+     * @return array
+     * @throws AccountNotExistsException
+     * @throws GetresponseApiException
+     */
+    public function getContactListById($id)
+    {
+        return $this->sendRequest('campaigns/' . $id);
+    }
+
 
     /**
      * @param array $params
@@ -405,7 +416,7 @@ class GetresponseApi
      */
     public function getAutoresponders($page, $perPage)
     {
-        return $this->sendRequest('autoresponders?' . $this->setParams(['query' => ['page' => $page, 'perPage' => $perPage]]), 'GET', [], true);
+        return $this->sendRequest('autoresponders?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
     }
 
     /**
