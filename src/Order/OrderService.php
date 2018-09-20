@@ -93,15 +93,16 @@ class OrderService
                 $order->getExternalCartId()
             );
 
-            $grOrder['cartId'] = $cartId;
+            if (!empty($cartId)) {
+                $grOrder['cartId'] = $cartId;
+                $this->getresponseApiClient->removeCart($addOrderCommand->getShopId(), $cartId);
+            }
 
             $grOrderId = $this->getresponseApiClient->createOrder(
                 $addOrderCommand->getShopId(),
                 $grOrder,
                 $addOrderCommand->skipAutomation()
             );
-
-            $this->getresponseApiClient->removeCart($addOrderCommand->getShopId(), $cartId);
 
         } else {
 

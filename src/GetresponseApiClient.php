@@ -372,6 +372,18 @@ class GetresponseApiClient
         });
     }
 
+    /**
+     * @param string $id
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getContactListById($id)
+    {
+        return $this->execute(function () use ($id) {
+            return $this->grApi->getContactListById($id);
+        });
+    }
+
 
     /**
      * @param array $params
