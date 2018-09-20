@@ -124,4 +124,20 @@ abstract class Authorization
                 return self::MX_PL_TOKEN_URL;
         }
     }
+
+    /**
+     * @return string
+     */
+    public function getDomain()
+    {
+        return $this->domain;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 }
