@@ -49,22 +49,6 @@ class OauthAuthorization extends Authorization implements AuthorizationInterface
     /**
      * @return string
      */
-    public function getDomain()
-    {
-        return $this->domain;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @return string
-     */
     public function getRefreshToken()
     {
         return $this->refreshToken;
