@@ -162,12 +162,13 @@ class ContactService
                 'hidden' => false,
                 'values' => [$addContactCommand->getOriginValue()]
             ]);
-        }
 
-        $addContactCommand->addCustomField(new ContactCustomField(
-            $origin['customFieldId'],
-            $addContactCommand->getOriginValue()
-        ));
+            $addContactCommand->addCustomField(new ContactCustomField(
+                $origin['customFieldId'],
+                $addContactCommand->getOriginValue()
+            ));
+
+        }
 
         $params = [
             'name' => $addContactCommand->getName(),
