@@ -122,6 +122,22 @@ class ContactService
      */
     public function createContact(AddContactCommand $addContactCommand)
     {
+        $origin = $this->getresponseApiClient->getCustomFieldByName('origin');
+
+        if (empty($origin)) {
+            $origin = $this->getresponseApiClient->createCustomField([
+                'name' => 'origin',
+                'type' => 'text',
+                'hidden' => false,
+                'values' => [$addContactCommand->getOriginValue()]
+            ]);
+        }
+
+        $addContactCommand->addCustomField(new ContactCustomField(
+            $origin['customFieldId'],
+            $addContactCommand->getOriginValue()
+        ));
+
         $params = $this->prepareParams($addContactCommand, $addContactCommand->getCustomFieldsCollection());
 
         $this->getresponseApiClient->createContact($params);
@@ -153,23 +169,6 @@ class ContactService
      */
     private function prepareParams(AddContactCommand $addContactCommand, ContactCustomFieldsCollection $customFieldCollection)
     {
-        $origin = $this->getresponseApiClient->getCustomFieldByName('origin');
-
-        if (empty($origin)) {
-            $origin = $this->getresponseApiClient->createCustomField([
-                'name' => 'origin',
-                'type' => 'text',
-                'hidden' => false,
-                'values' => [$addContactCommand->getOriginValue()]
-            ]);
-
-            $addContactCommand->addCustomField(new ContactCustomField(
-                $origin['customFieldId'],
-                $addContactCommand->getOriginValue()
-            ));
-
-        }
-
         $params = [
             'name' => $addContactCommand->getName(),
             'email' => $addContactCommand->getEmail(),
