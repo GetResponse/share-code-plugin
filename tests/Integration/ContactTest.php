@@ -6,7 +6,6 @@ use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\CustomField\CustomFieldService;
-use GrShareCode\GetresponseApi;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
