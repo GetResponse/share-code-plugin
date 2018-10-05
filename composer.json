@@ -1,6 +1,6 @@
 {
     "name": "getresponse/share-code-plugin",
-    "license": "",
+    "license": "MIT",
     "description": "Share code plugin",
     "type": "library",
     "authors": [
