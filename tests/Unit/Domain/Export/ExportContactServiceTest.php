@@ -3,6 +3,7 @@ namespace GrShareCode\Tests\Unit\Domain\Export;
 
 use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\Contact;
+use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\Export\ExportContactService;
@@ -61,7 +62,7 @@ class ExportContactServiceTest extends TestCase
         $this->contactServiceMock
             ->expects($this->once())
             ->method('getContactByEmail')
-            ->willReturn(new Contact(1, 'Adam Kowalski', 'adam.kowalski@getresponse.com'));
+            ->willReturn(new Contact(1, 'Adam Kowalski', 'adam.kowalski@getresponse.com', new ContactCustomFieldsCollection()));
 
         $this->contactServiceMock
             ->expects($this->once())
@@ -127,7 +128,7 @@ class ExportContactServiceTest extends TestCase
         $this->contactServiceMock
             ->expects($this->once())
             ->method('getContactByEmail')
-            ->willReturn(new Contact(1, 'Adam Kowalski', 'adam.kowalski@getresponse.com'));
+            ->willReturn(new Contact(1, 'Adam Kowalski', 'adam.kowalski@getresponse.com', new ContactCustomFieldsCollection()));
 
         $this->cartServiceMock
             ->expects($this->never())

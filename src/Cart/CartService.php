@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\Cart;
 
+use GrShareCode\Cache\CacheInterface;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
@@ -12,6 +13,9 @@ use GrShareCode\Product\ProductService;
  */
 class CartService
 {
+    const CACHE_TTL = 600;
+    const CART_KEY = 'cart_key';
+
     /** @var GetresponseApiClient */
     private $getresponseApiClient;
 
@@ -21,19 +25,25 @@ class CartService
     /** @var ProductService */
     private $productService;
 
+    /** @var CacheInterface */
+    private $cache;
+
     /**
      * @param GetresponseApiClient $getresponseApiClient
      * @param DbRepositoryInterface $dbRepository
      * @param ProductService $productService
+     * @param CacheInterface $cache
      */
     public function __construct(
         GetresponseApiClient $getresponseApiClient,
         DbRepositoryInterface $dbRepository,
-        ProductService $productService
+        ProductService $productService,
+        CacheInterface $cache
     ) {
         $this->getresponseApiClient = $getresponseApiClient;
         $this->dbRepository = $dbRepository;
         $this->productService = $productService;
+        $this->cache = $cache;
     }
 
     /**
@@ -71,10 +81,11 @@ class CartService
      */
     public function sendCart(AddCartCommand $addCartCommand)
     {
-        $contact = $this->getresponseApiClient->getContactByEmail(
-            $addCartCommand->getEmail(),
-            $addCartCommand->getContactListId()
-        );
+        if ($this->cartAlreadySend($addCartCommand->getCart())) {
+            return;
+        }
+
+        $contact = $this->getContact($addCartCommand->getEmail(), $addCartCommand->getContactListId());
 
         if (empty($contact)) {
             return;
@@ -89,6 +100,8 @@ class CartService
             $cart->getCartId(),
             $createCartPayload
         );
+
+        $this->cache->set($this->getCartCacheKey($cart), $this->getCartHash($cart), self::CACHE_TTL);
     }
 
     /**
@@ -142,4 +155,56 @@ class CartService
             $this->getresponseApiClient->updateCart($grShopId, $grCartId, $createCartPayload);
         }
     }
+
+    /**
+     * @param string $email
+     * @param string $contactListId
+     * @return array|string
+     * @throws GetresponseApiException
+     */
+    private function getContact($email, $contactListId)
+    {
+        $userCacheKey = $email . '_' . $contactListId;
+
+        if ($contact = $this->cache->get($userCacheKey)) {
+            $contact = json_decode($contact, true);
+
+        } else {
+            $contact = $this->getresponseApiClient->getContactByEmail($email, $contactListId);
+            $this->cache->set($userCacheKey, json_encode($contact), self::CACHE_TTL);
+        }
+
+        return $contact;
+    }
+
+    /**
+     * @param Cart $cart
+     * @return string
+     */
+    private function getCartCacheKey(Cart $cart)
+    {
+        return self::CART_KEY . $cart->getCartId();
+    }
+
+    /**
+     * @param Cart $cart
+     * @return string
+     */
+    private function getCartHash(Cart $cart)
+    {
+        return md5(serialize($cart->getProducts()));
+    }
+
+    /**
+     * @param Cart $cart
+     * @return bool
+     */
+    private function cartAlreadySend(Cart $cart)
+    {
+        $cacheKey = $this->getCartCacheKey($cart);
+        $currentProductHash = $this->getCartHash($cart);
+
+        return ($cachedProductHash = $this->cache->get($cacheKey)) && $currentProductHash === $cachedProductHash;
+    }
+
 }
