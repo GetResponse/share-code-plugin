@@ -35,7 +35,7 @@ class ContactServiceTest extends TestCase
         $email = 'adam.kowalski@getresponse.com';
         $contactListId = 'grListId';
 
-        $contact = new Contact('grContactId', 'Adam Kowalski', $email);
+        $contact = new Contact('grContactId', 'Adam Kowalski', $email, new ContactCustomFieldsCollection());
 
         $this->getResponseApiClientMock
             ->expects($this->once())
@@ -126,7 +126,7 @@ class ContactServiceTest extends TestCase
 
         $this->getResponseApiClientMock
             ->expects($this->once())
-            ->method('getContactByEmail')
+            ->method('getContactWithCustomFieldsByEmail')
             ->with($email, $listId)->willReturn(null);
 
         $this->getResponseApiClientMock
@@ -187,7 +187,7 @@ class ContactServiceTest extends TestCase
 
         $this->getResponseApiClientMock
             ->expects($this->once())
-            ->method('getContactByEmail')
+            ->method('getContactWithCustomFieldsByEmail')
             ->with($email, $listId)->willReturn(null);
 
         $this->getResponseApiClientMock

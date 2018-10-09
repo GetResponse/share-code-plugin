@@ -26,9 +26,9 @@ abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
     public function __construct()
     {
         define('ROOT_DIR', __DIR__ . '/../../');
-//        require_once ROOT_DIR . 'vendor/autoload.php';
+        require_once ROOT_DIR . 'vendor/autoload.php';
 //        $this->config = include 'config.php';
-
+        $this->dbRepositoryMock = $this->getMockBuilder(DbRepositoryInterface::class)->getMock();
         parent::__construct();
     }
 

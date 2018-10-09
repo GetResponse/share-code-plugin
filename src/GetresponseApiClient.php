@@ -84,6 +84,20 @@ class GetresponseApiClient
     }
 
     /**
+     * @param string $email
+     * @param string $listId
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getContactWithCustomFieldsByEmail($email, $listId)
+    {
+        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
+        return $this->execute(function () use ($email, $listId) {
+            return $this->grApi->getContactWithCustomFieldsByEmail($email, $listId);
+        });
+    }
+
+    /**
      * @param string $contactId
      * @return array
      * @throws GetresponseApiException

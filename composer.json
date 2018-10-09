@@ -21,5 +21,8 @@
         "psr-4": {
             "GrShareCode\\Tests\\": "tests/"
         }
+    },
+    "require": {
+        "ext-json": "*"
     }
 }
