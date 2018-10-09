@@ -103,9 +103,9 @@ class GetresponseApi
         $params = [
             'query' => [
                 'email' => $email,
-                'campaignId' => $listId,
-                'additionalFlags' => 'forceCustoms'
+                'campaignId' => $listId
             ],
+            'additionalFlags' => 'forceCustoms'
         ];
 
         $result = $this->sendRequest('contacts?' . $this->setParams($params));
