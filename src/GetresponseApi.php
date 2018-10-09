@@ -81,12 +81,34 @@ class GetresponseApi
     {
         $params = [
             'query' => [
-                'email'      => $email,
+                'email' => $email,
                 'campaignId' => $listId,
             ],
         ];
 
-        $result = $this->sendRequest('contacts?'.$this->setParams($params));
+        $result = $this->sendRequest('contacts?' . $this->setParams($params));
+
+        return is_array($result) ? reset($result) : [];
+    }
+
+    /**
+     * @param string $email
+     * @param string $listId
+     * @return array
+     * @throws GetresponseApiException
+     * @throws AccountNotExistsException
+     */
+    public function getContactWithCustomFieldsByEmail($email, $listId)
+    {
+        $params = [
+            'query' => [
+                'email' => $email,
+                'campaignId' => $listId,
+                'additionalFlags' => 'forceCustoms'
+            ],
+        ];
+
+        $result = $this->sendRequest('contacts?' . $this->setParams($params));
 
         return is_array($result) ? reset($result) : [];
     }

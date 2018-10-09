@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\Export;
 
+use GrShareCode\Cache\CacheNull;
 use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\DbRepositoryInterface;
@@ -25,7 +26,7 @@ class ExportContactServiceFactory
 
         return new ExportContactService(
             new ContactService($getresponseApiClient),
-            new CartService($getresponseApiClient, $dbRepository, $productService),
+            new CartService($getresponseApiClient, $dbRepository, $productService, new CacheNull()),
             new OrderService($getresponseApiClient, $dbRepository, $productService)
         );
     }

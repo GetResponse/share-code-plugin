@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Cart;
 
+use GrShareCode\Cache\CacheInterface;
 use GrShareCode\Cart\CartService;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApiClient;
@@ -21,6 +22,8 @@ class CartServiceTest extends TestCase
     private $grApiClientMock;
     /** @var ProductService|\PHPUnit_Framework_MockObject_MockObject */
     private $productServiceMock;
+    /** @var CacheInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $cacheMock;
     /** @var CartService */
     private $sut;
 
@@ -38,7 +41,55 @@ class CartServiceTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->sut = new CartService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock);
+        $this->cacheMock = $this->getMockBuilder(CacheInterface::class)
+            ->getMock();
+
+        $this->sut = new CartService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock, $this->cacheMock);
+    }
+
+
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     * @throws GetresponseApiException
+     */
+    public function shouldNotSentCartIfAlreadySentWithSameData()
+    {
+        $command = Generator::createAddCartCommand();
+        $variants[] = [
+            'variantId' => 'abc',
+            'price' => 100,
+            'priceTax' => 120,
+            'quantity' => 1
+        ];
+
+        $this->cacheMock
+            ->expects(self::once())
+            ->method('get')
+            ->with('cart_key' . $command->getCart()->getCartId())
+            ->willReturn('f91ec96768b279d32473d372bb3ec179');
+
+        $this->grApiClientMock
+            ->expects(self::never())
+            ->method('getContactByEmail');
+
+        $this->productServiceMock
+            ->expects(self::never())
+            ->method('getProductsVariants');
+
+        $this->dbRepositoryMock
+            ->expects(self::never())
+            ->method('getGrCartIdFromMapping');
+
+        $this->grApiClientMock
+            ->expects(self::never())
+            ->method('createCart');
+
+        $this->dbRepositoryMock
+            ->expects(self::never())
+            ->method('saveCartMapping');
+
+        $this->sut->sendCart($command);
     }
 
     /**
@@ -46,7 +97,7 @@ class CartServiceTest extends TestCase
      * @doesNotPerformAssertions
      * @throws GetresponseApiException
      */
-    public function shouldCreateCartWithProductInGetResponse()
+    public function shouldCreateCartWithProductInGetResponseAndRetrieveContactFromCache()
     {
         $command = Generator::createAddCartCommand();
         $contact = ['contactId' => 1];
@@ -66,11 +117,15 @@ class CartServiceTest extends TestCase
             'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
         ];
 
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['cart_key' . $command->getCart()->getCartId()], [$command->getEmail() . '_' . $command->getContactListId()])
+            ->willReturnOnConsecutiveCalls('f91ec96768b279d32473d372bb3ec179XX', json_encode($contact));
+
         $this->grApiClientMock
-            ->expects(self::once())
-            ->method('getContactByEmail')
-            ->with($command->getEmail(), $command->getContactListId())
-            ->willReturn($contact);
+            ->expects(self::never())
+            ->method('getContactByEmail');
 
         $this->productServiceMock
             ->expects(self::once())
@@ -97,6 +152,84 @@ class CartServiceTest extends TestCase
             ->method('saveCartMapping')
             ->with($command->getShopId(), $command->getCart()->getCartId(), 'grCartId');
 
+        $this->cacheMock
+            ->expects(self::once())
+            ->method('set')
+            ->with('cart_key' . $command->getCart()->getCartId(), 'f91ec96768b279d32473d372bb3ec179', 600);
+
+        $this->sut->sendCart($command);
+    }
+
+
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     * @throws GetresponseApiException
+     */
+    public function shouldCreateCartWithProductInGetResponse()
+    {
+        $command = Generator::createAddCartCommand();
+        $contact = ['contactId' => 1];
+        $variants[] = [
+            'variantId' => 'abc',
+            'price' => 100,
+            'priceTax' => 120,
+            'quantity' => 1
+        ];
+
+        $createCartPayload = [
+            'contactId' => $contact['contactId'],
+            'currency' => $command->getCart()->getCurrency(),
+            'totalPrice' => $command->getCart()->getTotalPrice(),
+            'selectedVariants' => $variants,
+            'externalId' => $command->getCart()->getCartId(),
+            'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
+        ];
+
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['cart_key100001'], [$command->getEmail() . '_' . $command->getContactListId()])
+            ->willReturnOnConsecutiveCalls('f91ec96768b279d32473d372bb3ec179XX', false);
+
+        $this->grApiClientMock
+            ->expects(self::once())
+            ->method('getContactByEmail')
+            ->with($command->getEmail(), $command->getContactListId())
+            ->willReturn($contact);
+
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('set')
+            ->withConsecutive(
+                [$command->getEmail() . '_' . $command->getContactListId(), json_encode($contact), 600],
+                ['cart_key' . $command->getCart()->getCartId(), 'f91ec96768b279d32473d372bb3ec179', 600]
+            );
+
+        $this->productServiceMock
+            ->expects(self::once())
+            ->method('getProductsVariants')
+            ->with(
+                $command->getCart()->getProducts(),
+                $command->getShopId()
+            )->willReturn($variants);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getGrCartIdFromMapping')
+            ->with($command->getShopId(), $command->getCart()->getCartId())
+            ->willReturn(null);
+
+        $this->grApiClientMock
+            ->expects(self::once())
+            ->method('createCart')
+            ->with($command->getShopId(), $createCartPayload)
+            ->willReturn('grCartId');
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('saveCartMapping')
+            ->with($command->getShopId(), $command->getCart()->getCartId(), 'grCartId');
 
         $this->sut->sendCart($command);
     }
@@ -125,11 +258,25 @@ class CartServiceTest extends TestCase
             'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
         ];
 
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['cart_key100001'], [$command->getEmail() . '_' . $command->getContactListId()])
+            ->willReturnOnConsecutiveCalls('f91ec96768b279d32473d372bb3ec179XX', false);
+
         $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
+
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('set')
+            ->withConsecutive(
+                [$command->getEmail() . '_' . $command->getContactListId(), json_encode($contact), 600],
+                ['cart_key' . $command->getCart()->getCartId(), 'f91ec96768b279d32473d372bb3ec179', 600]
+            );
 
         $this->productServiceMock
             ->expects(self::once())
@@ -168,11 +315,22 @@ class CartServiceTest extends TestCase
     {
         $command = Generator::createAddCartCommand();
 
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['cart_key100001'], [$command->getEmail() . '_' . $command->getContactListId()])
+            ->willReturnOnConsecutiveCalls('f91ec96768b279d32473d372bb3ec179XX', false);
+
         $this->grApiClientMock
             ->expects($this->once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn([]);
+
+        $this->cacheMock
+            ->expects(self::once())
+            ->method('set')
+            ->with($command->getEmail() . '_' . $command->getContactListId(), json_encode([]), 600);
 
         $this->productServiceMock
             ->expects($this->never())
@@ -203,11 +361,25 @@ class CartServiceTest extends TestCase
         $contact = ['contactId' => 1];
         $variants = [];
 
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['cart_key100001'], [$command->getEmail() . '_' . $command->getContactListId()])
+            ->willReturnOnConsecutiveCalls('f91ec96768b279d32473d372bb3ec179XX', false);
+
         $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
+
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('set')
+            ->withConsecutive(
+                [$command->getEmail() . '_' . $command->getContactListId(), json_encode($contact), 600],
+                ['cart_key' . $command->getCart()->getCartId(), '8b9c3edb4d700d04f4b6490f086508fd', 600]
+            );
 
         $this->productServiceMock
             ->expects(self::once())
@@ -247,11 +419,26 @@ class CartServiceTest extends TestCase
         $contact = ['contactId' => 1];
         $variants = [];
 
+
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive(['cart_key100001'], [$command->getEmail() . '_' . $command->getContactListId()])
+            ->willReturnOnConsecutiveCalls('f91ec96768b279d32473d372bb3ec179XX', false);
+
         $this->grApiClientMock
             ->expects(self::once())
             ->method('getContactByEmail')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
+
+        $this->cacheMock
+            ->expects(self::exactly(2))
+            ->method('set')
+            ->withConsecutive(
+                [$command->getEmail() . '_' . $command->getContactListId(), json_encode($contact), 600],
+                ['cart_key' . $command->getCart()->getCartId(), '8b9c3edb4d700d04f4b6490f086508fd', 600]
+            );
 
         $this->productServiceMock
             ->expects(self::once())

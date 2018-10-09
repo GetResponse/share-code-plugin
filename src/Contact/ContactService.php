@@ -49,7 +49,7 @@ class ContactService
         foreach ($exportContactCommand->getCustomFieldsCollection() as $customField) {
             $params['customFieldValues'][] = [
                 'customFieldId' => $customField->getId(),
-                'value' => [$customField->getValue()]
+                'value' => $customField->getValues()
             ];
         }
         $this->getresponseApiClient->updateContact($contactId, $params);
@@ -62,8 +62,8 @@ class ContactService
     public function upsertContact(AddContactCommand $addContactCommand)
     {
         try {
-            $contact = $this->getContactByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
-            $this->updateContact($contact->getContactId(), $addContactCommand);
+            $contact = $this->getContactWithCustomFieldsByEmail($addContactCommand->getEmail(), $addContactCommand->getContactListId());
+            $this->updateContact($contact, $addContactCommand);
         } catch (ContactNotFoundException $e) {
             $this->createContact($addContactCommand);
         }
@@ -87,7 +87,33 @@ class ContactService
         return new Contact(
             $response['contactId'],
             $response['name'],
-            $response['email']
+            $response['email'],
+            new ContactCustomFieldsCollection()
+        );
+    }
+
+    /**
+     * @param string $email
+     * @param string $listId
+     * @return Contact
+     * @throws ContactNotFoundException
+     * @throws GetresponseApiException
+     */
+    public function getContactWithCustomFieldsByEmail($email, $listId)
+    {
+        $response = $this->getresponseApiClient->getContactWithCustomFieldsByEmail($email, $listId);
+
+        if (empty($response)) {
+            throw ContactNotFoundException::withEmailAndContactListId($email, $listId);
+        }
+
+        $contactCustomFieldCollection = (new ContactCustomFieldCollectionFactory)->fromApiResponse($response);
+
+        return new Contact(
+            $response['contactId'],
+            $response['name'],
+            $response['email'],
+            $contactCustomFieldCollection
         );
     }
 
@@ -144,28 +170,26 @@ class ContactService
     }
 
     /**
-     * @param string $contactId
+     * @param Contact $contact
      * @param AddContactCommand $addContactCommand
      * @throws GetresponseApiException
-     * @throws ContactNotFoundException
      */
-    private function updateContact($contactId, AddContactCommand $addContactCommand)
+    private function updateContact(Contact $contact, AddContactCommand $addContactCommand)
     {
-        $grCustomFields = $this->getContactCustomFields($contactId);
+        $grCustomFields = $contact->getContactCustomFieldCollection();
         $newCustomFields = $addContactCommand->getCustomFieldsCollection();
 
         $customFieldsMerger = new ContactCustomFieldBuilder($grCustomFields, $newCustomFields);
         $customFieldCollection = $customFieldsMerger->getMergedCustomFieldsCollection();
 
         $params = $this->prepareParams($addContactCommand, $customFieldCollection);
-        $this->getresponseApiClient->updateContact($contactId, $params);
+        $this->getresponseApiClient->updateContact($contact->getContactId(), $params);
     }
 
     /**
      * @param AddContactCommand $addContactCommand
      * @param ContactCustomFieldsCollection $customFieldCollection
      * @return array
-     * @throws GetresponseApiException
      */
     private function prepareParams(AddContactCommand $addContactCommand, ContactCustomFieldsCollection $customFieldCollection)
     {
