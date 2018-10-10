@@ -154,7 +154,7 @@ class OrderServiceTest extends TestCase
             ->expects($this->once())
             ->method('getPayloadMd5FromOrderMapping')
             ->with($addOrderCommand->getShopId(), $addOrderCommand->getOrder()->getExternalOrderId())
-            ->willReturn('bcf9db4827ba8b3addbb64f76537598d');
+            ->willReturn('d065abbedbfa77b8da3a7a1191068317');
 
         $this->grApiClientMock
             ->expects(self::never())
