@@ -81,7 +81,7 @@ class CartService
      */
     public function sendCart(AddCartCommand $addCartCommand)
     {
-        if ($this->cartAlreadySend($addCartCommand->getCart())) {
+        if ($this->cartAlreadySent($addCartCommand->getCart())) {
             return;
         }
 
@@ -199,12 +199,9 @@ class CartService
      * @param Cart $cart
      * @return bool
      */
-    private function cartAlreadySend(Cart $cart)
+    private function cartAlreadySent(Cart $cart)
     {
-        $cacheKey = $this->getCartCacheKey($cart);
-        $currentProductHash = $this->getCartHash($cart);
-
-        return ($cachedProductHash = $this->cache->get($cacheKey)) && $currentProductHash === $cachedProductHash;
+        return $this->getCartHash($cart) === $this->cache->get($this->getCartCacheKey($cart));
     }
 
 }
