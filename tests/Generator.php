@@ -231,9 +231,10 @@ class Generator
     }
 
     /**
+     * @param string $name
      * @return AddContactCommand
      */
-    public static function createAddContactCommand()
+    public static function createAddContactCommand($name = 'Adam Kowalski')
     {
         $customFieldCollection = new ContactCustomFieldsCollection();
         $customFieldCollection->add(new ContactCustomField('id_1',  'value_1'));
@@ -241,7 +242,7 @@ class Generator
 
         return new AddContactCommand(
             'adam.kowalski@getresponse.com',
-            'Adam Kowalski',
+            $name,
             'contactListId',
             3,
             $customFieldCollection,

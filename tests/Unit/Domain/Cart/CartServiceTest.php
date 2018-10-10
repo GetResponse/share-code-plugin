@@ -67,7 +67,7 @@ class CartServiceTest extends TestCase
             ->expects(self::once())
             ->method('get')
             ->with('cart_key' . $command->getCart()->getCartId())
-            ->willReturn('f91ec96768b279d32473d372bb3ec179');
+            ->willReturn('4a3afe4fab8f35cc2d9b92b580c8d7bd');
 
         $this->grApiClientMock
             ->expects(self::never())
@@ -120,8 +120,16 @@ class CartServiceTest extends TestCase
         $this->cacheMock
             ->expects(self::exactly(2))
             ->method('get')
-            ->withConsecutive(['cart_key' . $command->getCart()->getCartId()], [$command->getEmail() . '_' . $command->getContactListId()])
+            ->withConsecutive(
+                ['cart_key' . $command->getCart()->getCartId()],
+                [$command->getEmail() . '_' . $command->getContactListId()]
+            )
             ->willReturnOnConsecutiveCalls('f91ec96768b279d32473d372bb3ec179XX', json_encode($contact));
+
+        $this->cacheMock
+            ->expects(self::once())
+            ->method('set')
+            ->with('cart_key' . $command->getCart()->getCartId(), '4a3afe4fab8f35cc2d9b92b580c8d7bd', 600);
 
         $this->grApiClientMock
             ->expects(self::never())
@@ -151,11 +159,6 @@ class CartServiceTest extends TestCase
             ->expects(self::once())
             ->method('saveCartMapping')
             ->with($command->getShopId(), $command->getCart()->getCartId(), 'grCartId');
-
-        $this->cacheMock
-            ->expects(self::once())
-            ->method('set')
-            ->with('cart_key' . $command->getCart()->getCartId(), 'f91ec96768b279d32473d372bb3ec179', 600);
 
         $this->sut->sendCart($command);
     }
@@ -203,7 +206,7 @@ class CartServiceTest extends TestCase
             ->method('set')
             ->withConsecutive(
                 [$command->getEmail() . '_' . $command->getContactListId(), json_encode($contact), 600],
-                ['cart_key' . $command->getCart()->getCartId(), 'f91ec96768b279d32473d372bb3ec179', 600]
+                ['cart_key' . $command->getCart()->getCartId(), '4a3afe4fab8f35cc2d9b92b580c8d7bd', 600]
             );
 
         $this->productServiceMock
@@ -275,7 +278,7 @@ class CartServiceTest extends TestCase
             ->method('set')
             ->withConsecutive(
                 [$command->getEmail() . '_' . $command->getContactListId(), json_encode($contact), 600],
-                ['cart_key' . $command->getCart()->getCartId(), 'f91ec96768b279d32473d372bb3ec179', 600]
+                ['cart_key' . $command->getCart()->getCartId(), '4a3afe4fab8f35cc2d9b92b580c8d7bd', 600]
             );
 
         $this->productServiceMock

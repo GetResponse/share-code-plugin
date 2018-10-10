@@ -1,6 +1,9 @@
 <?php
 namespace GrShareCode\Contact;
 
+use GrShareCode\Validation\Assert\Assert;
+use GrShareCode\Validation\Assert\InvalidArgumentException;
+
 /**
  * Class AddContactCommand
  * @package GrShareCode\Contact
@@ -32,9 +35,20 @@ class AddContactCommand
      * @param int $dayOfCycle
      * @param ContactCustomFieldsCollection $customFieldsCollection
      * @param string $originValue
+     * @throws InvalidArgumentException
      */
     public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $originValue)
     {
+        Assert::that($email, 'Email in ' . AddContactCommand::class . ' should be a not null string')
+            ->notNull()
+            ->notEmpty()
+            ->string();
+
+        Assert::that($contactListId, 'Contact list in ' . AddContactCommand::class . ' should be a not null string')
+            ->notNull()
+            ->notEmpty()
+            ->string();
+
         $this->email = $email;
         $this->name = $name;
         $this->contactListId = $contactListId;

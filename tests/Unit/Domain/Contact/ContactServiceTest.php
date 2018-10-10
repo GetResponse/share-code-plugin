@@ -9,28 +9,27 @@ use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\Tests\Generator;
+use GrShareCode\Tests\Unit\BaseTestCase;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class ContactServiceTest
  * @package GrShareCode\Tests\Unit\Domain\Contact
  */
-class ContactServiceTest extends TestCase
+class ContactServiceTest extends BaseTestCase
 {
     /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
     private $getResponseApiClientMock;
 
     public function setUp()
     {
-        $this->getResponseApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
     }
 
     /**
      * @test
      */
-    public function shouldReturnContact()
+    public function shouldGetContactByEmail()
     {
         $email = 'adam.kowalski@getresponse.com';
         $contactListId = 'grListId';
@@ -73,10 +72,29 @@ class ContactServiceTest extends TestCase
 
     /**
      * @test
+     * @dataProvider validAddContactProvider
+     * @param $addContactCommand
+     * @param $params
+     * @throws \GrShareCode\GetresponseApiException
      */
-    public function shouldCreateContact()
+    public function shouldCreateContact($addContactCommand, $params)
     {
-        $params = [
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('createContact')
+            ->with($params);
+
+        $contactService = new ContactService($this->getResponseApiClientMock);
+        $contactService->createContact($addContactCommand);
+    }
+
+    /**
+     * @return array
+     */
+    public function validAddContactProvider()
+    {
+        $addContactCommand = Generator::createAddContactCommand();
+        $expectedParams = [
             'name' => 'Adam Kowalski',
             'email' => 'adam.kowalski@getresponse.com',
             'campaign' => [
@@ -89,15 +107,29 @@ class ContactServiceTest extends TestCase
                 ['customFieldId' => '', 'value' => ['origin']]
             ]
         ];
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createContact')
-            ->with($params);
 
-        $addContactCommand = Generator::createAddContactCommand();
+        $addContactCommand1 = Generator::createAddContactCommand('');
+        $expectedParams1 = $expectedParams;
+        unset($expectedParams1['name']);
 
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->createContact($addContactCommand);
+        $addContactCommand2 = Generator::createAddContactCommand(null);
+        $expectedParams2 = $expectedParams;
+        unset($expectedParams2['name']);
+
+        return [
+            [
+                'add_contact_command' => $addContactCommand,
+                'expected_params' => $expectedParams,
+            ],
+            [
+                'add_contact_command' => $addContactCommand1,
+                'expected_params' => $expectedParams1,
+            ],
+            [
+                'add_contact_command' => $addContactCommand2,
+                'expected_params' => $expectedParams2
+            ]
+        ];
     }
 
     /**

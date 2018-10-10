@@ -201,6 +201,10 @@ class ContactService
             ]
         ];
 
+        if (empty($params['name'])) {
+            unset($params['name']);
+        }
+
         if (!empty($addContactCommand->getDayOfCycle())) {
             $params['dayOfCycle'] = $addContactCommand->getDayOfCycle();
         }
