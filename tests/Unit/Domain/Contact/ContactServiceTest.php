@@ -8,9 +8,9 @@ use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\GetresponseApiClient;
+use GrShareCode\GetresponseApiException;
 use GrShareCode\Tests\Generator;
 use GrShareCode\Tests\Unit\BaseTestCase;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Class ContactServiceTest
@@ -75,7 +75,7 @@ class ContactServiceTest extends BaseTestCase
      * @dataProvider validAddContactProvider
      * @param $addContactCommand
      * @param $params
-     * @throws \GrShareCode\GetresponseApiException
+     * @throws GetresponseApiException
      */
     public function shouldCreateContact($addContactCommand, $params)
     {
@@ -292,6 +292,83 @@ class ContactServiceTest extends BaseTestCase
     /**
      * @test
      */
+    public function shouldCreateContactWithDayOfCycleZero()
+    {
+        $customerName = 'Adam Kowalski';
+        $dayOfCycle = 0;
+
+        $params = [
+            'name' => $customerName,
+            'email' => 'adam.kowalski@getresponse.com',
+            'campaign' => [
+                'campaignId' => 'contactListId'
+            ],
+            'dayOfCycle' => $dayOfCycle,
+            'customFieldValues' => [
+                ['customFieldId' => 'id_1', 'value' => ['value_1']],
+                ['customFieldId' => 'id_2', 'value' => ['value_2']],
+                ['customFieldId' => 'cx4R', 'value' => ['origin']]
+            ]
+        ];
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('createContact')
+            ->with($params);
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('getCustomFieldByName')
+            ->with('origin')
+            ->willReturn(['customFieldId' => 'cx4R']);
+
+        $addContactCommand = Generator::createAddContactCommand($customerName, $dayOfCycle);
+
+        $contactService = new ContactService($this->getResponseApiClientMock);
+        $contactService->createContact($addContactCommand);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCreateContactWithNoDayOfCycle()
+    {
+        $customerName = 'Adam Kowalski';
+        $dayOfCycle = null;
+
+        $params = [
+            'name' => $customerName,
+            'email' => 'adam.kowalski@getresponse.com',
+            'campaign' => [
+                'campaignId' => 'contactListId'
+            ],
+            'customFieldValues' => [
+                ['customFieldId' => 'id_1', 'value' => ['value_1']],
+                ['customFieldId' => 'id_2', 'value' => ['value_2']],
+                ['customFieldId' => 'cx4R', 'value' => ['origin']]
+            ]
+        ];
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('createContact')
+            ->with($params);
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('getCustomFieldByName')
+            ->with('origin')
+            ->willReturn(['customFieldId' => 'cx4R']);
+
+        $addContactCommand = Generator::createAddContactCommand($customerName, $dayOfCycle);
+
+        $contactService = new ContactService($this->getResponseApiClientMock);
+        $contactService->createContact($addContactCommand);
+    }
+
+    /**
+     * @test
+     */
     public function shouldCreateContactWithOriginIfCustomFieldExists()
     {
         $params = [
@@ -351,6 +428,7 @@ class ContactServiceTest extends BaseTestCase
      * @param string $email
      * @param string $origin
      * @param string $invalidOrigin
+     * @throws GetresponseApiException
      */
     public function shouldNotUnsubscribeContact($email, $origin, $invalidOrigin)
     {

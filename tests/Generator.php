@@ -232,9 +232,10 @@ class Generator
 
     /**
      * @param string $name
+     * @param int $dayOfCycle
      * @return AddContactCommand
      */
-    public static function createAddContactCommand($name = 'Adam Kowalski')
+    public static function createAddContactCommand($name = 'Adam Kowalski', $dayOfCycle = 3)
     {
         $customFieldCollection = new ContactCustomFieldsCollection();
         $customFieldCollection->add(new ContactCustomField('id_1',  'value_1'));
@@ -244,7 +245,7 @@ class Generator
             'adam.kowalski@getresponse.com',
             $name,
             'contactListId',
-            3,
+            $dayOfCycle,
             $customFieldCollection,
             'origin'
         );
