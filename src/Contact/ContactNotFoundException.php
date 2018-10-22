@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\Contact;
 
+use GrShareCode\Contact\Command\GetContactCommand;
 use GrShareCode\GrShareCodeException;
 
 /**
@@ -9,13 +10,30 @@ use GrShareCode\GrShareCodeException;
  */
 class ContactNotFoundException extends GrShareCodeException
 {
+
     /**
-     * @param string $email
-     * @param string $contactListId
+     * @param GetContactCommand $getContactCommand
      * @return ContactNotFoundException
      */
-    public static function withEmailAndContactListId($email, $contactListId)
+    public static function createFromGetContactCommand(GetContactCommand $getContactCommand)
     {
-        return new self(sprintf('Contact with email: %s and contactListId: %s not found', $email, $contactListId));
+        if (null !== $getContactCommand->getId()) {
+            return new self(
+                sprintf(
+                    'Contact with id: %s not found',
+                    $getContactCommand->getId()
+                )
+            );
+        } else {
+            return new self(
+                sprintf(
+                    'Contact with email: %s and contactListId: %s not found',
+                    $getContactCommand->getEmail(),
+                    $getContactCommand->getId()
+                )
+            );
+        }
+
+
     }
 }

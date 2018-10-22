@@ -94,19 +94,23 @@ class GetresponseApi
     /**
      * @param string $email
      * @param string $listId
+     * @param bool $withCustoms
      * @return array
-     * @throws GetresponseApiException
      * @throws AccountNotExistsException
+     * @throws GetresponseApiException
      */
-    public function getContactWithCustomFieldsByEmail($email, $listId)
+    public function getContactByEmailAndListId($email, $listId, $withCustoms)
     {
         $params = [
             'query' => [
                 'email' => $email,
                 'campaignId' => $listId
             ],
-            'additionalFlags' => 'forceCustoms'
         ];
+
+        if ($withCustoms) {
+            $params['additionalFlags'] = 'forceCustoms';
+        }
 
         $result = $this->sendRequest('contacts?' . $this->setParams($params));
 
@@ -115,13 +119,19 @@ class GetresponseApi
 
     /**
      * @param string $contactId
+     * @param bool $withCustoms
      * @return array
-     * @throws GetresponseApiException
      * @throws AccountNotExistsException
+     * @throws GetresponseApiException
      */
-    public function getContactById($contactId)
+    public function getContactById($contactId, $withCustoms)
     {
-        $result = $this->sendRequest('contacts/' . $contactId);
+        $params = [];
+        if ($withCustoms) {
+            $params['additionalFlags'] = 'forceCustoms';
+        }
+
+        $result = $this->sendRequest('contacts/' . $contactId . '?' . $this->setParams($params));
 
         return is_array($result) ? $result : [];
     }

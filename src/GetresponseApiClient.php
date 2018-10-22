@@ -72,41 +72,29 @@ class GetresponseApiClient
     /**
      * @param string $email
      * @param string $listId
+     * @param bool $withCustoms
      * @return array
      * @throws GetresponseApiException
      */
-    public function getContactByEmail($email, $listId)
+    public function getContactByEmailAndListId($email, $listId, $withCustoms)
     {
         $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-        return $this->execute(function () use ($email, $listId) {
-            return $this->grApi->getContactByEmail($email, $listId);
-        });
-    }
-
-    /**
-     * @param string $email
-     * @param string $listId
-     * @return array
-     * @throws GetresponseApiException
-     */
-    public function getContactWithCustomFieldsByEmail($email, $listId)
-    {
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-        return $this->execute(function () use ($email, $listId) {
-            return $this->grApi->getContactWithCustomFieldsByEmail($email, $listId);
+        return $this->execute(function () use ($email, $listId, $withCustoms) {
+            return $this->grApi->getContactByEmailAndListId($email, $listId, $withCustoms);
         });
     }
 
     /**
      * @param string $contactId
+     * @param bool $withCustoms
      * @return array
      * @throws GetresponseApiException
      */
-    public function getContactById($contactId)
+    public function getContactById($contactId, $withCustoms)
     {
         $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-        return $this->execute(function () use ($contactId) {
-            return $this->grApi->getContactById($contactId);
+        return $this->execute(function () use ($contactId, $withCustoms) {
+            return $this->grApi->getContactById($contactId, $withCustoms);
         });
     }
 
