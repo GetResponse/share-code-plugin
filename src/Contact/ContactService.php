@@ -2,7 +2,9 @@
 namespace GrShareCode\Contact;
 
 use GrShareCode\Contact\Command\AddContactCommand;
+use GrShareCode\Contact\Command\FindContactCommand;
 use GrShareCode\Contact\Command\GetContactCommand;
+use GrShareCode\Contact\Command\UnsubscribeContactsCommand;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
@@ -13,21 +15,31 @@ use GrShareCode\GetresponseApiException;
 class ContactService
 {
     const PER_PAGE = 100;
-
     /** @var GetresponseApiClient */
     private $getresponseApiClient;
-
     /** @var ContactPayloadFactory */
     private $contactPayloadFactory;
+    /** @var ContactCustomField */
+    private $originCustomField;
+    /** @var ContactFactory */
+    private $contactFactory;
 
     /**
      * @param GetresponseApiClient $getresponseApiClient
      * @param ContactPayloadFactory $contactPayloadFactory
+     * @param ContactFactory $contactFactory
+     * @param ContactCustomField $originCustomField
      */
-    public function __construct(GetresponseApiClient $getresponseApiClient, ContactPayloadFactory $contactPayloadFactory)
-    {
+    public function __construct(
+        GetresponseApiClient $getresponseApiClient,
+        ContactPayloadFactory $contactPayloadFactory,
+        ContactFactory $contactFactory,
+        ContactCustomField $originCustomField
+    ) {
         $this->getresponseApiClient = $getresponseApiClient;
         $this->contactPayloadFactory = $contactPayloadFactory;
+        $this->originCustomField = $originCustomField;
+        $this->contactFactory = $contactFactory;
     }
 
     /**
@@ -36,51 +48,62 @@ class ContactService
      */
     public function addContact(AddContactCommand $addContactCommand)
     {
-        try {
-            $getContactCommand = GetContactCommand::createWithEmailAndListId(
-                $addContactCommand->getEmail(),
-                $addContactCommand->getContactListId()
-            );
+        $findContactCommand = new FindContactCommand(
+            $addContactCommand->getEmail(),
+            $addContactCommand->getContactListId(),
+            $addContactCommand->updateIfAlreadyExists()
+        );
 
-            $contact = $this->getContact($getContactCommand);
-            $this->updateContact($contact, $addContactCommand);
-        } catch (ContactNotFoundException $e) {
+        $contact = $this->findContact($findContactCommand);
+
+        if (false === $contact) {
             $this->createContact($addContactCommand);
+        } else if ($addContactCommand->updateIfAlreadyExists()) {
+            $this->updateContact(
+                $contact,
+                $addContactCommand
+            );
         }
     }
 
     /**
      * @param GetContactCommand $getContactCommand
-     * @param bool $withCustomFields
      * @return Contact
      * @throws ContactNotFoundException
      * @throws GetresponseApiException
      */
-    public function getContact(GetContactCommand $getContactCommand, $withCustomFields = false)
+    public function getContact(GetContactCommand $getContactCommand)
     {
-        if (null !== $getContactCommand->getId()) {
-            $response = $this->getresponseApiClient->getContactById(
-                $getContactCommand->getId(),
-                $withCustomFields
-            );
-        } else {
-            $response = $this->getresponseApiClient->getContactByEmailAndListId(
-                $getContactCommand->getId(),
-                $getContactCommand->getListId(),
-                $withCustomFields
-            );
-        }
+        $response = $this->getresponseApiClient->getContactById(
+            $getContactCommand->getId(),
+            $getContactCommand->withCustoms()
+        );
 
         if (empty($response)) {
             throw ContactNotFoundException::createFromGetContactCommand($getContactCommand);
         }
 
-        return new Contact(
-            $response['contactId'],
-            $response['name'],
-            $response['email'],
-            (new ContactCustomFieldCollectionFactory)->fromApiResponse($response)
+        return $this->contactFactory->createContactFromResponse($response);
+    }
+
+    /**
+     * @param FindContactCommand $findContactCommand
+     * @return Contact|false
+     * @throws GetresponseApiException
+     */
+    public function findContact(FindContactCommand $findContactCommand)
+    {
+        $response = $this->getresponseApiClient->findContactByEmailAndListId(
+            $findContactCommand->getEmail(),
+            $findContactCommand->getListId(),
+            $findContactCommand->withCustoms()
         );
+
+        if (empty($response)) {
+            return false;
+        }
+
+        return $this->contactFactory->createContactFromResponse($response);
     }
 
     /**
@@ -100,7 +123,7 @@ class ContactService
             ]);
         }*/
 
-        $addContactCommand->addCustomField($addContactCommand->getOriginCustomField());
+        $addContactCommand->addCustomField($this->originCustomField);
 
         $this->getresponseApiClient->createContact(
             $this->contactPayloadFactory->createFromAddContactCommand($addContactCommand)
@@ -128,21 +151,18 @@ class ContactService
         );
     }
 
-
-
     /**
-     * @param string $email
-     * @param string $originCustomName
+     * @param UnsubscribeContactsCommand $unsubscribeCommand
      * @throws GetresponseApiException
      */
-    public function unsubscribe($email, $originCustomName)
+    public function unsubscribeContacts(UnsubscribeContactsCommand $unsubscribeCommand)
     {
-        $contacts = $this->getresponseApiClient->searchContacts($email);
+        $rawContacts = $this->getresponseApiClient->searchContacts($unsubscribeCommand->getEmail());
 
-        foreach ($contacts as $contact) {
-
-            if (!empty($originCustomName) && $contact['origin'] === $originCustomName) {
-                $this->getresponseApiClient->deleteContact($contact['contactId']);
+        foreach ($rawContacts as $rowContact) {
+            $contact = $this->contactFactory->createContactFromResponse($rowContact);
+            if ($contact->hasContactCustomField($this->originCustomField)) {
+                $this->getresponseApiClient->deleteContact($contact->getContactId());
             }
         }
     }

@@ -17,23 +17,11 @@ class ContactNotFoundException extends GrShareCodeException
      */
     public static function createFromGetContactCommand(GetContactCommand $getContactCommand)
     {
-        if (null !== $getContactCommand->getId()) {
-            return new self(
-                sprintf(
-                    'Contact with id: %s not found',
-                    $getContactCommand->getId()
-                )
-            );
-        } else {
-            return new self(
-                sprintf(
-                    'Contact with email: %s and contactListId: %s not found',
-                    $getContactCommand->getEmail(),
-                    $getContactCommand->getId()
-                )
-            );
-        }
-
-
+        return new self(
+            sprintf(
+                'Contact with id: %s not found',
+                $getContactCommand->getId()
+            )
+        );
     }
 }

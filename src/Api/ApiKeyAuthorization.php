@@ -5,7 +5,7 @@ namespace GrShareCode\Api;
  * Class ApiKeyAuthorizationMethod
  * @package GrShareCode\Api
  */
-class ApiKeyAuthorization extends Authorization implements AuthorizationInterface
+class ApiKeyAuthorization extends Authorization
 {
     /** @var string */
     private $apiKey;

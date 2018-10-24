@@ -52,7 +52,7 @@ class CartService
      */
     public function exportCart(AddCartCommand $addCartCommand)
     {
-        $contact = $this->getresponseApiClient->getContactByEmail(
+        $contact = $this->getresponseApiClient->findContactByEmailAndListId(
             $addCartCommand->getEmail(),
             $addCartCommand->getContactListId()
         );
@@ -170,7 +170,7 @@ class CartService
             $contact = json_decode($contact, true);
 
         } else {
-            $contact = $this->getresponseApiClient->getContactByEmail($email, $contactListId);
+            $contact = $this->getresponseApiClient->findContactByEmailAndListId($email, $contactListId);
             $this->cache->set($userCacheKey, json_encode($contact), self::CACHE_TTL);
         }
 

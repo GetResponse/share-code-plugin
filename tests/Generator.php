@@ -4,15 +4,14 @@ namespace GrShareCode\Tests;
 use GrShareCode\Address\Address;
 use GrShareCode\Cart\AddCartCommand;
 use GrShareCode\Cart\Cart;
-use GrShareCode\Contact\AddContactCommand;
+use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Export\ExportContactCommand;
-use GrShareCode\Export\HistoricalOrder\HistoricalOrder;
-use GrShareCode\Export\HistoricalOrder\HistoricalOrderCollection;
 use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\Order\AddOrderCommand;
 use GrShareCode\Order\Order;
+use GrShareCode\Order\OrderCollection;
 use GrShareCode\Product\Category\Category;
 use GrShareCode\Product\Category\CategoryCollection;
 use GrShareCode\Product\Product;
@@ -189,24 +188,23 @@ class Generator
     public static function createExportContactCommandWithSettings(ExportSettings $exportSettings)
     {
         $customFieldsCollection = new ContactCustomFieldsCollection();
-        $customFieldsCollection->add(new ContactCustomField('id1', 'company', 'country'));
+        $customFieldsCollection->add(new ContactCustomField('id1', 'company'));
 
         return new ExportContactCommand(
             'adam.kowalski@getresponse.com',
             'Adam Kowalski',
-            'origin',
             $exportSettings,
             $customFieldsCollection,
-            self::createHistoricalOrderCollection()
+            self::createOrderCollection()
         );
     }
 
     /**
-     * @return HistoricalOrderCollection
+     * @return OrderCollection
      */
-    private static function createHistoricalOrderCollection()
+    private static function createOrderCollection()
     {
-        $order = new HistoricalOrder(
+        $order1 = new Order(
             '21',
             self::createProductsCollection(),
             20.00,
@@ -220,14 +218,14 @@ class Generator
             'awaiting',
             '2018-05-17T16:15:33+0200',
             self::createAddress(),
-            self::createAddress(),
-            new Cart('100001', self::createProductsCollection(), 'PLN', 10.00, 123.3)
+            self::createAddress()
         );
 
-        $historicalOrderCollection = new HistoricalOrderCollection();
-        $historicalOrderCollection->add($order);
+        $orderCollection = new OrderCollection();
+        $orderCollection->add($order1);
+        $orderCollection->add(clone $order1);
 
-        return $historicalOrderCollection;
+        return $orderCollection;
     }
 
     /**

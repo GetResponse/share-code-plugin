@@ -8,32 +8,18 @@ namespace GrShareCode\Contact\Command;
 class GetContactCommand
 {
     /** @var string */
-    private $email;
-    /** @var string */
-    private $listId;
-    /** @var string */
     private $id;
+    /** @var bool */
+    private $withCustoms;
 
     /**
-     * @param $id
-     * @param string $email
-     * @param string $listId
+     * @param string $id
+     * @param bool $withCustoms
      */
-    public function __construct($id = null, $email = null, $listId = null)
+    public function __construct($id, $withCustoms = false)
     {
         $this->id = $id;
-        $this->email = $email;
-        $this->listId = $listId;
-    }
-
-    public static function createWithId($id)
-    {
-        return new GetContactCommand($id);
-    }
-
-    public static function createWithEmailAndListId($email, $listId)
-    {
-        return new GetContactCommand(null, $email, $listId);
+        $this->withCustoms = $withCustoms;
     }
 
     /**
@@ -45,18 +31,10 @@ class GetContactCommand
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getEmail()
+    public function withCustoms()
     {
-        return $this->email;
-    }
-
-    /**
-     * @return string
-     */
-    public function getListId()
-    {
-        return $this->listId;
+        return $this->withCustoms;
     }
 }

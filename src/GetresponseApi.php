@@ -1,9 +1,7 @@
 <?php
 namespace GrShareCode;
 
-use GrShareCode\Api\ApiKeyAuthorization;
 use GrShareCode\Api\Authorization;
-use GrShareCode\Api\OauthAuthorization;
 use GrShareCode\Api\UserAgentHeader;
 
 /**
@@ -17,7 +15,7 @@ class GetresponseApi
     /** @var string */
     private $xAppId;
 
-    /** @var OauthAuthorization|ApiKeyAuthorization */
+    /** @var Authorization */
     private $authorization;
 
     /** @var array */
@@ -676,7 +674,7 @@ class GetresponseApi
     }
 
     /**
-     * @return OauthAuthorization|ApiKeyAuthorization
+     * @return Authorization
      */
     public function getAuthorization()
     {

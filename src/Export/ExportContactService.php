@@ -1,14 +1,11 @@
 <?php
 namespace GrShareCode\Export;
 
-use GrShareCode\Cart\AddCartCommand;
-use GrShareCode\Cart\CartService;
-use GrShareCode\Contact\AddContactCommand;
-use GrShareCode\Contact\ContactNotFoundException;
+use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\Export\HistoricalOrder\HistoricalOrder;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Order\AddOrderCommand;
+use GrShareCode\Order\Order;
 use GrShareCode\Order\OrderService;
 
 /**
@@ -20,21 +17,16 @@ class ExportContactService
     /** @var ContactService */
     private $contactService;
 
-    /** @var CartService */
-    private $cartService;
-
     /** @var OrderService */
     private $orderService;
 
     /**
      * @param ContactService $contactService
-     * @param CartService $cartService
      * @param OrderService $orderService
      */
-    public function __construct(ContactService $contactService, CartService $cartService, OrderService $orderService)
+    public function __construct(ContactService $contactService, OrderService $orderService)
     {
         $this->contactService = $contactService;
-        $this->cartService = $cartService;
         $this->orderService = $orderService;
     }
 
@@ -54,29 +46,15 @@ class ExportContactService
      */
     private function exportCustomer(ExportContactCommand $exportContactCommand)
     {
-        $exportSettings = $exportContactCommand->getExportSettings();
+        $addContactCommand = new AddContactCommand(
+            $exportContactCommand->getEmail(),
+            $exportContactCommand->getName(),
+            $exportContactCommand->getExportSettings()->getContactListId(),
+            $exportContactCommand->getExportSettings()->getDayOfCycle(),
+            $exportContactCommand->getCustomFieldsCollection()
+        );
 
-        try {
-            $contact = $this->contactService->getContactByEmail(
-                $exportContactCommand->getEmail(),
-                $exportSettings->getContactListId()
-            );
-
-            $this->contactService->updateContactOnExport($exportContactCommand, $contact->getContactId());
-
-        } catch (ContactNotFoundException $e) {
-
-            $addContactCommand = new AddContactCommand(
-                $exportContactCommand->getEmail(),
-                $exportContactCommand->getName(),
-                $exportSettings->getContactListId(),
-                $exportSettings->getDayOfCycle(),
-                $exportContactCommand->getCustomFieldsCollection(),
-                $exportContactCommand->getOriginValue()
-            );
-
-            $this->contactService->createContact($addContactCommand);
-        }
+        $this->contactService->addContact($addContactCommand);
     }
 
     /**
@@ -91,16 +69,14 @@ class ExportContactService
             return;
         }
 
-        /** @var HistoricalOrder $historicalOrder */
-        foreach ($exportContactCommand->getHistoricalOrderCollection() as $historicalOrder) {
-
-            $shopId = $exportSettings->getEcommerceConfig()->getShopId();
+        /** @var Order $order */
+        foreach ($exportContactCommand->getOrderCollection() as $order) {
 
             $addOrderCommand = new AddOrderCommand(
-                $historicalOrder,
+                $order,
                 $exportContactCommand->getEmail(),
                 $exportSettings->getContactListId(),
-                $shopId
+                $exportSettings->getEcommerceConfig()->getShopId()
             );
             $addOrderCommand->setToSkipAutomation();
 

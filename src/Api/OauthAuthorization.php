@@ -6,7 +6,7 @@ namespace GrShareCode\Api;
  * Class OauthAuthorizationMethod
  * @package GrShareCode\Api
  */
-class OauthAuthorization extends Authorization implements AuthorizationInterface
+class OauthAuthorization extends Authorization
 {
     /** @var string */
     private $accessToken;

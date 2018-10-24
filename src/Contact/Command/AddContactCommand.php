@@ -26,9 +26,6 @@ class AddContactCommand
     /** @var ContactCustomFieldsCollection */
     private $customFieldsCollection;
 
-    /** @var ContactCustomField */
-    private $originCustomField;
-
     /** @var bool  */
     private $updateIfAlreadyExists;
 
@@ -38,10 +35,9 @@ class AddContactCommand
      * @param string $contactListId
      * @param int $dayOfCycle
      * @param ContactCustomFieldsCollection $customFieldsCollection
-     * @param $originCustomField
      * @param bool $updateIfAlreadyExists
      */
-    public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $originCustomField, $updateIfAlreadyExists = false)
+    public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $updateIfAlreadyExists = false)
     {
         Assert::that($email, 'Email in ' . AddContactCommand::class . ' should be a not null string')
             ->notNull()
@@ -58,7 +54,6 @@ class AddContactCommand
         $this->contactListId = $contactListId;
         $this->dayOfCycle = $dayOfCycle;
         $this->customFieldsCollection = $customFieldsCollection;
-        $this->originCustomField = $originCustomField;
         $this->updateIfAlreadyExists = $updateIfAlreadyExists;
     }
 
@@ -111,14 +106,6 @@ class AddContactCommand
     }
 
     /**
-     * @return ContactCustomField
-     */
-    public function getOriginCustomField()
-    {
-        return $this->originCustomField;
-    }
-
-    /**
      * @param ContactCustomField $customField
      */
     public function addCustomField(ContactCustomField $customField)
@@ -129,7 +116,7 @@ class AddContactCommand
     /**
      * @return bool
      */
-    public function isUpdateIfAlreadyExists()
+    public function updateIfAlreadyExists()
     {
         return $this->updateIfAlreadyExists;
     }

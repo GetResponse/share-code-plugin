@@ -12,10 +12,8 @@ class GetresponseApiClient
 {
     /** @var GetresponseApi */
     private $grApi;
-
     /** @var DbRepositoryInterface */
     private $dbRepository;
-
     /** @var string */
     private $authorizationKey;
 
@@ -76,9 +74,8 @@ class GetresponseApiClient
      * @return array
      * @throws GetresponseApiException
      */
-    public function getContactByEmailAndListId($email, $listId, $withCustoms)
+    public function findContactByEmailAndListId($email, $listId, $withCustoms = false)
     {
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
         return $this->execute(function () use ($email, $listId, $withCustoms) {
             return $this->grApi->getContactByEmailAndListId($email, $listId, $withCustoms);
         });
@@ -92,20 +89,18 @@ class GetresponseApiClient
      */
     public function getContactById($contactId, $withCustoms)
     {
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
         return $this->execute(function () use ($contactId, $withCustoms) {
             return $this->grApi->getContactById($contactId, $withCustoms);
         });
     }
 
     /**
-     * @param $params
+     * @param array $params
      * @return array
      * @throws GetresponseApiException
      */
     public function createContact($params)
     {
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
         return $this->execute(function () use ($params) {
             return $this->grApi->createContact($params);
         });

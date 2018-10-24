@@ -71,7 +71,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects(self::never())
-            ->method('getContactByEmail');
+            ->method('findContactByEmailAndListId');
 
         $this->productServiceMock
             ->expects(self::never())
@@ -133,7 +133,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects(self::never())
-            ->method('getContactByEmail');
+            ->method('findContactByEmailAndListId');
 
         $this->productServiceMock
             ->expects(self::once())
@@ -197,7 +197,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects(self::once())
-            ->method('getContactByEmail')
+            ->method('findContactByEmailAndListId')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
 
@@ -269,7 +269,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects(self::once())
-            ->method('getContactByEmail')
+            ->method('findContactByEmailAndListId')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
 
@@ -326,7 +326,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects($this->once())
-            ->method('getContactByEmail')
+            ->method('findContactByEmailAndListId')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn([]);
 
@@ -372,7 +372,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects(self::once())
-            ->method('getContactByEmail')
+            ->method('findContactByEmailAndListId')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
 
@@ -431,7 +431,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects(self::once())
-            ->method('getContactByEmail')
+            ->method('findContactByEmailAndListId')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
 
@@ -483,7 +483,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects($this->once())
-            ->method('getContactByEmail')
+            ->method('findContactByEmailAndListId')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn([]);
 
@@ -522,7 +522,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects(self::once())
-            ->method('getContactByEmail')
+            ->method('findContactByEmailAndListId')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
 
@@ -577,7 +577,7 @@ class CartServiceTest extends TestCase
 
         $this->grApiClientMock
             ->expects(self::once())
-            ->method('getContactByEmail')
+            ->method('findContactByEmailAndListId')
             ->with($command->getEmail(), $command->getContactListId())
             ->willReturn($contact);
 

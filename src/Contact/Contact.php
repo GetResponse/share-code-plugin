@@ -7,15 +7,13 @@ namespace GrShareCode\Contact;
  */
 class Contact
 {
+
     /** @var string */
     private $contactId;
-
     /** @var string */
     private $name;
-
     /** @var string */
     private $email;
-
     /** @var ContactCustomFieldsCollection */
     private $contactCustomFieldCollection;
 
@@ -63,5 +61,21 @@ class Contact
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * @param ContactCustomField $contactCustomField
+     * @return bool
+     */
+    public function hasContactCustomField(ContactCustomField $contactCustomField)
+    {
+        /** @var ContactCustomField $custom */
+        foreach ($this->contactCustomFieldCollection as $custom) {
+            if ($custom->getId() == $contactCustomField->getId() && $custom->getValue() == $contactCustomField->getValue()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -2,8 +2,8 @@
 namespace GrShareCode\Export;
 
 use GrShareCode\Contact\ContactCustomFieldsCollection;
-use GrShareCode\Export\HistoricalOrder\HistoricalOrderCollection;
 use GrShareCode\Export\Settings\ExportSettings;
+use GrShareCode\Order\OrderCollection;
 
 /**
  * Class ExportContactCommand
@@ -17,40 +17,34 @@ class ExportContactCommand
     /** @var string */
     private $email;
 
-    /** @var string */
-    private $originValue;
-
     /** @var ExportSettings */
     private $exportSettings;
 
     /** @var ContactCustomFieldsCollection */
     private $customFieldsCollection;
 
-    /** @var HistoricalOrderCollection */
-    private $historicalOrderCollection;
+    /** @var OrderCollection */
+    private $orderCollection;
 
     /**
      * @param string $email
      * @param string $name
-     * @param string $originValue
      * @param ExportSettings $exportSettings
      * @param ContactCustomFieldsCollection $customFieldsCollection
-     * @param HistoricalOrderCollection $historicalOrderCollection
+     * @param OrderCollection $orderCollection
      */
     public function __construct(
         $email,
         $name,
-        $originValue,
         ExportSettings $exportSettings,
         ContactCustomFieldsCollection $customFieldsCollection,
-        HistoricalOrderCollection $historicalOrderCollection
+        OrderCollection $orderCollection
     ) {
         $this->email = $email;
         $this->name = $name;
-        $this->originValue = $originValue;
         $this->exportSettings = $exportSettings;
         $this->customFieldsCollection = $customFieldsCollection;
-        $this->historicalOrderCollection = $historicalOrderCollection;
+        $this->orderCollection = $orderCollection;
     }
 
     /**
@@ -70,14 +64,6 @@ class ExportContactCommand
     }
 
     /**
-     * @return string
-     */
-    public function getOriginValue()
-    {
-        return $this->originValue;
-    }
-
-    /**
      * @return ExportSettings
      */
     public function getExportSettings()
@@ -94,10 +80,10 @@ class ExportContactCommand
     }
 
     /**
-     * @return HistoricalOrderCollection
+     * @return OrderCollection
      */
-    public function getHistoricalOrderCollection()
+    public function getOrderCollection()
     {
-        return $this->historicalOrderCollection;
+        return $this->orderCollection;
     }
 }
