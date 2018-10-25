@@ -1,9 +1,6 @@
 <?php
 namespace GrShareCode;
 
-use DateTime;
-use GrShareCode\Job\Job;
-use GrShareCode\Job\JobCollection;
 use GrShareCode\ProductMapping\ProductMapping;
 
 /**
@@ -73,21 +70,6 @@ interface DbRepositoryInterface
      * @param ProductMapping $productMapping
      */
     public function saveProductMapping(ProductMapping $productMapping);
-
-    /**
-     * @param Job $job
-     */
-    public function addJob(Job $job);
-
-    /**
-     * @return JobCollection
-     */
-    public function getJobsToProcess();
-
-    /**
-     * @param Job $job
-     */
-    public function deleteJob(Job $job);
 
     /**
      * @param int $accountId
