@@ -214,14 +214,13 @@ class GetresponseApiClient
      * @param string $shopId
      * @param string $orderId
      * @param array $params
-     * @param bool $skipAutomation
      * @return array
      * @throws GetresponseApiException
      */
-    public function updateOrder($shopId, $orderId, $params, $skipAutomation = false)
+    public function updateOrder($shopId, $orderId, $params)
     {
-        return $this->execute(function () use ($shopId, $orderId, $params, $skipAutomation) {
-            return $this->grApi->updateOrder($shopId, $orderId, $params, $skipAutomation);
+        return $this->execute(function () use ($shopId, $orderId, $params) {
+            return $this->grApi->updateOrder($shopId, $orderId, $params);
         });
     }
 

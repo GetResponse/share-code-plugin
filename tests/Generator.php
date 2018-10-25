@@ -9,7 +9,8 @@ use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Export\ExportContactCommand;
 use GrShareCode\Export\Settings\ExportSettings;
-use GrShareCode\Order\AddOrderCommand;
+use GrShareCode\Order\Command\AddOrderCommand;
+use GrShareCode\Order\Command\EditOrderCommand;
 use GrShareCode\Order\Order;
 use GrShareCode\Order\OrderCollection;
 use GrShareCode\Product\Category\Category;
@@ -136,6 +137,17 @@ class Generator
             self::createOrder(),
             'simple@example.com',
             'listId',
+            'shopId'
+        );
+    }
+
+    /**
+     * @return EditOrderCommand
+     */
+    public static function createEditOrderCommand()
+    {
+        return new EditOrderCommand(
+            self::createOrder(),
             'shopId'
         );
     }

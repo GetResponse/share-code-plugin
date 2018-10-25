@@ -4,7 +4,7 @@ namespace GrShareCode\Export;
 use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\GetresponseApiException;
-use GrShareCode\Order\AddOrderCommand;
+use GrShareCode\Order\Command\AddOrderCommand;
 use GrShareCode\Order\Order;
 use GrShareCode\Order\OrderService;
 
@@ -80,7 +80,7 @@ class ExportContactService
             );
             $addOrderCommand->setToSkipAutomation();
 
-            $this->orderService->sendOrder($addOrderCommand);
+            $this->orderService->addOrder($addOrderCommand);
         }
     }
 }

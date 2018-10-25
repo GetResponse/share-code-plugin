@@ -1,6 +1,7 @@
 <?php
-namespace GrShareCode\Order;
+namespace GrShareCode\Order\Command;
 
+use GrShareCode\Order\Order;
 use GrShareCode\Validation\Assert\Assert;
 
 /**

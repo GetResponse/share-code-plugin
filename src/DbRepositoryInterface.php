@@ -49,6 +49,7 @@ interface DbRepositoryInterface
     /**
      * @param string $grShopId
      * @param int $externalOrderId
+     * @return string
      */
     public function getPayloadMd5FromOrderMapping($grShopId, $externalOrderId);
 

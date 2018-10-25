@@ -3,6 +3,8 @@ namespace GrShareCode\Tests\Unit\Domain\Order;
 
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApiClient;
+use GrShareCode\GetresponseApiException;
+use GrShareCode\Order\OrderPayloadFactory;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Product\ProductService;
 use GrShareCode\Tests\Generator;
@@ -28,14 +30,20 @@ class OrderServiceTest extends BaseTestCase
         $this->dbRepositoryMock = $this->getMockWithoutConstructing(DbRepositoryInterface::class);
         $this->grApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->productServiceMock = $this->getMockWithoutConstructing(ProductService::class);
-        $this->sut = new OrderService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock);
+
+        $this->sut = new OrderService(
+            $this->grApiClientMock,
+            $this->dbRepositoryMock,
+            $this->productServiceMock,
+            new OrderPayloadFactory()
+        );
     }
 
     /**
      * @test
-     * @throws \GrShareCode\GetresponseApiException
+     * @throws GetresponseApiException
      */
-    public function shouldCreateOrder()
+    public function shouldAddOrder()
     {
         $addOrderCommand = Generator::createAddOrderCommand();
 
@@ -44,6 +52,11 @@ class OrderServiceTest extends BaseTestCase
             ->expects(self::once())
             ->method('findContactByEmailAndListId')
             ->willReturn($contact);
+
+        $this->productServiceMock
+            ->expects(self::once())
+            ->method('getProductsVariants')
+            ->willReturn([]);
 
         $this->dbRepositoryMock
             ->expects(self::once())
@@ -59,24 +72,32 @@ class OrderServiceTest extends BaseTestCase
 
         $this->grApiClientMock
             ->expects(self::once())
-            ->method('createOrder');
+            ->method('removeCart')
+            ->with($addOrderCommand->getShopId(), 10);
 
         $this->grApiClientMock
             ->expects(self::once())
-            ->method('removeCart');
+            ->method('createOrder')
+            ->willReturn('oid');
 
         $this->dbRepositoryMock
             ->expects(self::once())
-            ->method('saveOrderMapping');
+            ->method('saveOrderMapping')
+            ->with(
+                $addOrderCommand->getShopId(),
+                $addOrderCommand->getOrder()->getExternalOrderId(),
+                'oid',
+                'd9308e4853266e5058ae21d77602c58e'
+            );
 
-        $this->sut->sendOrder($addOrderCommand);
+        $this->sut->addOrder($addOrderCommand);
     }
 
     /**
      * @test
-     * @throws \GrShareCode\GetresponseApiException
+     * @throws GetresponseApiException
      */
-    public function shouldNotSendOrderForContactThatNotExistsInGr()
+    public function shouldNotAddOrderForContactThatNotExistsInGr()
     {
         $addOrderCommand = Generator::createAddOrderCommand();
 
@@ -101,9 +122,71 @@ class OrderServiceTest extends BaseTestCase
             ->expects(self::never())
             ->method('saveOrderMapping');
 
-        $orderService = new OrderService($this->grApiClientMock, $this->dbRepositoryMock, $this->productServiceMock);
-        $orderService->sendOrder($addOrderCommand);
+        $this->sut->addOrder($addOrderCommand);
+    }
 
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldUpdateOrder()
+    {
+        $editOrderCommand = Generator::createEditOrderCommand();
+
+        $this->productServiceMock
+            ->expects(self::once())
+            ->method('getProductsVariants')
+            ->willReturn([]);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getGrOrderIdFromMapping')
+            ->with($editOrderCommand->getShopId(), $editOrderCommand->getOrder()->getExternalOrderId())
+            ->willReturn('oid');
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getPayloadMd5FromOrderMapping')
+            ->with($editOrderCommand->getShopId(), $editOrderCommand->getOrder()->getExternalOrderId())
+            ->willReturn('aasdadasdsdadssa');
+
+        $this->grApiClientMock
+            ->expects(self::once())
+            ->method('updateOrder');
+
+        $this->sut->updateOrder($editOrderCommand);
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldNotUpdateOrderIfPayloadDoesntChange()
+    {
+        $editOrderCommand = Generator::createEditOrderCommand();
+
+        $this->productServiceMock
+            ->expects(self::once())
+            ->method('getProductsVariants')
+            ->willReturn([]);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getGrOrderIdFromMapping')
+            ->with($editOrderCommand->getShopId(), $editOrderCommand->getOrder()->getExternalOrderId())
+            ->willReturn('oid');
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getPayloadMd5FromOrderMapping')
+            ->with($editOrderCommand->getShopId(), $editOrderCommand->getOrder()->getExternalOrderId())
+            ->willReturn('d9308e4853266e5058ae21d77602c58e');
+
+        $this->grApiClientMock
+            ->expects(self::never())
+            ->method('updateOrder');
+
+        $this->sut->updateOrder($editOrderCommand);
     }
 
 }

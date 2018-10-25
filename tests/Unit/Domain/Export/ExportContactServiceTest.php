@@ -51,7 +51,7 @@ class ExportContactServiceTest extends BaseTestCase
 
         $this->orderServiceMock
             ->expects(self::never())
-            ->method('sendOrder');
+            ->method('addOrder');
 
         $exportContactCommand = Generator::createExportContactCommandWithSettings($exportSettings);
         $this->sut->exportContact($exportContactCommand);
@@ -78,7 +78,7 @@ class ExportContactServiceTest extends BaseTestCase
 
         $this->orderServiceMock
             ->expects(self::exactly(2))
-            ->method('sendOrder');
+            ->method('addOrder');
 
         $exportContactCommand = Generator::createExportContactCommandWithSettings($exportSettings);
         $this->sut->exportContact($exportContactCommand);

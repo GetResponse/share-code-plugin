@@ -256,20 +256,13 @@ class GetresponseApi
      * @param string $shopId
      * @param string $orderId
      * @param array $params
-     * @param bool $skipAutomation
      * @return array
      * @throws GetresponseApiException
      * @throws AccountNotExistsException
      */
-    public function updateOrder($shopId, $orderId, $params, $skipAutomation = false)
+    public function updateOrder($shopId, $orderId, $params)
     {
-        $url = 'shops/' . $shopId . '/orders/' . $orderId;
-
-        if ($skipAutomation) {
-            $url .= '?additionalFlags=skipAutomation';
-        }
-
-        return $this->sendRequest($url, 'POST', $params);
+        return $this->sendRequest('shops/' . $shopId . '/orders/' . $orderId, 'POST', $params);
 
     }
 
