@@ -167,7 +167,7 @@ class Generator
             'pending',
             '431',
             'This is description',
-            3.53,
+            3.00,
             'awaiting',
             '2018-05-17T16:15:33+0200',
             self::createAddress(),
