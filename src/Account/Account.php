@@ -132,5 +132,4 @@ class Account
     {
         return $this->zipCode;
     }
-
 }
