@@ -1,0 +1,23 @@
+stages:
+  - install_dependencies
+  - test
+
+composer install:php56:
+  image: php:5.6-cli
+  stage: install_dependencies
+  script:
+    - composer install --prefer-dist --no-progress --optimize-autoloader
+  except:
+    - develop
+
+test:app-php56:
+  image: php:5.6-cli
+  stage: test
+  tags:
+    - phpunit
+  script:
+    - ./vendor/bin/phpunit --testsuite unit --configuration ./tests/phpunit.xml --colors=never
+  except:
+    - develop
+  dependencies:
+    - composer install:php56
