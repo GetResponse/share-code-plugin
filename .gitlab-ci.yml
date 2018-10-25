@@ -14,6 +14,10 @@ composer install:php56:
     - php -r "unlink('composer-setup.php');"
   script:
     - php composer.phar install --prefer-dist --no-progress --optimize-autoloader
+  artifacts:
+    paths:
+      - vendor/
+    expire_in: 2 hrs
   except:
     - develop
 
