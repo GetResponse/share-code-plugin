@@ -146,7 +146,7 @@ class OrderService
             unset($orderPayload['cartId']);
         }
 
-        print_r($orderPayload);
+        var_dump($orderPayload);
 
         return md5(json_encode($orderPayload));
     }
