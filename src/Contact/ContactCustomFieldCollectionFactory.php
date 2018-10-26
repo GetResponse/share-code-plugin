@@ -20,10 +20,11 @@ class ContactCustomFieldCollectionFactory
         }
 
         foreach ($contact['customFieldValues'] as $customField) {
+
             $customFields->add(
                 new ContactCustomField(
                     $customField['customFieldId'],
-                    $customField['value'][0]
+                    $customField['value']
                 )
             );
         }

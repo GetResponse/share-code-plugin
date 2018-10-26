@@ -11,6 +11,6 @@ class ContactCustomFieldsCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\Contact\ContactCustomField');
+        $this->setItemType(ContactCustomField::class);
     }
 }

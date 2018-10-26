@@ -200,7 +200,7 @@ class Generator
     public static function createExportContactCommandWithSettings(ExportSettings $exportSettings)
     {
         $customFieldsCollection = new ContactCustomFieldsCollection();
-        $customFieldsCollection->add(new ContactCustomField('id1', 'company'));
+        $customFieldsCollection->add(new ContactCustomField('id1', ['company']));
 
         return new ExportContactCommand(
             'adam.kowalski@getresponse.com',

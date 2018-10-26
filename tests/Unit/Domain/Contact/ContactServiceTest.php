@@ -27,8 +27,6 @@ class ContactServiceTest extends BaseTestCase
     private $getResponseApiClientMock;
     /** @var ContactPayloadFactory|\PHPUnit_Framework_MockObject_MockObject */
     private $contactPayloadFactoryMock;
-    /** @var ContactFactory|\PHPUnit_Framework_MockObject_MockObject */
-    private $contactFactoryMock;
     /** @var ContactCustomField */
     private $originCustomField;
     /** @var ContactService */
@@ -38,8 +36,7 @@ class ContactServiceTest extends BaseTestCase
     {
         $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->contactPayloadFactoryMock = $this->getMockWithoutConstructing(ContactPayloadFactory::class);
-        //$this->contactFactoryMock = $this->getMockWithoutConstructing(ContactFactory::class);
-        $this->originCustomField = new ContactCustomField('cid', 'wordpress');
+        $this->originCustomField = new ContactCustomField('cid', ['wordpress']);
         $this->sut = new ContactService(
             $this->getResponseApiClientMock,
             $this->contactPayloadFactoryMock,
@@ -50,6 +47,8 @@ class ContactServiceTest extends BaseTestCase
 
     /**
      * @test
+     * @throws ContactNotFoundException
+     * @throws GetresponseApiException
      */
     public function shouldGetContact()
     {
@@ -61,7 +60,7 @@ class ContactServiceTest extends BaseTestCase
 
         $contactCustomFieldsCollection = new ContactCustomFieldsCollection();
         $contactCustomFieldsCollection->add(
-            new ContactCustomField('n', 'white')
+            new ContactCustomField('n', ['white', 'black'])
         );
 
         $contact = new Contact($id, $name, $email, $contactCustomFieldsCollection);
@@ -74,7 +73,8 @@ class ContactServiceTest extends BaseTestCase
                 [
                     'customFieldId' => 'n',
                     'value' => [
-                        'white'
+                        'white',
+                        'black'
                     ]
                 ]
             ]
@@ -94,6 +94,7 @@ class ContactServiceTest extends BaseTestCase
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldFindContact()
     {
@@ -106,7 +107,7 @@ class ContactServiceTest extends BaseTestCase
 
         $contactCustomFieldsCollection = new ContactCustomFieldsCollection();
         $contactCustomFieldsCollection->add(
-            new ContactCustomField('n', 'white')
+            new ContactCustomField('n', ['white'])
         );
         $contact = new Contact($id, $name, $email, $contactCustomFieldsCollection);
 
@@ -132,12 +133,14 @@ class ContactServiceTest extends BaseTestCase
 
         $this->assertEquals(
             $contact,
-            $this->sut->findContact($findContactCommand, true)
+            $this->sut->findContact($findContactCommand)
         );
     }
 
     /**
      * @test
+     * @throws ContactNotFoundException
+     * @throws GetresponseApiException
      */
     public function shouldThrowExceptionWhenContactDoesntExist()
     {
@@ -178,6 +181,7 @@ class ContactServiceTest extends BaseTestCase
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldUpdateContactIfAlreadyExists()
     {
@@ -213,7 +217,7 @@ class ContactServiceTest extends BaseTestCase
 
         $contactCustomFieldsCollection = new ContactCustomFieldsCollection();
         $contactCustomFieldsCollection->add(
-            new ContactCustomField('x2', 'value2')
+            new ContactCustomField('x2', ['value2'])
         );
 
         $addContactCommand = new AddContactCommand(
@@ -226,6 +230,7 @@ class ContactServiceTest extends BaseTestCase
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldUnsubscribeContact()
     {
@@ -239,8 +244,8 @@ class ContactServiceTest extends BaseTestCase
                 [
                     'customFieldId' => $this->originCustomField->getId(),
                     'name' => 'origin',
-                    'value' => [$this->originCustomField->getValue()],
-                    'values' => [$this->originCustomField->getValue()],
+                    'value' => $this->originCustomField->getValue(),
+                    'values' => $this->originCustomField->getValue(),
                     'type' => 'text',
                     'fieldType' => 'text',
                     'valueType' => 'string',
@@ -256,8 +261,8 @@ class ContactServiceTest extends BaseTestCase
                 [
                     'customFieldId' => $this->originCustomField->getId(),
                     'name' => 'origin',
-                    'value' => [$this->originCustomField->getValue()],
-                    'values' => [$this->originCustomField->getValue()],
+                    'value' => $this->originCustomField->getValue(),
+                    'values' => $this->originCustomField->getValue(),
                     'type' => 'text',
                     'fieldType' => 'text',
                     'valueType' => 'string',
