@@ -10,6 +10,7 @@ use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApiClient;
+use GrShareCode\Order\OrderPayloadFactory;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Product\ProductService;
 
@@ -36,8 +37,12 @@ class ExportContactServiceFactory
                 new ContactFactory(new ContactCustomFieldCollectionFactory()),
                 $originCustomField
             ),
-            new CartService($getresponseApiClient, $dbRepository, $productService, new CacheNull()),
-            new OrderService($getresponseApiClient, $dbRepository, $productService)
+            new OrderService(
+                $getresponseApiClient,
+                $dbRepository,
+                $productService,
+                new OrderPayloadFactory()
+            )
         );
     }
 }

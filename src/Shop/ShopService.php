@@ -3,6 +3,8 @@ namespace GrShareCode\Shop;
 
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
+use GrShareCode\Shop\Command\AddShopCommand;
+use GrShareCode\Shop\Command\DeleteShopCommand;
 
 /**
  * Class ShopService
@@ -64,11 +66,11 @@ class ShopService
     }
 
     /**
-     * @param string $shopId
+     * @param DeleteShopCommand $deleteShopCommand
      * @throws GetresponseApiException
      */
-    public function deleteShop($shopId)
+    public function deleteShop(DeleteShopCommand $deleteShopCommand)
     {
-        $this->getresponseApiClient->deleteShop($shopId);
+        $this->getresponseApiClient->deleteShop($deleteShopCommand->getShopId());
     }
 }

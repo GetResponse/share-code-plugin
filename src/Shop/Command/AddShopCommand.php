@@ -1,5 +1,5 @@
 <?php
-namespace GrShareCode\Shop;
+namespace GrShareCode\Shop\Command;
 
 /**
  * Class AddShopCommnad

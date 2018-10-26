@@ -140,7 +140,7 @@ class ContactService
         $addContactCommand->setCustomFieldsCollection(
             (new ContactCustomFieldBuilder(
                 $contact->getContactCustomFieldCollection(),
-                $addContactCommand->getCustomFieldsCollection()
+                $addContactCommand->getContactCustomFieldsCollection()
             ))
                 ->getMergedCustomFieldsCollection()
         );

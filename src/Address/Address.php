@@ -74,6 +74,8 @@ class Address
      */
     private function setCountryCode($countryCode)
     {
+        $countryCode = CountryCodeConverter::getCountryCodeInISO3166Alpha3($countryCode);
+
         $message = 'Country code in Address should be a not blank string (3 chars)';
         Assert::that($countryCode, $message)->notBlank()->string()->length(3);
         $this->countryCode = $countryCode;

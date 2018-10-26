@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\Export;
 
+use GrShareCode\Export\Command\ExportContactCommand;
 use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\GetresponseApiException;

@@ -39,8 +39,6 @@ class ExportContactServiceTest extends BaseTestCase
         $exportSettings = ExportSettingsFactory::createFromArray([
             'contactListId' => 'contactListId',
             'dayOfCycle' => null,
-            'jobSchedulerEnabled' => false,
-            'updateContactEnabled' => false,
             'ecommerceEnabled' => false,
             'shopId' => null
         ]);

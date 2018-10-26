@@ -19,7 +19,7 @@ class ContactPayloadFactory
             ]
         ];
 
-        if (empty($payload['name'])) {
+        if (empty(trim($payload['name']))) {
             unset($payload['name']);
         }
 
@@ -28,7 +28,7 @@ class ContactPayloadFactory
         }
 
         /** @var ContactCustomField $customField */
-        foreach ($addContactCommand->getCustomFieldsCollection() as $customField) {
+        foreach ($addContactCommand->getContactCustomFieldsCollection() as $customField) {
             $payload['customFieldValues'][] = [
                 'customFieldId' => $customField->getId(),
                 'value' => [$customField->getValue()]

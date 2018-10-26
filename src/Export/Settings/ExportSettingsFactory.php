@@ -16,8 +16,6 @@ class ExportSettingsFactory
         return new ExportSettings(
             $config['contactListId'],
             $config['dayOfCycle'],
-            $config['jobSchedulerEnabled'],
-            $config['updateContactEnabled'],
             new EcommerceSettings(
                 $config['ecommerceEnabled'],
                 $config['shopId']

@@ -16,6 +16,8 @@ class GetresponseApiClient
     private $dbRepository;
     /** @var string */
     private $authorizationKey;
+    /** @var array */
+    private $shortTermCache;
 
     /**
      * @param GetresponseApi $grApi
@@ -77,7 +79,16 @@ class GetresponseApiClient
     public function findContactByEmailAndListId($email, $listId, $withCustoms = false)
     {
         return $this->execute(function () use ($email, $listId, $withCustoms) {
-            return $this->grApi->getContactByEmailAndListId($email, $listId, $withCustoms);
+
+            $key = md5($email .$listId .$withCustoms);
+
+            if (isset($this->shortTermCache[$key])) {
+                return $this->shortTermCache[$key];
+            }
+
+            $response = $this->grApi->getContactByEmailAndListId($email, $listId, $withCustoms);
+            $this->shortTermCache[$key] = $response;
+            return $response;
         });
     }
 

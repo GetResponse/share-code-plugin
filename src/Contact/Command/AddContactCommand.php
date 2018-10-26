@@ -84,7 +84,7 @@ class AddContactCommand
     /**
      * @return ContactCustomFieldsCollection
      */
-    public function getCustomFieldsCollection()
+    public function getContactCustomFieldsCollection()
     {
         return $this->customFieldsCollection;
     }

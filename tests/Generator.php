@@ -2,12 +2,12 @@
 namespace GrShareCode\Tests;
 
 use GrShareCode\Address\Address;
-use GrShareCode\Cart\AddCartCommand;
+use GrShareCode\Cart\Command\AddCartCommand;
 use GrShareCode\Cart\Cart;
 use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
-use GrShareCode\Export\ExportContactCommand;
+use GrShareCode\Export\Command\ExportContactCommand;
 use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\Order\Command\AddOrderCommand;
 use GrShareCode\Order\Command\EditOrderCommand;
@@ -195,7 +195,7 @@ class Generator
 
     /**
      * @param ExportSettings $exportSettings
-     * @return ExportContactCommand
+     * @return \GrShareCode\Export\Command\ExportContactCommand
      */
     public static function createExportContactCommandWithSettings(ExportSettings $exportSettings)
     {
