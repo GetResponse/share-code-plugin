@@ -41,7 +41,7 @@ class Order
     /** @var float */
     private $shippingPrice;
 
-    /** @var float */
+    /** @var string */
     private $billingStatus;
 
     /** @var string */
@@ -55,51 +55,20 @@ class Order
 
     /**
      * @param string $externalOrderId
-     * @param ProductsCollection $products
      * @param float $totalPrice
-     * @param float $totalPriceTax
-     * @param string $orderUrl
      * @param string $currency
-     * @param string $status
-     * @param string $externalCartId
-     * @param string $description
-     * @param float $shippingPrice
-     * @param float $billingStatus
-     * @param string $processedAt
-     * @param null|Address $shippingAddress
-     * @param Address $billingAddress
+     * @param ProductsCollection $products
      */
     public function __construct(
         $externalOrderId,
-        ProductsCollection $products,
         $totalPrice,
-        $totalPriceTax,
-        $orderUrl,
         $currency,
-        $status,
-        $externalCartId,
-        $description,
-        $shippingPrice,
-        $billingStatus,
-        $processedAt,
-        $shippingAddress,
-        Address $billingAddress
+        ProductsCollection $products
     ) {
-
         $this->setExternalOrderId($externalOrderId);
-        $this->setProducts($products);
         $this->setTotalPrice($totalPrice);
-        $this->setTotalPriceTax($totalPriceTax);
-        $this->setOrderUrl($orderUrl);
         $this->setCurrency($currency);
-        $this->setStatus($status);
-        $this->setExternalCartId($externalCartId);
-        $this->setDescription($description);
-        $this->setShippingPrice($shippingPrice);
-        $this->setBillingStatus($billingStatus);
-        $this->setProcessedAt($processedAt);
-        $this->setShippingAddress($shippingAddress);
-        $this->setBillingAddress($billingAddress);
+        $this->setProducts($products);
     }
 
     /**
@@ -131,9 +100,9 @@ class Order
     }
 
     /**
-     * @param null|float $totalPriceTax
+     * @param float $totalPriceTax
      */
-    private function setTotalPriceTax($totalPriceTax)
+    public function setTotalPriceTax($totalPriceTax)
     {
         $message = 'Total price tax in Order should be null or float';
         Assert::that($totalPriceTax, $message)->nullOr()->float();
@@ -141,12 +110,12 @@ class Order
     }
 
     /**
-     * @param null|string $orderUrl
+     * @param string $orderUrl
      */
-    private function setOrderUrl($orderUrl)
+    public function setOrderUrl($orderUrl)
     {
         $message = 'Order URL in Order should be null or string';
-        Assert::that($orderUrl, $message)->nullOr()->string();
+        Assert::that($orderUrl, $message)->notEmpty()->notNull()->string();
         $this->orderUrl = $orderUrl;
     }
 
@@ -161,19 +130,19 @@ class Order
     }
 
     /**
-     * @param null|string $status
+     * @param string $status
      */
-    private function setStatus($status)
+    public function setStatus($status)
     {
-        $message = 'Status in Order should be null or string';
-        Assert::that($status, $message)->nullOr()->string();
+        $message = 'Status in Order should be string';
+        Assert::that($status, $message)->notEmpty()->notNull()->string();
         $this->status = $status;
     }
 
     /**
      * @param string $cartId
      */
-    private function setExternalCartId($cartId)
+    public function setExternalCartId($cartId)
     {
         $message = 'External cart ID in Order should be a not blank string';
         Assert::that($cartId, $message)->notBlank()->string();
@@ -181,39 +150,39 @@ class Order
     }
 
     /**
-     * @param null|string $description
+     * @param string $description
      */
-    private function setDescription($description)
+    public function setDescription($description)
     {
-        $message = 'Description in Order should be null or string';
-        Assert::that($description, $message)->nullOr()->string();
+        $message = 'Description in Order should be string';
+        Assert::that($description, $message)->notEmpty()->notNull()->string();
         $this->description = $description;
     }
 
     /**
-     * @param null|float $shippingPrice
+     * @param float $shippingPrice
      */
-    private function setShippingPrice($shippingPrice)
+    public function setShippingPrice($shippingPrice)
     {
-        $message = 'Shipping price in Order should be null or float';
-        Assert::that($shippingPrice, $message)->nullOr()->float();
+        $message = 'Shipping price in Order should be float';
+        Assert::that($shippingPrice, $message)->notNull()->float();
         $this->shippingPrice = $shippingPrice;
     }
 
     /**
-     * @param null|string $billingStatus
+     * @param string $billingStatus
      */
-    private function setBillingStatus($billingStatus)
+    public function setBillingStatus($billingStatus)
     {
-        $message = 'Billing status in Order should be null or string';
-        Assert::that($billingStatus, $message)->nullOr()->string();
+        $message = 'Billing status in Order should be string';
+        Assert::that($billingStatus, $message)->notEmpty()->notNull()->string();
         $this->billingStatus = $billingStatus;
     }
 
     /**
      * @param string $processedAt
      */
-    private function setProcessedAt($processedAt)
+    public function setProcessedAt($processedAt)
     {
         $message = 'Processed at in Order should be a ISO8601 date time';
         Assert::that($processedAt, $message)->date(\DateTime::ISO8601);
@@ -221,19 +190,17 @@ class Order
     }
 
     /**
-     * @param mixed $shippingAddress
+     * @param Address $shippingAddress
      */
-    private function setShippingAddress($shippingAddress)
+    public function setShippingAddress(Address $shippingAddress)
     {
-        $message = 'Shipping address in Order should be null or Address instance';
-        Assert::that($shippingAddress, $message)->nullOr()->isInstanceOf(Address::class);
         $this->shippingAddress = $shippingAddress;
     }
 
     /**
      * @param Address $billingAddress
      */
-    private function setBillingAddress(Address $billingAddress)
+    public function setBillingAddress(Address $billingAddress)
     {
         $this->billingAddress = $billingAddress;
     }

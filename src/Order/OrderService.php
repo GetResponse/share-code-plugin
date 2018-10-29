@@ -150,11 +150,12 @@ class OrderService
     }
 
     /**
-     * @param AddOrderCommand $addOrderCommand
-     * @param string $newPayloadMd5
+     * @param array $orderPayload
+     * @param string $shopId
+     * @param int $externalOrderId
      * @return bool
      */
-    private function hasPayloadChanged($orderPayload, $shopId, $externalOrderId)
+    private function hasPayloadChanged(array $orderPayload, $shopId, $externalOrderId)
     {
         $oldPayloadHash = $this->dbRepository->getPayloadMd5FromOrderMapping(
             $shopId,

@@ -11,21 +11,21 @@ class WebForm
 {
     const STATUS_DISABLED = 'disabled';
     const STATUS_ENABLED = 'enabled';
+    const VERSION_V1 = 'v1';
+    const VERSION_V2 = 'v2';
 
     /** @var string */
     private $webFormId;
-
     /** @var string */
     private $name;
-
     /** @var string */
     private $campaignName;
-
     /** @var string */
     private $status;
-
     /** @var string */
     private $scriptUrl;
+    /** @var string */
+    private $version;
 
     /**
      * @param string $webFormId
@@ -33,14 +33,16 @@ class WebForm
      * @param string $scriptUrl
      * @param string $campaignName
      * @param string $status
+     * @param string $version
      */
-    public function __construct($webFormId, $name, $scriptUrl, $campaignName, $status)
+    public function __construct($webFormId, $name, $scriptUrl, $campaignName, $status, $version)
     {
         $this->webFormId = $webFormId;
         $this->name = $name;
         $this->scriptUrl = $scriptUrl;
         $this->campaignName = $campaignName;
         $this->setStatus($status);
+        $this->version = $version;
     }
 
     /**
@@ -91,6 +93,14 @@ class WebForm
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 
     /**

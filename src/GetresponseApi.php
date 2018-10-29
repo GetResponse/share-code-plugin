@@ -327,6 +327,17 @@ class GetresponseApi
     }
 
     /**
+     * @param $id
+     * @return array|mixed
+     * @throws AccountNotExistsException
+     * @throws GetresponseApiException
+     */
+    public function getWebFormById($id)
+    {
+        return $this->sendRequest('webforms/' . $id);
+    }
+
+    /**
      * @param string $lang
      * @return array|mixed
      * @throws GetresponseApiException
@@ -373,6 +384,18 @@ class GetresponseApi
     {
         return $this->sendRequest('forms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
     }
+
+    /**
+     * @param string $id
+     * @return array|mixed
+     * @throws AccountNotExistsException
+     * @throws GetresponseApiException
+     */
+    public function getFormById($id)
+    {
+        return $this->sendRequest('forms/' . $id, 'GET');
+    }
+
 
     /**
      * @param $name

@@ -289,7 +289,6 @@ class GetresponseApiClient
     /**
      * @param int $page
      * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      */
@@ -297,6 +296,18 @@ class GetresponseApiClient
     {
         return $this->execute(function () use ($page, $perPage) {
             return $this->grApi->getWebForms($page, $perPage);
+        });
+    }
+
+    /**
+     * @param string $id
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getWebFormById($id)
+    {
+        return $this->execute(function () use ($id) {
+            return $this->grApi->getWebFormById($id);
         });
     }
 
@@ -341,7 +352,6 @@ class GetresponseApiClient
     /**
      * @param int $page
      * @param int $perPage
-     *
      * @return array
      * @throws GetresponseApiException
      */
@@ -349,6 +359,18 @@ class GetresponseApiClient
     {
         return $this->execute(function () use ($page, $perPage) {
             return $this->grApi->getForms($page, $perPage);
+        });
+    }
+
+    /**
+     * @param string $id
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getFormById($id)
+    {
+        return $this->execute(function () use ($id) {
+            return $this->grApi->getFormById($id);
         });
     }
 

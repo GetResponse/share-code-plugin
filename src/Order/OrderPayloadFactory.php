@@ -2,9 +2,12 @@
 
 namespace GrShareCode\Order;
 
-
 use GrShareCode\Address\Address;
 
+/**
+ * Class OrderPayloadFactory
+ * @package GrShareCode\Order
+ */
 class OrderPayloadFactory
 {
     /**
@@ -18,20 +21,44 @@ class OrderPayloadFactory
     {
         $orderPayload = [
             'totalPrice' => $order->getTotalPrice(),
-            'totalPriceTax' => $order->getTotalPriceTax(),
-            'orderUrl' => $order->getOrderUrl(),
-            'externalId' => $order->getExternalOrderId(),
             'currency' => $order->getCurrency(),
-            'status' => $order->getStatus(),
-            'description' => $order->getDescription(),
-            'shippingPrice' => $order->getShippingPrice(),
-            'billingPrice' => $order->getBillingStatus(),
-            'processedAt' => $order->getProcessedAt(),
-            'billingAddress' => $this->buildAddress($order->getBillingAddress()),
+            'externalId' => $order->getExternalOrderId(),
             'selectedVariants' => $variants,
         ];
 
-        if ($order->hasShippingAddress()) {
+        if (null !== $order->getTotalPriceTax()) {
+            $orderPayload['totalPriceTax'] = $order->getTotalPriceTax();
+        }
+
+        if (null !== $order->getOrderUrl()) {
+            $orderPayload['orderUrl'] = $order->getOrderUrl();
+        }
+
+        if (null !== $order->getStatus()) {
+            $orderPayload['status'] = $order->getStatus();
+        }
+
+        if (null !== $order->getDescription()) {
+            $orderPayload['description'] = $order->getDescription();
+        }
+
+        if (null !== $order->getShippingPrice()) {
+            $orderPayload['shippingPrice'] = $order->getDescription();
+        }
+
+        if (null !== $order->getBillingStatus()) {
+            $orderPayload['billingStatus'] = $order->getBillingStatus();
+        }
+
+        if (null !== $order->getProcessedAt()) {
+            $orderPayload['processedAt'] = $order->getProcessedAt();
+        }
+
+        if ($order->getBillingAddress() instanceof Address) {
+            $orderPayload['billingAddress'] = $this->buildAddress($order->getBillingAddress());
+        }
+
+        if ($order->getShippingAddress() instanceof Address) {
             $orderPayload['shippingAddress'] = $this->buildAddress($order->getShippingAddress());
         }
 
@@ -52,20 +79,51 @@ class OrderPayloadFactory
      */
     private function buildAddress(Address $address)
     {
-        return [
+        $addressPayload = [
             'countryCode' => $address->getCountryCode(),
-            'countryName' => $address->getCountryName(),
             'name' => $address->getName(),
-            'firstName' => $address->getFirstName(),
-            'lastName' => $address->getLastName(),
-            'address1' => $address->getAddress1(),
-            'address2' => $address->getAddress2(),
-            'city' => $address->getCity(),
-            'zip' => $address->getZip(),
-            'province' => $address->getProvince(),
-            'provinceCode' => $address->getProvinceCode(),
-            'phone' => $address->getPhone(),
-            'company' => $address->getCompany()
         ];
+
+        if (null !== $address->getFirstName()) {
+            $addressPayload['firstName'] = $address->getFirstName();
+        }
+
+        if (null !== $address->getLastName()) {
+            $addressPayload['lastName'] = $address->getLastName();
+        }
+
+        if (null !== $address->getAddress1()) {
+            $addressPayload['address1'] = $address->getAddress1();
+        }
+
+        if (null !== $address->getAddress2()) {
+            $addressPayload['address2'] = $address->getAddress2();
+        }
+
+        if (null !== $address->getCity()) {
+            $addressPayload['city'] = $address->getCity();
+        }
+
+        if (null !== $address->getZip()) {
+            $addressPayload['zip'] = $address->getZip();
+        }
+
+        if (null !== $address->getProvince()) {
+            $addressPayload['province'] = $address->getProvince();
+        }
+
+        if (null !== $address->getProvinceCode()) {
+            $addressPayload['provinceCode'] = $address->getProvinceCode();
+        }
+
+        if (null !== $address->getPhone()) {
+            $addressPayload['phone'] = $address->getPhone();
+        }
+
+        if (null !== $address->getCompany()) {
+            $addressPayload['company'] = $address->getCompany();
+        }
+
+        return $addressPayload;
     }
 }

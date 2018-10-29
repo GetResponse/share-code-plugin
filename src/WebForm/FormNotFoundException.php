@@ -10,4 +10,12 @@ use GrShareCode\GrShareCodeException;
 class FormNotFoundException extends GrShareCodeException
 {
 
+    /**
+     * @param string $id
+     * @return FormNotFoundException
+     */
+    public static function createWithId($id)
+    {
+        return new self(sprintf('Form with id %s not found in getResponse.' , $id));
+    }
 }

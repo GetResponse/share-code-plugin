@@ -2,25 +2,29 @@
 namespace GrShareCode\Tests\Unit\Domain\WebForm;
 
 use GrShareCode\GetresponseApiClient;
+use GrShareCode\GetresponseApiException;
+use GrShareCode\WebForm\Command\GetWebFormCommand;
 use GrShareCode\WebForm\WebForm;
 use GrShareCode\WebForm\WebFormCollection;
 use GrShareCode\WebForm\WebFormService;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
-class WebFormServiceTest extends TestCase
+class WebFormServiceTest extends BaseTestCase
 {
     /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
     private $grApiClientMock;
+    /** @var WebFormService */
+    private $webFormService;
 
     public function setUp()
     {
-        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->grApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
+        $this->webFormService = new WebFormService($this->grApiClientMock);
     }
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldReturnWebFormCollection()
     {
@@ -104,7 +108,9 @@ class WebFormServiceTest extends TestCase
                 'webFormName_1',
                 'scriptUrl_1',
                 'campaignName_1',
-                'enabled')
+                'enabled',
+                WebForm::VERSION_V1
+            )
         );
         $webFormCollection->add(
             new WebForm(
@@ -112,7 +118,8 @@ class WebFormServiceTest extends TestCase
                 'webFormName_2',
                 'scriptUrl_2',
                 'campaignName_2',
-                'disabled'
+                'disabled',
+                WebForm::VERSION_V1
             )
         );
         $webFormCollection->add(
@@ -121,7 +128,8 @@ class WebFormServiceTest extends TestCase
                 'webFormName_3',
                 'scriptUrl_3',
                 'campaignName_3',
-                'enabled'
+                'enabled',
+                WebForm::VERSION_V1
             )
         );
         $webFormCollection->add(new WebForm(
@@ -129,7 +137,8 @@ class WebFormServiceTest extends TestCase
                 'webFormName_4',
                 'scriptUrl_4',
                 'campaignName_4',
-                'enabled'
+                'enabled',
+                WebForm::VERSION_V2
             )
         );
         $webFormCollection->add(
@@ -138,7 +147,8 @@ class WebFormServiceTest extends TestCase
                 'webFormName_5',
                 'scriptUrl_5',
                 'campaignName_5',
-                'disabled'
+                'disabled',
+                WebForm::VERSION_V2
             )
         );
         $webFormCollection->add(
@@ -147,12 +157,65 @@ class WebFormServiceTest extends TestCase
                 'webFormName_6',
                 'scriptUrl_6',
                 'campaignName_6',
-                'enabled'
+                'enabled',
+                WebForm::VERSION_V2
             )
         );
 
-        $shopService = new WebFormService($this->grApiClientMock);
-        $this->assertEquals($webFormCollection, $shopService->getAllWebForms());
+        $this->assertEquals($webFormCollection, $this->webFormService->getAllWebForms());
     }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldGetOldWebFormById()
+    {
+        $getWebFormCommand = new GetWebFormCommand('id', WebForm::VERSION_V1);
+
+        $this->grApiClientMock
+            ->expects(self::once())
+            ->method('getWebFormById')
+            ->with('id')
+            ->willReturn([
+                'webformId' => 'id',
+                'name' => 'form_name',
+                'scriptUrl' => 'https://app.getresponse.com/view_webform.js?u=as11ab&wid=11212315',
+                'status' => 'enabled',
+                'campaign' => ['name' => 'campaign_name']
+            ]);
+
+        $form = $this->webFormService->getWebFormById($getWebFormCommand);
+
+        self::assertEquals('id', $form->getWebFormId());
+        self::assertEquals(WebForm::VERSION_V1, $form->getVersion());
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldGetNewWebFormById()
+    {
+        $getWebFormCommand = new GetWebFormCommand('id', WebForm::VERSION_V2);
+
+        $this->grApiClientMock
+            ->expects(self::once())
+            ->method('getFormById')
+            ->with('id')
+            ->willReturn([
+                'webformId' => 'id',
+                'name' => 'form_name',
+                'scriptUrl' => 'https://app.getresponse.com/view_webform.js?u=as11ab&wid=11212315',
+                'status' => 'published',
+                'campaign' => ['name' => 'campaign_name']
+            ]);
+
+        $form = $this->webFormService->getWebFormById($getWebFormCommand);
+
+        self::assertEquals('id', $form->getWebFormId());
+        self::assertEquals(WebForm::VERSION_V2, $form->getVersion());
+    }
+
 
 }
