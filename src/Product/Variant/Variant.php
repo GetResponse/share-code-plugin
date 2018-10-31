@@ -101,7 +101,11 @@ class Variant
      */
     private function setSku($sku)
     {
-        $message = 'SKU in Variant should be a not blank string';
+        $message = sprintf(
+            'SKU should be a not blank string. ProductId: %s. ProductName: %s',
+            $this->getExternalId(),
+            $this->getName()
+        );
         Assert::that($sku, $message)->notBlank()->string();
         $this->sku = $sku;
     }
