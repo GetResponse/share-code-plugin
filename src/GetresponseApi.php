@@ -147,13 +147,18 @@ class GetresponseApi
 
     /**
      * @param string $email
+     * @param bool $withCustoms
      * @return array
-     * @throws GetresponseApiException
      * @throws AccountNotExistsException
+     * @throws GetresponseApiException
      */
-    public function searchContacts($email)
+    public function searchContacts($email, $withCustoms)
     {
         $params = ['query' => ['email' => $email]];
+        if ($withCustoms) {
+            $params['additionalFlags'] = 'forceCustoms';
+        }
+
         return $this->sendRequest('contacts?'.$this->setParams($params));
     }
 

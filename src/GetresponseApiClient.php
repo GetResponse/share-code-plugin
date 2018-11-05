@@ -119,13 +119,14 @@ class GetresponseApiClient
 
     /**
      * @param string $email
+     * @param bool $withCustoms
      * @return array
      * @throws GetresponseApiException
      */
-    public function searchContacts($email)
+    public function searchContacts($email, $withCustoms)
     {
-        return $this->execute(function () use ($email) {
-            return $this->grApi->searchContacts($email);
+        return $this->execute(function () use ($email, $withCustoms) {
+            return $this->grApi->searchContacts($email, $withCustoms);
         });
     }
 

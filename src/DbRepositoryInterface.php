@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode;
 
+use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\ProductMapping\ProductMapping;
 
 /**
@@ -90,4 +91,17 @@ interface DbRepositoryInterface
      * @param int $accountId
      */
     public function disconnectAccount($accountId);
+
+    /**
+     * @return string
+     */
+    public function getOriginCustomFieldId();
+
+    /**
+     * @param string $id
+     */
+    public function setOriginCustomFieldId($id);
+
+    public function clearOriginCustomField();
+
 }

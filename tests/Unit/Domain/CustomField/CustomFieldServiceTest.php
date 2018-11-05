@@ -1,30 +1,34 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\CustomField;
 
+use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomField;
 use GrShareCode\CustomField\CustomFieldCollection;
 use GrShareCode\CustomField\CustomFieldService;
 use GrShareCode\GetresponseApiClient;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\GetresponseApiException;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
  * Class CustomFieldServiceTest
  * @package GrShareCode\Tests\Unit\Domain\CustomField
  */
-class CustomFieldServiceTest extends TestCase
+class CustomFieldServiceTest extends BaseTestCase
 {
     /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
     private $getResponseApiClientMock;
+    /** @var CustomFieldService */
+    private $sut;
 
     public function setUp()
     {
-        $this->getResponseApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
+        $this->sut = new CustomFieldService($this->getResponseApiClientMock);
     }
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldReturnAllCustomFields()
     {
@@ -48,7 +52,58 @@ class CustomFieldServiceTest extends TestCase
         $customFieldCollection->add(new CustomField('grCustomFieldId2', 'customFieldName2'));
         $customFieldCollection->add(new CustomField('grCustomFieldId3', 'customFieldName3'));
 
-        $contactService = new CustomFieldService($this->getResponseApiClientMock);
-        $this->assertEquals($customFieldCollection, $contactService->getAllCustomFields());
+
+        $this->assertEquals($customFieldCollection, $this->sut->getAllCustomFields());
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldCreateCustomField()
+    {
+        $createCustomFieldCommand = new CreateCustomFieldCommand('origin', ['originName']);
+
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('createCustomField')
+            ->with(
+                [
+                    'name' => 'origin',
+                    'type' => 'text',
+                    'hidden' => false,
+                    'values' => ['originName']
+                ]
+            );
+
+        $this->sut->createCustomField($createCustomFieldCommand);
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldDeleteCustomField()
+    {
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('deleteCustomField')
+            ->with('customId');
+
+        $this->sut->deleteCustomFieldById('customId');
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldGetCustomFieldByName()
+    {
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('getCustomFieldByName')
+            ->with('customName');
+
+        $this->sut->getCustomFieldByName('customName');
     }
 }

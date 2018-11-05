@@ -23,7 +23,7 @@ class ContactPayloadFactory
             unset($payload['name']);
         }
 
-        if (!empty($addContactCommand->getDayOfCycle())) {
+        if (!is_null($addContactCommand->getDayOfCycle())) {
             $payload['dayOfCycle'] = $addContactCommand->getDayOfCycle();
         }
 
@@ -31,7 +31,7 @@ class ContactPayloadFactory
         foreach ($addContactCommand->getContactCustomFieldsCollection() as $customField) {
             $payload['customFieldValues'][] = [
                 'customFieldId' => $customField->getId(),
-                'value' => [$customField->getValue()]
+                'value' => $customField->getValue()
             ];
         }
 

@@ -64,14 +64,14 @@ class Contact
     }
 
     /**
-     * @param ContactCustomField $contactCustomField
+     * @param ContactCustomField $originCustomField
      * @return bool
      */
-    public function hasContactCustomField(ContactCustomField $contactCustomField)
+    public function hasOriginCustomField(ContactCustomField $originCustomField)
     {
         /** @var ContactCustomField $custom */
         foreach ($this->contactCustomFieldCollection as $custom) {
-            if ($custom->getId() == $contactCustomField->getId() && 1 == count($custom->getValue()) && 1 == count($contactCustomField->getValue()) && $custom->getValue()[0] == $contactCustomField->getValue()[0]) {
+            if ($custom->getId() == $originCustomField->getId() && 1 == count($custom->getValue()) && 1 == count($originCustomField->getValue()) && $custom->getValue()[0] == $originCustomField->getValue()[0]) {
                 return true;
             }
         }

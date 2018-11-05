@@ -13,6 +13,9 @@ use GrShareCode\Contact\ContactFactory;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
+use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
+use GrShareCode\CustomField\CustomFieldService;
+use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
@@ -27,8 +30,13 @@ class ContactServiceTest extends BaseTestCase
     private $getResponseApiClientMock;
     /** @var ContactPayloadFactory|\PHPUnit_Framework_MockObject_MockObject */
     private $contactPayloadFactoryMock;
-    /** @var ContactCustomField */
-    private $originCustomField;
+    /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $dbRepositoryMock;
+    /** @var CustomFieldService|\PHPUnit_Framework_MockObject_MockObject */
+    private $customFieldServiceMock;
+    /** @var string */
+    private $originCustomName;
+
     /** @var ContactService */
     private $sut;
 
@@ -36,12 +44,18 @@ class ContactServiceTest extends BaseTestCase
     {
         $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->contactPayloadFactoryMock = $this->getMockWithoutConstructing(ContactPayloadFactory::class);
-        $this->originCustomField = new ContactCustomField('cid', ['wordpress']);
+        $this->dbRepositoryMock = $this->getMockWithoutConstructing(DbRepositoryInterface::class);
+        $this->customFieldServiceMock = $this->getMockWithoutConstructing(CustomFieldService::class);
+
+        $this->originCustomName = 'originValue';
+
         $this->sut = new ContactService(
             $this->getResponseApiClientMock,
             $this->contactPayloadFactoryMock,
             new ContactFactory(new ContactCustomFieldCollectionFactory()),
-            $this->originCustomField
+            $this->customFieldServiceMock,
+            $this->dbRepositoryMock,
+            $this->originCustomName
         );
     }
 
@@ -157,15 +171,37 @@ class ContactServiceTest extends BaseTestCase
      * @test
      * @throws GetresponseApiException
      */
-    public function shouldAddContact()
+    public function shouldAddContactAndCreateCustomField()
     {
-        /** @var AddContactCommand|\PHPUnit_Framework_MockObject_MockObject $addContactCommandMock */
-        $addContactCommandMock = $this->getMockWithoutConstructing(AddContactCommand::class);
+        $addContactCommand = new AddContactCommand(
+            'example@exmple.com',
+            'name',
+            'listId',
+            null,
+            new ContactCustomFieldsCollection()
+        );
 
-        $addContactCommandMock
+        $this->dbRepositoryMock
             ->expects(self::once())
-            ->method('addCustomField')
-            ->with($this->originCustomField);
+            ->method('getOriginCustomFieldId')
+            ->willReturn(null);
+
+        $this->customFieldServiceMock
+            ->expects(self::once())
+            ->method('getCustomFieldByName')
+            ->with('origin')
+            ->willReturn(null);
+
+        $this->customFieldServiceMock
+            ->expects(self::once())
+            ->method('createCustomField')
+            ->with(new CreateCustomFieldCommand('origin', [$this->originCustomName]))
+            ->willReturn(['customFieldId' => 'oid']);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('setOriginCustomFieldId')
+            ->with('oid');
 
         $this->getResponseApiClientMock
             ->expects($this->once())
@@ -176,7 +212,116 @@ class ContactServiceTest extends BaseTestCase
             ->expects($this->once())
             ->method('createContact');
 
-        $this->sut->addContact($addContactCommandMock);
+        $this->sut->addContact($addContactCommand);
+
+        self::assertEquals(1, $addContactCommand->getContactCustomFieldsCollection()->count());
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldAddContact()
+    {
+        $addContactCommand = new AddContactCommand(
+            'example@exmple.com',
+            'name',
+            'listId',
+            null,
+            new ContactCustomFieldsCollection()
+        );
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getOriginCustomFieldId')
+            ->willReturn('oid');
+
+        $this->customFieldServiceMock
+            ->expects(self::never())
+            ->method('getCustomFieldByName');
+
+        $this->customFieldServiceMock
+            ->expects(self::never())
+            ->method('createCustomField');
+
+        $this->dbRepositoryMock
+            ->expects(self::never())
+            ->method('setOriginCustomFieldId');
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('findContactByEmailAndListId')
+            ->willReturn(false);
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('createContact');
+
+        $this->sut->addContact($addContactCommand);
+
+        self::assertEquals(1, $addContactCommand->getContactCustomFieldsCollection()->count());
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldAddContactWhenWrongOriginId()
+    {
+        $addContactCommand = new AddContactCommand(
+            'example@exmple.com',
+            'name',
+            'listId',
+            null,
+            new ContactCustomFieldsCollection()
+        );
+
+        $this->dbRepositoryMock
+            ->expects(self::exactly(2))
+            ->method('getOriginCustomFieldId')
+            ->willReturnOnConsecutiveCalls('oid', '');
+
+        $this->customFieldServiceMock
+            ->expects(self::once())
+            ->method('getCustomFieldByName')
+            ->willReturn(null);
+
+
+        $this->customFieldServiceMock
+            ->expects(self::once())
+            ->method('createCustomField')
+            ->willReturn(['customFieldId' => 'newoid']);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('setOriginCustomFieldId')
+            ->with('newoid');
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('clearOriginCustomField');
+
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('findContactByEmailAndListId')
+            ->willReturn(false);
+
+        $createContactCall = 0;
+        $callback = function () use (&$createContactCall) {
+            $createContactCall++;
+            if (1 == $createContactCall) {
+                throw new GetresponseApiException('Custom field by id: oid not found');
+            } else {return true; }
+        };
+
+        $this->getResponseApiClientMock
+            ->expects(self::exactly(2))
+            ->method('createContact')
+            ->will($this->returnCallback($callback));
+
+        $this->sut->addContact($addContactCommand);
+
+        self::assertEquals(1, $addContactCommand->getContactCustomFieldsCollection()->count());
     }
 
     /**
@@ -235,6 +380,7 @@ class ContactServiceTest extends BaseTestCase
     public function shouldUnsubscribeContact()
     {
         $email = 'test@test.com';
+        $originCustomFieldId = 'oid';
 
         $contact1 = [
             'contactId' => 'xyd1',
@@ -242,10 +388,10 @@ class ContactServiceTest extends BaseTestCase
             'email' => $email,
             'customFieldValues' => [
                 [
-                    'customFieldId' => $this->originCustomField->getId(),
+                    'customFieldId' => $originCustomFieldId,
                     'name' => 'origin',
-                    'value' => $this->originCustomField->getValue(),
-                    'values' => $this->originCustomField->getValue(),
+                    'value' => [$this->originCustomName],
+                    'values' => [$this->originCustomName],
                     'type' => 'text',
                     'fieldType' => 'text',
                     'valueType' => 'string',
@@ -259,10 +405,10 @@ class ContactServiceTest extends BaseTestCase
             'email' => $email,
             'customFieldValues' => [
                 [
-                    'customFieldId' => $this->originCustomField->getId(),
+                    'customFieldId' => $originCustomFieldId,
                     'name' => 'origin',
-                    'value' => $this->originCustomField->getValue(),
-                    'values' => $this->originCustomField->getValue(),
+                    'value' => [$this->originCustomName],
+                    'values' => [$this->originCustomName],
                     'type' => 'text',
                     'fieldType' => 'text',
                     'valueType' => 'string',
@@ -302,10 +448,15 @@ class ContactServiceTest extends BaseTestCase
             'email' => $email,
         ];
 
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getOriginCustomFieldId')
+            ->willReturn($originCustomFieldId);
+
         $this->getResponseApiClientMock
             ->expects(self::once())
             ->method('searchContacts')
-            ->with($email)
+            ->with($email, true)
             ->willReturn([$contact1, $contact2, $contact3, $contact4]);
 
         $this->getResponseApiClientMock

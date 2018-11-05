@@ -1,7 +1,6 @@
 <?php
 namespace GrShareCode\Contact\Command;
 
-use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Validation\Assert\Assert;
 
@@ -103,14 +102,6 @@ class AddContactCommand
     public function getEmail()
     {
         return $this->email;
-    }
-
-    /**
-     * @param ContactCustomField $customField
-     */
-    public function addCustomField(ContactCustomField $customField)
-    {
-        $this->customFieldsCollection->add($customField);
     }
 
     /**
