@@ -1,13 +1,12 @@
 <?php
 namespace GrShareCode\Export;
 
-use GrShareCode\Cache\CacheNull;
-use GrShareCode\Cart\CartService;
 use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldCollectionFactory;
 use GrShareCode\Contact\ContactFactory;
 use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
+use GrShareCode\CustomField\CustomFieldService;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\Order\OrderPayloadFactory;
@@ -26,7 +25,7 @@ class ExportContactServiceFactory
      * @param ContactCustomField $originCustomField
      * @return ExportContactService
      */
-    public static function create(GetresponseApiClient $getresponseApiClient, DbRepositoryInterface $dbRepository, ContactCustomField $originCustomField)
+    public static function create(GetresponseApiClient $getresponseApiClient, DbRepositoryInterface $dbRepository, $originValue)
     {
         $productService = new ProductService($getresponseApiClient, $dbRepository);
 
@@ -35,7 +34,9 @@ class ExportContactServiceFactory
                 $getresponseApiClient,
                 new ContactPayloadFactory(),
                 new ContactFactory(new ContactCustomFieldCollectionFactory()),
-                $originCustomField
+                new CustomFieldService($getresponseApiClient),
+                $dbRepository,
+                $originValue
             ),
             new OrderService(
                 $getresponseApiClient,
