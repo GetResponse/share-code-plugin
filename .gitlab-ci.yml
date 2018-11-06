@@ -25,7 +25,7 @@ test:app-php56:
   image: php:5.6-cli
   stage: test
   tags:
-    - phpunit
+    - kubernetes-ci
   script:
     - ./vendor/bin/phpunit --testsuite unit --configuration ./tests/phpunit.xml --colors=never
   except:

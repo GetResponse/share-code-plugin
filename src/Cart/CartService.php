@@ -73,6 +73,10 @@ class CartService
      */
     private function addCart(AddCartCommand $addCartCommand)
     {
+        if (0 === $addCartCommand->getCart()->getProducts()->count()) {
+            return;
+        }
+
         $contact = $this->getContact($addCartCommand->getEmail(), $addCartCommand->getContactListId());
 
         if (empty($contact)) {
