@@ -10,14 +10,14 @@ class ContactCustomField
     /** @var string */
     private $id;
 
-    /** @var string */
+    /** @var array */
     private $value;
 
     /**
      * @param string $id
-     * @param string $value
+     * @param array $value
      */
-    public function __construct($id, $value)
+    public function __construct($id, array $value)
     {
         $this->id = $id;
         $this->value = $value;
@@ -32,7 +32,7 @@ class ContactCustomField
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getValue()
     {

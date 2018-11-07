@@ -1,8 +1,6 @@
 <?php
 namespace GrShareCode\Address;
 
-use GrShareCode\CountryCodeConverter;
-
 /**
  * Class AddressFactory
  * @package GrShareCode\Address
@@ -38,7 +36,7 @@ class AddressFactory
         $company
     ) {
         $address = new Address(
-            CountryCodeConverter::getCountryCodeInISO3166Alpha3($countryCode),
+            $countryCode,
             $firstName . ' ' . $lastName
         );
 

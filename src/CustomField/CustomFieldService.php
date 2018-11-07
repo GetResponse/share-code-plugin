@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\CustomField;
 
+use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomFieldFilter\CustomFieldForMappingFilter;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
@@ -45,20 +46,17 @@ class CustomFieldService
     }
 
     /**
-     * @param string $name
-     * @param string $value
-     * @param string $type
-     * @param bool $hidden
+     * @param CreateCustomFieldCommand $createCustomFieldCommand
      * @return array
      * @throws GetresponseApiException
      */
-    public function createCustomField($name, $value, $type = CustomField::FIELD_TYPE_TEXT, $hidden = false)
+    public function createCustomField(CreateCustomFieldCommand $createCustomFieldCommand)
     {
         return $this->getresponseApiClient->createCustomField([
-            'name' => $name,
-            'type' => $type,
-            'hidden' => $hidden,
-            'values' => [$value]
+            'name' => $createCustomFieldCommand->getName(),
+            'type' => $createCustomFieldCommand->getType(),
+            'hidden' => $createCustomFieldCommand->isHidden(),
+            'values' => $createCustomFieldCommand->getValues()
         ]);
     }
 

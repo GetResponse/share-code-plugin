@@ -79,4 +79,27 @@ class TypedCollection implements IteratorAggregate
     {
         return !empty($this->itemType) && is_object($item) && ($item instanceof $this->itemType);
     }
+
+    public function clear()
+    {
+        $this->items = [];
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->items);
+    }
+
+    /**
+     * @param object $item
+     * @return boolean
+     */
+    public function contains($item)
+    {
+        return in_array($item, $this->items);
+    }
+
 }

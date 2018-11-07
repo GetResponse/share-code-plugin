@@ -12,12 +12,12 @@ class GetresponseApiClient
 {
     /** @var GetresponseApi */
     private $grApi;
-
     /** @var DbRepositoryInterface */
     private $dbRepository;
-
     /** @var string */
     private $authorizationKey;
+    /** @var array */
+    private $shortTermCache;
 
     /**
      * @param GetresponseApi $grApi
@@ -72,52 +72,46 @@ class GetresponseApiClient
     /**
      * @param string $email
      * @param string $listId
+     * @param bool $withCustoms
      * @return array
      * @throws GetresponseApiException
      */
-    public function getContactByEmail($email, $listId)
+    public function findContactByEmailAndListId($email, $listId, $withCustoms = false)
     {
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-        return $this->execute(function () use ($email, $listId) {
-            return $this->grApi->getContactByEmail($email, $listId);
-        });
-    }
+        return $this->execute(function () use ($email, $listId, $withCustoms) {
 
-    /**
-     * @param string $email
-     * @param string $listId
-     * @return array
-     * @throws GetresponseApiException
-     */
-    public function getContactWithCustomFieldsByEmail($email, $listId)
-    {
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-        return $this->execute(function () use ($email, $listId) {
-            return $this->grApi->getContactWithCustomFieldsByEmail($email, $listId);
+            $key = md5($email .$listId .$withCustoms);
+
+            if (isset($this->shortTermCache[$key])) {
+                return $this->shortTermCache[$key];
+            }
+
+            $response = $this->grApi->getContactByEmailAndListId($email, $listId, $withCustoms);
+            $this->shortTermCache[$key] = $response;
+            return $response;
         });
     }
 
     /**
      * @param string $contactId
+     * @param bool $withCustoms
      * @return array
      * @throws GetresponseApiException
      */
-    public function getContactById($contactId)
+    public function getContactById($contactId, $withCustoms)
     {
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
-        return $this->execute(function () use ($contactId) {
-            return $this->grApi->getContactById($contactId);
+        return $this->execute(function () use ($contactId, $withCustoms) {
+            return $this->grApi->getContactById($contactId, $withCustoms);
         });
     }
 
     /**
-     * @param $params
+     * @param array $params
      * @return array
      * @throws GetresponseApiException
      */
     public function createContact($params)
     {
-        $this->authorizationKey = $this->grApi->getAuthorization()->getAccessToken();
         return $this->execute(function () use ($params) {
             return $this->grApi->createContact($params);
         });
@@ -125,13 +119,14 @@ class GetresponseApiClient
 
     /**
      * @param string $email
+     * @param bool $withCustoms
      * @return array
      * @throws GetresponseApiException
      */
-    public function searchContacts($email)
+    public function searchContacts($email, $withCustoms)
     {
-        return $this->execute(function () use ($email) {
-            return $this->grApi->searchContacts($email);
+        return $this->execute(function () use ($email, $withCustoms) {
+            return $this->grApi->searchContacts($email, $withCustoms);
         });
     }
 
@@ -231,14 +226,13 @@ class GetresponseApiClient
      * @param string $shopId
      * @param string $orderId
      * @param array $params
-     * @param bool $skipAutomation
      * @return array
      * @throws GetresponseApiException
      */
-    public function updateOrder($shopId, $orderId, $params, $skipAutomation = false)
+    public function updateOrder($shopId, $orderId, $params)
     {
-        return $this->execute(function () use ($shopId, $orderId, $params, $skipAutomation) {
-            return $this->grApi->updateOrder($shopId, $orderId, $params, $skipAutomation);
+        return $this->execute(function () use ($shopId, $orderId, $params) {
+            return $this->grApi->updateOrder($shopId, $orderId, $params);
         });
     }
 
@@ -296,7 +290,6 @@ class GetresponseApiClient
     /**
      * @param int $page
      * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      */
@@ -304,6 +297,18 @@ class GetresponseApiClient
     {
         return $this->execute(function () use ($page, $perPage) {
             return $this->grApi->getWebForms($page, $perPage);
+        });
+    }
+
+    /**
+     * @param string $id
+     * @return array|mixed
+     * @throws GetresponseApiException
+     */
+    public function getWebFormById($id)
+    {
+        return $this->execute(function () use ($id) {
+            return $this->grApi->getWebFormById($id);
         });
     }
 
@@ -348,7 +353,6 @@ class GetresponseApiClient
     /**
      * @param int $page
      * @param int $perPage
-     *
      * @return array
      * @throws GetresponseApiException
      */
@@ -356,6 +360,18 @@ class GetresponseApiClient
     {
         return $this->execute(function () use ($page, $perPage) {
             return $this->grApi->getForms($page, $perPage);
+        });
+    }
+
+    /**
+     * @param string $id
+     * @return array
+     * @throws GetresponseApiException
+     */
+    public function getFormById($id)
+    {
+        return $this->execute(function () use ($id) {
+            return $this->grApi->getFormById($id);
         });
     }
 

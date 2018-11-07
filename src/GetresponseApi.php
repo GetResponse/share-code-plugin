@@ -1,9 +1,7 @@
 <?php
 namespace GrShareCode;
 
-use GrShareCode\Api\ApiKeyAuthorization;
 use GrShareCode\Api\Authorization;
-use GrShareCode\Api\OauthAuthorization;
 use GrShareCode\Api\UserAgentHeader;
 
 /**
@@ -17,7 +15,7 @@ class GetresponseApi
     /** @var string */
     private $xAppId;
 
-    /** @var OauthAuthorization|ApiKeyAuthorization */
+    /** @var Authorization */
     private $authorization;
 
     /** @var array */
@@ -94,19 +92,23 @@ class GetresponseApi
     /**
      * @param string $email
      * @param string $listId
+     * @param bool $withCustoms
      * @return array
-     * @throws GetresponseApiException
      * @throws AccountNotExistsException
+     * @throws GetresponseApiException
      */
-    public function getContactWithCustomFieldsByEmail($email, $listId)
+    public function getContactByEmailAndListId($email, $listId, $withCustoms)
     {
         $params = [
             'query' => [
                 'email' => $email,
                 'campaignId' => $listId
             ],
-            'additionalFlags' => 'forceCustoms'
         ];
+
+        if ($withCustoms) {
+            $params['additionalFlags'] = 'forceCustoms';
+        }
 
         $result = $this->sendRequest('contacts?' . $this->setParams($params));
 
@@ -115,13 +117,19 @@ class GetresponseApi
 
     /**
      * @param string $contactId
+     * @param bool $withCustoms
      * @return array
-     * @throws GetresponseApiException
      * @throws AccountNotExistsException
+     * @throws GetresponseApiException
      */
-    public function getContactById($contactId)
+    public function getContactById($contactId, $withCustoms)
     {
-        $result = $this->sendRequest('contacts/' . $contactId);
+        $params = [];
+        if ($withCustoms) {
+            $params['additionalFlags'] = 'forceCustoms';
+        }
+
+        $result = $this->sendRequest('contacts/' . $contactId . '?' . $this->setParams($params));
 
         return is_array($result) ? $result : [];
     }
@@ -139,13 +147,18 @@ class GetresponseApi
 
     /**
      * @param string $email
+     * @param bool $withCustoms
      * @return array
-     * @throws GetresponseApiException
      * @throws AccountNotExistsException
+     * @throws GetresponseApiException
      */
-    public function searchContacts($email)
+    public function searchContacts($email, $withCustoms)
     {
         $params = ['query' => ['email' => $email]];
+        if ($withCustoms) {
+            $params['additionalFlags'] = 'forceCustoms';
+        }
+
         return $this->sendRequest('contacts?'.$this->setParams($params));
     }
 
@@ -248,20 +261,13 @@ class GetresponseApi
      * @param string $shopId
      * @param string $orderId
      * @param array $params
-     * @param bool $skipAutomation
      * @return array
      * @throws GetresponseApiException
      * @throws AccountNotExistsException
      */
-    public function updateOrder($shopId, $orderId, $params, $skipAutomation = false)
+    public function updateOrder($shopId, $orderId, $params)
     {
-        $url = 'shops/' . $shopId . '/orders/' . $orderId;
-
-        if ($skipAutomation) {
-            $url .= '?additionalFlags=skipAutomation';
-        }
-
-        return $this->sendRequest($url, 'POST', $params);
+        return $this->sendRequest('shops/' . $shopId . '/orders/' . $orderId, 'POST', $params);
 
     }
 
@@ -326,6 +332,17 @@ class GetresponseApi
     }
 
     /**
+     * @param $id
+     * @return array|mixed
+     * @throws AccountNotExistsException
+     * @throws GetresponseApiException
+     */
+    public function getWebFormById($id)
+    {
+        return $this->sendRequest('webforms/' . $id);
+    }
+
+    /**
      * @param string $lang
      * @return array|mixed
      * @throws GetresponseApiException
@@ -372,6 +389,18 @@ class GetresponseApi
     {
         return $this->sendRequest('forms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
     }
+
+    /**
+     * @param string $id
+     * @return array|mixed
+     * @throws AccountNotExistsException
+     * @throws GetresponseApiException
+     */
+    public function getFormById($id)
+    {
+        return $this->sendRequest('forms/' . $id, 'GET');
+    }
+
 
     /**
      * @param $name
@@ -666,7 +695,7 @@ class GetresponseApi
     }
 
     /**
-     * @return OauthAuthorization|ApiKeyAuthorization
+     * @return Authorization
      */
     public function getAuthorization()
     {

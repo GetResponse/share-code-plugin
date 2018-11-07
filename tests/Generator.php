@@ -2,17 +2,16 @@
 namespace GrShareCode\Tests;
 
 use GrShareCode\Address\Address;
-use GrShareCode\Cart\AddCartCommand;
+use GrShareCode\Cart\Command\AddCartCommand;
 use GrShareCode\Cart\Cart;
-use GrShareCode\Contact\AddContactCommand;
 use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
-use GrShareCode\Export\ExportContactCommand;
-use GrShareCode\Export\HistoricalOrder\HistoricalOrder;
-use GrShareCode\Export\HistoricalOrder\HistoricalOrderCollection;
+use GrShareCode\Export\Command\ExportContactCommand;
 use GrShareCode\Export\Settings\ExportSettings;
-use GrShareCode\Order\AddOrderCommand;
+use GrShareCode\Order\Command\AddOrderCommand;
+use GrShareCode\Order\Command\EditOrderCommand;
 use GrShareCode\Order\Order;
+use GrShareCode\Order\OrderCollection;
 use GrShareCode\Product\Category\Category;
 use GrShareCode\Product\Category\CategoryCollection;
 use GrShareCode\Product\Product;
@@ -142,26 +141,40 @@ class Generator
     }
 
     /**
+     * @return EditOrderCommand
+     */
+    public static function createEditOrderCommand()
+    {
+        return new EditOrderCommand(
+            self::createOrder(),
+            'shopId'
+        );
+    }
+
+    /**
      * @return Order
      */
     private static function createOrder()
     {
-        return new Order(
+        $order = new Order(
             '21',
-            self::createProductsCollection(),
             20.00,
-            25.00,
-            'http://getresponse.com',
             'PLN',
-            'pending',
-            '431',
-            'This is description',
-            3.53,
-            'awaiting',
-            '2018-05-17T16:15:33+0200',
-            self::createAddress(),
-            self::createAddress()
+            self::createProductsCollection()
         );
+
+        $order->setTotalPriceTax(25.0);
+        $order->setOrderUrl('http://getresponse.com');
+        $order->setStatus('pending');
+        $order->setExternalCartId('431');
+        $order->setDescription('This is description');
+        $order->setShippingPrice(3.0);
+        $order->setBillingStatus('awaiting');
+        $order->setProcessedAt('2018-05-17T16:15:33+0200');
+        $order->setShippingAddress(self::createAddress());
+        $order->setBillingAddress(self::createAddress());
+
+        return $order;
     }
 
     /**
@@ -184,71 +197,32 @@ class Generator
 
     /**
      * @param ExportSettings $exportSettings
-     * @return ExportContactCommand
+     * @return \GrShareCode\Export\Command\ExportContactCommand
      */
     public static function createExportContactCommandWithSettings(ExportSettings $exportSettings)
     {
         $customFieldsCollection = new ContactCustomFieldsCollection();
-        $customFieldsCollection->add(new ContactCustomField('id1', 'company', 'country'));
+        $customFieldsCollection->add(new ContactCustomField('id1', ['company']));
 
         return new ExportContactCommand(
             'adam.kowalski@getresponse.com',
             'Adam Kowalski',
-            'origin',
             $exportSettings,
             $customFieldsCollection,
-            self::createHistoricalOrderCollection()
+            self::createOrderCollection()
         );
     }
 
     /**
-     * @return HistoricalOrderCollection
+     * @return OrderCollection
      */
-    private static function createHistoricalOrderCollection()
+    private static function createOrderCollection()
     {
-        $order = new HistoricalOrder(
-            '21',
-            self::createProductsCollection(),
-            20.00,
-            25.00,
-            'http://getresponse.com',
-            'PLN',
-            'pending',
-            '431',
-            'This is description',
-            3.53,
-            'awaiting',
-            '2018-05-17T16:15:33+0200',
-            self::createAddress(),
-            self::createAddress(),
-            new Cart('100001', self::createProductsCollection(), 'PLN', 10.00, 123.3)
-        );
+        $orderCollection = new OrderCollection();
+        $orderCollection->add(self::createOrder());
+        $orderCollection->add(self::createOrder());
 
-        $historicalOrderCollection = new HistoricalOrderCollection();
-        $historicalOrderCollection->add($order);
-
-        return $historicalOrderCollection;
-    }
-
-    /**
-     * @param string $name
-     * @param int $dayOfCycle
-     * @return AddContactCommand
-     */
-    public static function createAddContactCommand($name = 'Adam Kowalski', $dayOfCycle = 3)
-    {
-        $customFieldCollection = new ContactCustomFieldsCollection();
-        $customFieldCollection->add(new ContactCustomField('id_1',  'value_1'));
-        $customFieldCollection->add(new ContactCustomField('id_2', 'value_2'));
-
-        return new AddContactCommand(
-            'adam.kowalski@getresponse.com',
-            $name,
-            'contactListId',
-            $dayOfCycle,
-            $customFieldCollection,
-            'origin'
-        );
+        return $orderCollection;
     }
 
     /**

@@ -22,7 +22,7 @@ class TrackingCodeService
     }
 
     /**
-     * @return TrackingCode|string
+     * @return TrackingCode
      * @throws GetresponseApiException
      */
     public function getTrackingCode()

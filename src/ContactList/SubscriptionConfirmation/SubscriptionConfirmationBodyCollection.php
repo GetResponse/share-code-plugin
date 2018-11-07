@@ -11,6 +11,6 @@ class SubscriptionConfirmationBodyCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationBody');
+        $this->setItemType(SubscriptionConfirmationBody::class);
     }
 }

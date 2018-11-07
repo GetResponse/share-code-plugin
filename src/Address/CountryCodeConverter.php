@@ -1,9 +1,9 @@
 <?php
-namespace GrShareCode;
+namespace GrShareCode\Address;
 
 /**
  * Class CountryCodeConverter
- * @package GrShareCode
+ * @package GrShareCode\Address
  */
 class CountryCodeConverter
 {

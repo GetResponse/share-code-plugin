@@ -1,8 +1,8 @@
 <?php
-namespace GrShareCode\Contact;
+namespace GrShareCode\Contact\Command;
 
+use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Validation\Assert\Assert;
-use GrShareCode\Validation\Assert\InvalidArgumentException;
 
 /**
  * Class AddContactCommand
@@ -25,8 +25,8 @@ class AddContactCommand
     /** @var ContactCustomFieldsCollection */
     private $customFieldsCollection;
 
-    /** @var string */
-    private $originValue;
+    /** @var bool  */
+    private $updateIfAlreadyExists;
 
     /**
      * @param string $email
@@ -34,10 +34,9 @@ class AddContactCommand
      * @param string $contactListId
      * @param int $dayOfCycle
      * @param ContactCustomFieldsCollection $customFieldsCollection
-     * @param string $originValue
-     * @throws InvalidArgumentException
+     * @param bool $updateIfAlreadyExists
      */
-    public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $originValue)
+    public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $updateIfAlreadyExists = false)
     {
         Assert::that($email, 'Email in ' . AddContactCommand::class . ' should be a not null string')
             ->notNull()
@@ -54,7 +53,7 @@ class AddContactCommand
         $this->contactListId = $contactListId;
         $this->dayOfCycle = $dayOfCycle;
         $this->customFieldsCollection = $customFieldsCollection;
-        $this->originValue = $originValue;
+        $this->updateIfAlreadyExists = $updateIfAlreadyExists;
     }
 
     /**
@@ -84,9 +83,17 @@ class AddContactCommand
     /**
      * @return ContactCustomFieldsCollection
      */
-    public function getCustomFieldsCollection()
+    public function getContactCustomFieldsCollection()
     {
         return $this->customFieldsCollection;
+    }
+
+    /**
+     * @param ContactCustomFieldsCollection $customFieldsCollection
+     */
+    public function setCustomFieldsCollection(ContactCustomFieldsCollection $customFieldsCollection)
+    {
+        $this->customFieldsCollection = $customFieldsCollection;
     }
 
     /**
@@ -98,18 +105,10 @@ class AddContactCommand
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getOriginValue()
+    public function updateIfAlreadyExists()
     {
-        return $this->originValue;
-    }
-
-    /**
-     * @param ContactCustomField $customField
-     */
-    public function addCustomField(ContactCustomField $customField)
-    {
-        $this->customFieldsCollection->add($customField);
+        return $this->updateIfAlreadyExists;
     }
 }

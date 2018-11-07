@@ -4,25 +4,29 @@ namespace GrShareCode\Tests\Unit\Domain\Contact;
 use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldBuilder;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
-class ContactCustomFieldBuilderTest extends TestCase
+/**
+ * Class ContactCustomFieldBuilderTest
+ * @package GrShareCode\Tests\Unit\Domain\Contact
+ */
+class ContactCustomFieldBuilderTest extends BaseTestCase
 {
     /**
      * @test
      */
     public function shouldReturnMergedCustomFieldCollection()
     {
-        $contactCustomFieldsCollection = $this->getCustomFieldCollectionFromArray([
-            ['id' => 'grId1', 'value' => 'grValue1'],
-            ['id' => 'grId2', 'value' => 'grValue2'],
-            ['id' => 'grId3', 'value' => 'grValue3']
+        $contactCustomFieldsCollection = $this->getContactCustomFieldCollectionFromArray([
+            ['id' => 'grId1', 'value' => ['grValue1', 'grValue2']],
+            ['id' => 'grId2', 'value' => ['grValue2', 'grValue3']],
+            ['id' => 'grId3', 'value' => ['grValue3']]
         ]);
 
-        $newContactCustomFieldsCollection = $this->getCustomFieldCollectionFromArray([
-            ['id' => 'grId4', 'value' => 'grValue4'],
-            ['id' => 'grId2', 'value' => 'grValueNewValueId'],
-            ['id' => 'grId5', 'value' => 'grValue5']
+        $newContactCustomFieldsCollection = $this->getContactCustomFieldCollectionFromArray([
+            ['id' => 'grId4', 'value' => ['grValue4']],
+            ['id' => 'grId2', 'value' => ['grValueNewValueId', 'grValueNewValueId2']],
+            ['id' => 'grId5', 'value' => ['grValue5']]
         ]);
 
         $customFieldMerger = new ContactCustomFieldBuilder(
@@ -31,11 +35,11 @@ class ContactCustomFieldBuilderTest extends TestCase
         );
 
         $expectedCustomFieldCollection = new ContactCustomFieldsCollection();
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId1', 'grValue1'));
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId2', 'grValueNewValueId'));
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId3', 'grValue3'));
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId4', 'grValue4'));
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId5', 'grValue5'));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId1', ['grValue1', 'grValue2']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId2', ['grValueNewValueId', 'grValueNewValueId2']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId3', ['grValue3']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId4', ['grValue4']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId5', ['grValue5']));
 
         $this->assertEquals($expectedCustomFieldCollection, $customFieldMerger->getMergedCustomFieldsCollection());
     }
@@ -44,7 +48,7 @@ class ContactCustomFieldBuilderTest extends TestCase
      * @param array $customFields
      * @return ContactCustomFieldsCollection
      */
-    private function getCustomFieldCollectionFromArray(array $customFields)
+    private function getContactCustomFieldCollectionFromArray(array $customFields)
     {
         $contactCustomFieldsCollection = new ContactCustomFieldsCollection();
 

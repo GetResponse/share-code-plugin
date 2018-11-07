@@ -140,4 +140,9 @@ abstract class Authorization
     {
         return $this->type;
     }
+
+    abstract public function getAuthorizationHeader();
+
+    abstract public function getAccessToken();
+
 }

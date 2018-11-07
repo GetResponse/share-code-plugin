@@ -1,6 +1,7 @@
 <?php
-namespace GrShareCode\Cart;
+namespace GrShareCode\Cart\Command;
 
+use GrShareCode\Cart\Cart;
 use GrShareCode\Validation\Assert\Assert;
 
 /**
