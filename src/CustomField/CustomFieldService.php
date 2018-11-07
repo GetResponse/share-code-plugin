@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\CustomField;
 
+use GrShareCode\CustomField\CustomFieldFilter\CustomFieldForMappingFilter;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
 
@@ -29,24 +30,18 @@ class CustomFieldService
      */
     public function getAllCustomFields()
     {
-        $customFields = $this->getresponseApiClient->getCustomFields(1, self::PER_PAGE);
+        return CustomFieldCollection::fromApiResponse($this->getCustomFields());
+    }
 
-        $headers = $this->getresponseApiClient->getHeaders();
+    /**
+     * @return CustomFieldCollection
+     * @throws GetresponseApiException
+     */
+    public function getCustomFieldsForMapping()
+    {
+        $customFieldCollection = CustomFieldCollection::fromApiResponse($this->getCustomFields());
 
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $customFields = array_merge($customFields, $this->getresponseApiClient->getCustomFields($page, self::PER_PAGE));
-        }
-
-        $collection = new CustomFieldCollection();
-
-        foreach ($customFields as $field) {
-            $collection->add(new CustomField(
-                $field['customFieldId'],
-                $field['name']
-            ));
-        }
-
-        return $collection;
+        return $customFieldCollection->filterBy(new CustomFieldForMappingFilter());
     }
 
     /**
@@ -57,7 +52,7 @@ class CustomFieldService
      * @return array
      * @throws GetresponseApiException
      */
-    public function createCustomField($name, $value, $type = 'text', $hidden = false)
+    public function createCustomField($name, $value, $type = CustomField::FIELD_TYPE_TEXT, $hidden = false)
     {
         return $this->getresponseApiClient->createCustomField([
             'name' => $name,
@@ -85,5 +80,21 @@ class CustomFieldService
     public function getCustomFieldByName($customFieldName)
     {
         return $this->getresponseApiClient->getCustomFieldByName($customFieldName);
+    }
+
+    /**
+     * @return array
+     * @throws GetresponseApiException
+     */
+    private function getCustomFields()
+    {
+        $page = 1;
+
+        do {
+            $customFields[] = $this->getresponseApiClient->getCustomFields($page, self::PER_PAGE);
+            $page++;
+        } while ($page <= $this->getresponseApiClient->getHeaders()['TotalPages']);
+
+        return call_user_func_array('array_merge', $customFields);
     }
 }
