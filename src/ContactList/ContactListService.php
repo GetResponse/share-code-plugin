@@ -1,6 +1,7 @@
 <?php
 namespace GrShareCode\ContactList;
 
+use GrShareCode\ContactList\Command\AddContactListCommand;
 use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationBody;
 use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationBodyCollection;
 use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationSubject;
@@ -14,8 +15,6 @@ use GrShareCode\GetresponseApiException;
  */
 class ContactListService
 {
-    const PER_PAGE = 100;
-
     /** @var GetresponseApiClient */
     private $getresponseApiClient;
 
@@ -33,15 +32,7 @@ class ContactListService
      */
     public function getFromFields()
     {
-        $fromFields[] = $this->getresponseApiClient->getFromFields(1, self::PER_PAGE);
-        $headers = $this->getresponseApiClient->getHeaders();
-
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $fromFields[] = $this->getresponseApiClient->getFromFields($page, self::PER_PAGE);
-        }
-
-        $fromFieldsList = call_user_func_array('array_merge', $fromFields);
-
+        $fromFieldsList = $this->getresponseApiClient->getFromFields();
         $collection = new FromFieldsCollection();
 
         foreach ($fromFieldsList as $fromField) {
@@ -62,7 +53,6 @@ class ContactListService
     public function getSubscriptionConfirmationSubjects()
     {
         $subjects = $this->getresponseApiClient->getSubscriptionConfirmationSubject();
-
         $collection = new SubscriptionConfirmationSubjectCollection();
 
         foreach ($subjects as $subject) {
@@ -82,7 +72,6 @@ class ContactListService
     public function getSubscriptionConfirmationsBody()
     {
         $subjects = $this->getresponseApiClient->getSubscriptionConfirmationBody();
-
         $collection = new SubscriptionConfirmationBodyCollection();
 
         foreach ($subjects as $subject) {
@@ -102,14 +91,7 @@ class ContactListService
      */
     public function getAllContactLists()
     {
-        $campaigns = $this->getresponseApiClient->getContactList(1, self::PER_PAGE);
-
-        $headers = $this->getresponseApiClient->getHeaders();
-
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $campaigns = array_merge($campaigns,  $this->getresponseApiClient->getContactList($page, self::PER_PAGE));
-        }
-
+        $campaigns = $this->getresponseApiClient->getContactList();
         $collection = new ContactListCollection();
 
         foreach ($campaigns as $field) {
@@ -126,48 +108,10 @@ class ContactListService
      * @return AutorespondersCollection
      * @throws GetresponseApiException
      */
-    public function getAutoresponders()
+    public function getAutoresponders($campaignId = null)
     {
+        $autoresponders = $this->getresponseApiClient->getAutoresponders($campaignId);
         $collection = new AutorespondersCollection();
-
-        $autoresponders = $this->getresponseApiClient->getAutoresponders(1, self::PER_PAGE);
-
-        $headers = $this->getresponseApiClient->getHeaders();
-
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $autoresponders = array_merge($autoresponders,  $this->getresponseApiClient->getAutoresponders($page, self::PER_PAGE));
-        }
-
-        foreach ($autoresponders as $field) {
-            $collection->add(new Autoresponder(
-                $field['autoresponderId'],
-                $field['name'],
-                $field['campaignId'],
-                $field['subject'],
-                $field['status'],
-                $field['triggerSettings']['dayOfCycle']
-            ));
-        }
-
-        return $collection;
-    }
-
-    /**
-     * @param string $campaignId
-     * @return AutorespondersCollection
-     * @throws GetresponseApiException
-     */
-    public function getCampaignAutoresponders($campaignId)
-    {
-        $collection = new AutorespondersCollection();
-
-        $autoresponders = $this->getresponseApiClient->getCampaignAutoresponders($campaignId, 1, self::PER_PAGE);
-
-        $headers = $this->getresponseApiClient->getHeaders();
-
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $autoresponders = array_merge($autoresponders,  $this->getresponseApiClient->getCampaignAutoresponders($campaignId, $page, self::PER_PAGE));
-        }
 
         foreach ($autoresponders as $field) {
             $collection->add(new Autoresponder(
@@ -193,8 +137,8 @@ class ContactListService
         return $this->getresponseApiClient->createContactList([
             'name' => $addContactListCommand->getContactListName(),
             'confirmation' => [
-                'fromField' => ['fromFieldId' => $addContactListCommand->getFromField()],
-                'replyTo' => ['fromFieldId' => $addContactListCommand->getReplyTo()],
+                'fromField' => ['fromFieldId' => $addContactListCommand->getFromFieldId()],
+                'replyTo' => ['fromFieldId' => $addContactListCommand->getReplyToId()],
                 'subscriptionConfirmationBodyId' => $addContactListCommand->getSubscriptionConfirmationBodyId(),
                 'subscriptionConfirmationSubjectId' => $addContactListCommand->getSubscriptionConfirmationSubjectId()
             ],

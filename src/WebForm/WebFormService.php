@@ -11,8 +11,6 @@ use GrShareCode\WebForm\Command\GetWebFormCommand;
  */
 class WebFormService
 {
-    const PER_PAGE = 100;
-
     /** @var GetresponseApiClient */
     private $getresponseApiClient;
 
@@ -43,12 +41,7 @@ class WebFormService
      */
     private function addWebForms(WebFormCollection $collection)
     {
-        $webForms = $this->getresponseApiClient->getWebForms(1, self::PER_PAGE);
-        $headers = $this->getresponseApiClient->getHeaders();
-
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $webForms = array_merge($webForms, $this->getresponseApiClient->getWebForms($page, self::PER_PAGE));
-        }
+        $webForms = $this->getresponseApiClient->getWebForms();
 
         foreach ($webForms as $webForm) {
 
@@ -69,12 +62,7 @@ class WebFormService
      */
     private function addForms(WebFormCollection $collection)
     {
-        $forms = $this->getresponseApiClient->getForms(1, self::PER_PAGE);
-        $headers = $this->getresponseApiClient->getHeaders();
-
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $forms = array_merge($forms, $this->getresponseApiClient->getForms($page, self::PER_PAGE));
-        }
+        $forms = $this->getresponseApiClient->getForms();
 
         foreach ($forms as $form) {
 

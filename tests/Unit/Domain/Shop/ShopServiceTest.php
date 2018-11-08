@@ -2,50 +2,55 @@
 namespace GrShareCode\Tests\Unit\Domain\Shop\ShopServiceTest;
 
 use GrShareCode\GetresponseApiClient;
+use GrShareCode\GetresponseApiException;
 use GrShareCode\Shop\Shop;
-use GrShareCode\Shop\ShopsCollection;
 use GrShareCode\Shop\ShopService;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
-class ShopServiceTest extends TestCase
+/**
+ * Class ShopServiceTest
+ * @package GrShareCode\Tests\Unit\Domain\Shop\ShopServiceTest
+ */
+class ShopServiceTest extends BaseTestCase
 {
     /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiClientMock;
+    private $getResponseApiClientMock;
+    /** @var ShopService */
+    private $sut;
 
     public function setUp()
     {
-        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
+        $this->sut = new ShopService($this->getResponseApiClientMock);
     }
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
-    public function shouldReturnShopCollection()
+    public function shouldGetShops()
     {
-        $this->grApiClientMock
-            ->expects($this->exactly(3))
+        $this->getResponseApiClientMock
+            ->expects(self::once())
             ->method('getShops')
-            ->withConsecutive([1,100],[2,100],[3,100])
-            ->willReturnOnConsecutiveCalls(
-                [['shopId' => 'shopId_1', 'name' => 'shopName_1']],
-                [['shopId' => 'shopId_2', 'name' => 'shopName_2']],
-                [['shopId' => 'shopId_3', 'name' => 'shopName_3']]
-            );
+            ->willReturn([
+                [
+                    'shopId' => 'id1',
+                    'name' => 'name1'
+                ],
+                [
+                    'shopId' => 'id2',
+                    'name' => 'name2'
+                ],
+            ]);
 
-        $this->grApiClientMock
-            ->expects($this->once())
-            ->method('getHeaders')
-            ->willReturn(['TotalPages' => '3']);
+        $collection = $this->sut->getAllShops();
+        self::assertEquals(2, $collection->count());
 
-        $shopCollection = new ShopsCollection();
-        $shopCollection->add(new Shop('shopId_1', 'shopName_1'));
-        $shopCollection->add(new Shop('shopId_2', 'shopName_2'));
-        $shopCollection->add(new Shop('shopId_3', 'shopName_3'));
-
-        $shopService = new ShopService($this->grApiClientMock);
-        $this->assertEquals($shopCollection, $shopService->getAllShops());
+        /** @var Shop $first */
+        $first = $collection->get(0);
+        self::assertEquals('id1', $first->getId());
+        self::assertEquals('name1', $first->getName());
     }
 
 }

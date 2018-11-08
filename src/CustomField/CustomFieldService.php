@@ -12,8 +12,6 @@ use GrShareCode\GetresponseApiException;
  */
 class CustomFieldService
 {
-    const PER_PAGE = 100;
-
     /** @var GetresponseApiClient */
     private $getresponseApiClient;
 
@@ -31,7 +29,7 @@ class CustomFieldService
      */
     public function getAllCustomFields()
     {
-        return CustomFieldCollection::fromApiResponse($this->getCustomFields());
+        return CustomFieldCollection::fromApiResponse($this->getresponseApiClient->getCustomFields());
     }
 
     /**
@@ -40,7 +38,7 @@ class CustomFieldService
      */
     public function getCustomFieldsForMapping()
     {
-        $customFieldCollection = CustomFieldCollection::fromApiResponse($this->getCustomFields());
+        $customFieldCollection = CustomFieldCollection::fromApiResponse($this->getresponseApiClient->getCustomFields());
         return $customFieldCollection->filter(new CustomFieldForMappingFilter());
     }
 
@@ -77,21 +75,5 @@ class CustomFieldService
     public function getCustomFieldByName($customFieldName)
     {
         return $this->getresponseApiClient->getCustomFieldByName($customFieldName);
-    }
-
-    /**
-     * @return array
-     * @throws GetresponseApiException
-     */
-    private function getCustomFields()
-    {
-        $page = 1;
-
-        do {
-            $customFields[] = $this->getresponseApiClient->getCustomFields($page, self::PER_PAGE);
-            $page++;
-        } while ($page <= $this->getresponseApiClient->getHeaders()['TotalPages']);
-
-        return call_user_func_array('array_merge', $customFields);
     }
 }

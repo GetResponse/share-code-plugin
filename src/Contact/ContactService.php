@@ -18,7 +18,6 @@ use GrShareCode\GetresponseApiException;
  */
 class ContactService
 {
-    const PER_PAGE = 100;
     private $originCustomName = 'origin';
 
     /** @var GetresponseApiClient */

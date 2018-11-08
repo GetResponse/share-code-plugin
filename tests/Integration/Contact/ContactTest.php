@@ -2,7 +2,6 @@
 namespace GrShareCode\Tests\Integration\Contact;
 
 use GrShareCode\Contact\Command\AddContactCommand;
-use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\Contact\ContactCustomFieldCollectionFactory;
 use GrShareCode\Contact\ContactCustomFieldsCollection;
 use GrShareCode\Contact\ContactFactory;
@@ -10,7 +9,6 @@ use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\CustomField\CustomFieldService;
 use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
 use GrShareCode\Tests\Integration\BaseCaseTest;
 
 /**

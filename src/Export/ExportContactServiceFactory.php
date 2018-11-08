@@ -26,8 +26,6 @@ class ExportContactServiceFactory
      */
     public static function create(GetresponseApiClient $getresponseApiClient, DbRepositoryInterface $dbRepository, $originValue)
     {
-        $productService = new ProductService($getresponseApiClient, $dbRepository);
-
         return new ExportContactService(
             new ContactService(
                 $getresponseApiClient,
@@ -40,7 +38,7 @@ class ExportContactServiceFactory
             new OrderService(
                 $getresponseApiClient,
                 $dbRepository,
-                $productService,
+                new ProductService($getresponseApiClient, $dbRepository),
                 new OrderPayloadFactory()
             )
         );

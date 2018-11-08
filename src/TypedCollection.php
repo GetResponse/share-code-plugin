@@ -114,4 +114,17 @@ class TypedCollection implements IteratorAggregate
         return $result;
     }
 
+    /**
+     * @param int $index
+     * @return mixed
+     */
+    public function get($index)
+    {
+        if (!isset($this->items[$index])) {
+            return null;
+        }
+
+        return $this->items[$index];
+    }
+
 }
