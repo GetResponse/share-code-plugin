@@ -53,7 +53,7 @@ class CartService
      */
     public function sendCart(AddCartCommand $addCartCommand)
     {
-        if ($this->cartAlreadySent($addCartCommand->getCart())) {
+        if (!$this->hasCartPayloadChangedSinceLastRequest($addCartCommand->getCart())) {
             return;
         }
 
@@ -200,9 +200,9 @@ class CartService
      * @param Cart $cart
      * @return bool
      */
-    private function cartAlreadySent(Cart $cart)
+    private function hasCartPayloadChangedSinceLastRequest(Cart $cart)
     {
-        return $this->getCartHash($cart) === $this->cache->get($this->getCartCacheKey($cart));
+        return $this->getCartHash($cart) !== $this->cache->get($this->getCartCacheKey($cart));
     }
 
 }

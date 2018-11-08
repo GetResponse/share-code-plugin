@@ -20,7 +20,7 @@ class CustomFieldForMappingFilterTest extends TestCase
         );
 
         $filter = new CustomFieldForMappingFilter();
-        $this->assertFalse($filter->isEligible($customField));
+        $this->assertFalse($filter->matches($customField));
     }
 
     /**
@@ -36,7 +36,7 @@ class CustomFieldForMappingFilterTest extends TestCase
         );
 
         $filter = new CustomFieldForMappingFilter();
-        $this->assertTrue($filter->isEligible($customField));
+        $this->assertTrue($filter->matches($customField));
     }
 
 }

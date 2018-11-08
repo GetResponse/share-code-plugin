@@ -109,12 +109,22 @@ class GetresponseApiClient
      * @param array $params
      * @return array
      * @throws GetresponseApiException
+     * @throws CustomFieldNotFoundException
      */
     public function createContact($params)
     {
-        return $this->execute(function () use ($params) {
-            return $this->grApi->createContact($params);
-        });
+        try {
+            return $this->execute(function () use ($params) {
+                return $this->grApi->createContact($params);
+            });
+        } catch (GetresponseApiException $exception) {
+
+            if (1 === preg_match('#Custom field by id: (?<customId>\w+) not found#', $exception->getMessage(), $matched)) {
+                throw CustomFieldNotFoundException::createWithCustomFieldId($matched['customId']);
+            } else {
+                throw $exception;
+            }
+        }
     }
 
     /**

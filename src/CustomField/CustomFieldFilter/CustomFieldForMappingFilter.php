@@ -2,22 +2,23 @@
 namespace GrShareCode\CustomField\CustomFieldFilter;
 
 use GrShareCode\CustomField\CustomField;
+use GrShareCode\Matcher;
 
 /**
- * Class TextFieldCustomFieldFilter
+ * Class CustomFieldForMappingFilter
  * @package GrShareCode\CustomField\CustomFieldFilter
  */
-class CustomFieldForMappingFilter implements CustomFieldFilterInterface
+class CustomFieldForMappingFilter implements Matcher
 {
     const NAME_ORIGIN = 'origin';
 
     /**
-     * @param CustomField $customField
+     * @param CustomField $item
      * @return bool
      */
-    public function isEligible(CustomField $customField)
+    public function matches($item)
     {
-        return $customField->getName() !== self::NAME_ORIGIN
-            && $customField->isTextField();
+        return $item->getName() !== self::NAME_ORIGIN && $item->isTextField();
     }
+
 }

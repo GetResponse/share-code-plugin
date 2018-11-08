@@ -87,27 +87,65 @@ class ContactPayloadFactoryTest extends BaseTestCase
 
     /**
      * @test
+     * @dataProvider dayOfCycleDataProvider
+     * @param mixed $input
+     * @param bool $existsInPayload
+     * @param mixed $value
      */
-    public function shouldHandleZeroCycleDay()
+    public function shouldHandleVariousInputOfCycleDay($input, $existsInPayload, $value)
     {
         $addContactCommand = new AddContactCommand(
             'example@example.com',
             '',
             'contactListId',
-            0,
+            $input,
             new ContactCustomFieldsCollection()
         );
 
-        self::assertEquals(
-            [
-                'email' => 'example@example.com',
-                'campaign' => [
-                    'campaignId' => 'contactListId',
-                ],
-                'dayOfCycle' => 0,
+        $expectedPayload = [
+            'email' => 'example@example.com',
+            'campaign' => [
+                'campaignId' => 'contactListId',
             ],
+        ];
+
+        if ($existsInPayload) {
+            $expectedPayload['dayOfCycle'] = $value;
+        }
+
+        self::assertEquals(
+            $expectedPayload,
             (new ContactPayloadFactory())->createFromAddContactCommand($addContactCommand)
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function dayOfCycleDataProvider()
+    {
+        return [
+            [
+                'input' => 0,
+                'exists' => true,
+                'value' => 0
+            ],
+            [
+                'input' => 1,
+                'exists' => true,
+                'value' => 1
+            ],
+            [
+                'input' => null,
+                'exists' => false,
+                'value' => ''
+            ],
+            [
+                'input' => '',
+                'exists' => false,
+                'value' => ''
+            ]
+        ];
     }
 
 }

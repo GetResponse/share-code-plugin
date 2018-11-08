@@ -41,8 +41,7 @@ class CustomFieldService
     public function getCustomFieldsForMapping()
     {
         $customFieldCollection = CustomFieldCollection::fromApiResponse($this->getCustomFields());
-
-        return $customFieldCollection->filterBy(new CustomFieldForMappingFilter());
+        return $customFieldCollection->filter(new CustomFieldForMappingFilter());
     }
 
     /**

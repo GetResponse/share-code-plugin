@@ -15,6 +15,7 @@ use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomFieldService;
+use GrShareCode\CustomFieldNotFoundException;
 use GrShareCode\DbRepositoryInterface;
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
@@ -310,7 +311,7 @@ class ContactServiceTest extends BaseTestCase
         $callback = function () use (&$createContactCall) {
             $createContactCall++;
             if (1 == $createContactCall) {
-                throw new GetresponseApiException('Custom field by id: oid not found');
+                throw CustomFieldNotFoundException::createWithCustomFieldId('oid');
             } else {return true; }
         };
 
@@ -370,8 +371,9 @@ class ContactServiceTest extends BaseTestCase
         );
 
         $this->sut->addContact($addContactCommand);
-    }
 
+        self::assertNull($addContactCommand->getDayOfCycle());
+    }
 
     /**
      * @test

@@ -80,6 +80,11 @@ class AddContactCommand
         return $this->dayOfCycle;
     }
 
+    public function clearDayOfCycle()
+    {
+        $this->dayOfCycle = null;
+    }
+
     /**
      * @return ContactCustomFieldsCollection
      */

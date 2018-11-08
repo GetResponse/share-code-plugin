@@ -23,7 +23,7 @@ class ContactPayloadFactory
             unset($payload['name']);
         }
 
-        if (!is_null($addContactCommand->getDayOfCycle())) {
+        if (!is_null($addContactCommand->getDayOfCycle()) && '' !== $addContactCommand->getDayOfCycle()) {
             $payload['dayOfCycle'] = $addContactCommand->getDayOfCycle();
         }
 

@@ -19,14 +19,12 @@ class ContactCustomFieldsCollection extends TypedCollection
      */
     public function remove(ContactCustomField $contactCustomField)
     {
-        $clone = clone $this;
+        $clone = $this->filter(new ContactCustomFieldRemoveFilter($contactCustomField));
         $this->clear();
 
         /** @var ContactCustomField $ccf */
         foreach ($clone->getIterator() as $ccf) {
-            if ($ccf->getId() !== $contactCustomField->getId()) {
-                $this->add($ccf);
-            }
+            $this->add($ccf);
         }
     }
 }
