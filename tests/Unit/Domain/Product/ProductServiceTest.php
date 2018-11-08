@@ -10,9 +10,13 @@ use GrShareCode\Product\Variant\Images\Image;
 use GrShareCode\Product\Variant\Variant;
 use GrShareCode\ProductMapping\ProductMapping;
 use GrShareCode\Tests\Generator;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
-class ProductServiceTest extends TestCase
+/**
+ * Class ProductServiceTest
+ * @package GrShareCode\Tests\Unit\Domain\Cart
+ */
+class ProductServiceTest extends BaseTestCase
 {
     /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
     private $dbRepositoryMock;
@@ -23,19 +27,14 @@ class ProductServiceTest extends TestCase
 
     public function setUp()
     {
-        $this->dbRepositoryMock = $this->getMockBuilder(DbRepositoryInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
+        $this->dbRepositoryMock = $this->getMockWithoutConstructing(DbRepositoryInterface::class);
+        $this->grApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->sut = new ProductService($this->grApiClientMock, $this->dbRepositoryMock);
     }
 
     /**
      * @test
+     * @throws \GrShareCode\GetresponseApiException
      */
     public function shouldCreateProductAndVariant()
     {

@@ -1,7 +1,9 @@
 <?php
 namespace GrShareCode\Tests\Integration\CustomField;
 
+use GrShareCode\Api\ApiTypeException;
 use GrShareCode\CustomField\CustomFieldService;
+use GrShareCode\GetresponseApiException;
 use GrShareCode\Tests\Integration\BaseCaseTest;
 
 class CustomFieldServiceTest extends BaseCaseTest
@@ -9,6 +11,9 @@ class CustomFieldServiceTest extends BaseCaseTest
     /** @var CustomFieldService */
     private $sut;
 
+    /**
+     * @throws ApiTypeException
+     */
     public function setUp()
     {
         $this->sut = new CustomFieldService($this->getApiClient());
@@ -16,6 +21,7 @@ class CustomFieldServiceTest extends BaseCaseTest
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldFetchAllCustomFields()
     {

@@ -5,6 +5,8 @@ use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\Command\FindContactCommand;
 use GrShareCode\Contact\Command\GetContactCommand;
 use GrShareCode\Contact\Command\UnsubscribeContactsCommand;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldBuilder;
 use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomFieldService;
 use GrShareCode\CustomFieldNotFoundException;

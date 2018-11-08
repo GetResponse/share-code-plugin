@@ -1,6 +1,10 @@
 <?php
 namespace GrShareCode\Contact\Command;
 
+/**
+ * Class FindContactCommand
+ * @package GrShareCode\Contact\Command
+ */
 class FindContactCommand
 {
     /** @var string */

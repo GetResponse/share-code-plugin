@@ -2,8 +2,8 @@
 
 namespace GrShareCode\Tests\Unit\Domain\Contact;
 
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**

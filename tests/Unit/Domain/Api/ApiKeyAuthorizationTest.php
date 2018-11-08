@@ -4,13 +4,13 @@ namespace GrShareCode\Tests\Unit\Domain\Api;
 use GrShareCode\Api\ApiTypeException;
 use GrShareCode\Api\Authorization;
 use GrShareCode\Api\ApiKeyAuthorization;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
  * Class ApiKeyAuthorizationTest
  * @package GrShareCode\Tests\Unit\Domain\Cart
  */
-class ApiKeyAuthorizationTest extends TestCase
+class ApiKeyAuthorizationTest extends BaseTestCase
 {
     /**
      * @test
@@ -18,6 +18,7 @@ class ApiKeyAuthorizationTest extends TestCase
      * @param $apiKey
      * @param $type
      * @param $domain
+     * @throws ApiTypeException
      */
     public function shouldThrowExceptionWhenIncorrectParam($apiKey, $type, $domain)
     {
@@ -41,6 +42,7 @@ class ApiKeyAuthorizationTest extends TestCase
      * @test
      * @dataProvider GetInvalidApiTypeProvider
      * @param $type
+     * @throws ApiTypeException
      */
     public function shouldThrowExceptionWhenInvalidApiType($type)
     {
@@ -67,6 +69,7 @@ class ApiKeyAuthorizationTest extends TestCase
      * @param string $type
      * @param null|string $domain
      * @param string $url
+     * @throws ApiTypeException
      */
     public function shouldReturnValidApiUrl($type, $domain, $url)
     {

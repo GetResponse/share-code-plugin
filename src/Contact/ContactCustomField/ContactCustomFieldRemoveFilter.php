@@ -1,9 +1,13 @@
 <?php
 
-namespace GrShareCode\Contact;
+namespace GrShareCode\Contact\ContactCustomField;
 
 use GrShareCode\Matcher;
 
+/**
+ * Class ContactCustomFieldRemoveFilter
+ * @package GrShareCode\Contact\ContactCustomField
+ */
 class ContactCustomFieldRemoveFilter implements Matcher
 {
     /** @var ContactCustomField */

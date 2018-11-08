@@ -2,7 +2,7 @@
 namespace GrShareCode\Tests\Unit\Domain\Contact;
 
 use GrShareCode\Contact\Command\AddContactCommand;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Tests\Unit\BaseTestCase;
 use GrShareCode\Validation\Assert\InvalidArgumentException;
 

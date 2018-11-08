@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Export;
 
-use GrShareCode\Contact\ContactCustomFieldCollectionFactory;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldCollectionFactory;
 use GrShareCode\Contact\ContactFactory;
 use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;

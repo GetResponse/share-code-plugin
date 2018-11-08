@@ -3,6 +3,8 @@ namespace GrShareCode\Tests\Unit\Domain\Shop\ShopServiceTest;
 
 use GrShareCode\GetresponseApiClient;
 use GrShareCode\GetresponseApiException;
+use GrShareCode\Shop\Command\AddShopCommand;
+use GrShareCode\Shop\Command\DeleteShopCommand;
 use GrShareCode\Shop\Shop;
 use GrShareCode\Shop\ShopService;
 use GrShareCode\Tests\Unit\BaseTestCase;
@@ -53,4 +55,35 @@ class ShopServiceTest extends BaseTestCase
         self::assertEquals('name1', $first->getName());
     }
 
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldAddShop()
+    {
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('createShop')
+            ->with([
+                'name' => 'shopName',
+                'locale' => 'pl_PL',
+                'currency' => 'PLN'
+            ]);
+
+        $this->sut->addShop(new AddShopCommand('shopName', 'pl_PL', 'PLN'));
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldDeleteShop()
+    {
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('deleteShop')
+            ->with('sid');
+
+        $this->sut->deleteShop(new DeleteShopCommand('sid'));
+    }
 }

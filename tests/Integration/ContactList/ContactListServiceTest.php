@@ -1,7 +1,9 @@
 <?php
 namespace GrShareCode\Tests\Integration\ContactList;
 
+use GrShareCode\Api\ApiTypeException;
 use GrShareCode\ContactList\ContactListService;
+use GrShareCode\GetresponseApiException;
 use GrShareCode\Tests\Integration\BaseCaseTest;
 
 /**
@@ -13,6 +15,9 @@ class ContactListServiceTest extends BaseCaseTest
     /** @var ContactListService */
     private $sut;
 
+    /**
+     * @throws ApiTypeException
+     */
     public function setUp()
     {
         $this->sut = new ContactListService($this->getApiClient());
@@ -20,6 +25,7 @@ class ContactListServiceTest extends BaseCaseTest
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldGetAllAutorespondersBelongsToSpecificCampaign()
     {
@@ -29,6 +35,7 @@ class ContactListServiceTest extends BaseCaseTest
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldGetAllAutoresponders()
     {

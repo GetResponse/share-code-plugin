@@ -2,41 +2,48 @@
 namespace GrShareCode\Tests\Unit\Domain\TrackingCode;
 
 use GrShareCode\GetresponseApiClient;
+use GrShareCode\GetresponseApiException;
+use GrShareCode\Tests\Unit\BaseTestCase;
 use GrShareCode\TrackingCode\TrackingCode;
 use GrShareCode\TrackingCode\TrackingCodeService;
-use PHPUnit\Framework\TestCase;
 
-class TrackingCodeServiceTest extends TestCase
+/**
+ * Class TrackingCodeServiceTest
+ * @package GrShareCode\Tests\Unit\Domain\TrackingCode
+ */
+class TrackingCodeServiceTest extends BaseTestCase
 {
     /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiClientMock;
+    private $getResponseApiClientMock;
+    /** @var TrackingCodeService */
+    private $sut;
 
     public function setUp()
     {
-        $this->grApiClientMock = $this->getMockBuilder(GetresponseApiClient::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
+        $this->sut = new TrackingCodeService($this->getResponseApiClientMock);
     }
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldReturnTrackingCode()
     {
-        $this->grApiClientMock
-            ->expects($this->once())
+        $this->getResponseApiClientMock
+            ->expects(self::once())
             ->method('getAccountFeatures')
             ->willReturn(['feature_tracking' => true]);
 
-       $this->grApiClientMock
-            ->expects($this->once())
+       $this->getResponseApiClientMock
+            ->expects(self::once())
             ->method('getTrackingCodeSnippet')
             ->willReturn('tracking code snippet - long string');
 
-        $trackingCode = new TrackingCode(true, 'tracking code snippet - long string');
+        $trackingCode = $this->sut->getTrackingCode();
 
-        $trackingCodeService = new TrackingCodeService($this->grApiClientMock);
-        $this->assertEquals($trackingCode, $trackingCodeService->getTrackingCode());
+        self::assertTrue($trackingCode->isFeatureEnabled());
+        self::assertEquals('tracking code snippet - long string', $trackingCode->getSnippet());
     }
 
 }

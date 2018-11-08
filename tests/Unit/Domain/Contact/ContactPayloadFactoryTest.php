@@ -3,8 +3,8 @@
 namespace GrShareCode\Tests\Unit\Domain\Contact;
 
 use GrShareCode\Contact\Command\AddContactCommand;
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Tests\Unit\BaseTestCase;
 

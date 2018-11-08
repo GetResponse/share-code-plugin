@@ -1,11 +1,11 @@
 <?php
-namespace GrShareCode\Contact;
+namespace GrShareCode\Contact\ContactCustomField;
 
 use GrShareCode\TypedCollection;
 
 /**
- * Class CustomFieldsCollection
- * @package GrShareCode\Contact
+ * Class ContactCustomFieldsCollection
+ * @package GrShareCode\Contact\ContactCustomField
  */
 class ContactCustomFieldsCollection extends TypedCollection
 {

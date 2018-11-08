@@ -2,6 +2,7 @@
 namespace GrShareCode\Contact;
 
 use GrShareCode\Contact\Command\AddContactCommand;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
 
 class ContactPayloadFactory
 {

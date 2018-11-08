@@ -1,9 +1,9 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Contact;
 
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldBuilder;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldBuilder;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**

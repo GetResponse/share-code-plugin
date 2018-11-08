@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Contact\Command;
 
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Validation\Assert\Assert;
 
 /**

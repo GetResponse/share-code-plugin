@@ -3,9 +3,9 @@ namespace GrShareCode\Tests\Unit\Domain\CustomField\CustomFieldFilter;
 
 use GrShareCode\CustomField\CustomField;
 use GrShareCode\CustomField\CustomFieldFilter\CustomFieldForMappingFilter;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
-class CustomFieldForMappingFilterTest extends TestCase
+class CustomFieldForMappingFilterTest extends BaseTestCase
 {
     /**
      * @test

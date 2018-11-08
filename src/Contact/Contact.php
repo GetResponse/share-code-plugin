@@ -1,6 +1,9 @@
 <?php
 namespace GrShareCode\Contact;
 
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
+
 /**
  * Class Contact
  * @package GrShareCode\Contact

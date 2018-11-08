@@ -235,14 +235,6 @@ class Order
     }
 
     /**
-     * @return bool
-     */
-    public function hasShippingAddress()
-    {
-        return null !== $this->shippingAddress;
-    }
-
-    /**
      * @return int
      */
     public function getExternalOrderId()

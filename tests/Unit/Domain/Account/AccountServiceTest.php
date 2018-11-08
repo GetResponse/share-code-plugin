@@ -4,6 +4,7 @@ namespace GrShareCode\Tests\Unit\Domain\Account;
 
 use GrShareCode\Account\AccountService;
 use GrShareCode\GetresponseApiClient;
+use GrShareCode\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
@@ -25,6 +26,7 @@ class AccountServiceTest extends BaseTestCase
 
     /**
      * @test
+     * @throws \GrShareCode\GetresponseApiException
      */
     public function shouldGetAccount()
     {
@@ -56,6 +58,32 @@ class AccountServiceTest extends BaseTestCase
         self::assertEquals('firstname lastname', $account->getFullName());
         self::assertEquals('City Street 12-123', $account->getFullAddress());
 
+    }
+
+    /**
+     * @test
+     */
+    public function checkConnectionShouldReturnFalseOnFail()
+    {
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('checkConnection')
+            ->willThrowException(new GetresponseApiException());
+
+        self::assertFalse($this->sut->isConnectionAvailable());
+    }
+
+    /**
+     * @test
+     */
+    public function checkConnectionShouldReturnTrueOnSuccess()
+    {
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('checkConnection')
+            ->willReturn([]);
+
+        self::assertTrue($this->sut->isConnectionAvailable());
     }
 
 }
