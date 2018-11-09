@@ -56,7 +56,7 @@ class CartServiceTest extends BaseTestCase
             ->expects(self::once())
             ->method('get')
             ->with('cart_key' . $command->getCart()->getCartId())
-            ->willReturn('4a3afe4fab8f35cc2d9b92b580c8d7bd');
+            ->willReturn('e3a2899559f364df37f18bc4450f75a5');
 
         $this->grApiClientMock
             ->expects(self::never())
@@ -118,7 +118,7 @@ class CartServiceTest extends BaseTestCase
         $this->cacheMock
             ->expects(self::once())
             ->method('set')
-            ->with('cart_key' . $command->getCart()->getCartId(), '4a3afe4fab8f35cc2d9b92b580c8d7bd', 600);
+            ->with('cart_key' . $command->getCart()->getCartId(), 'e3a2899559f364df37f18bc4450f75a5', 600);
 
         $this->grApiClientMock
             ->expects(self::never())
@@ -195,7 +195,7 @@ class CartServiceTest extends BaseTestCase
             ->method('set')
             ->withConsecutive(
                 [$command->getEmail() . '_' . $command->getContactListId(), json_encode($contact), 600],
-                ['cart_key' . $command->getCart()->getCartId(), '4a3afe4fab8f35cc2d9b92b580c8d7bd', 600]
+                ['cart_key' . $command->getCart()->getCartId(), 'e3a2899559f364df37f18bc4450f75a5', 600]
             );
 
         $this->productServiceMock
@@ -263,7 +263,7 @@ class CartServiceTest extends BaseTestCase
         $this->cacheMock
             ->expects(self::once())
             ->method('set')
-            ->with('cart_key' . $command->getCart()->getCartId(), '4a3afe4fab8f35cc2d9b92b580c8d7bd', 600);
+            ->with('cart_key' . $command->getCart()->getCartId(), 'e3a2899559f364df37f18bc4450f75a5', 600);
 
         $this->productServiceMock
             ->expects(self::once())
