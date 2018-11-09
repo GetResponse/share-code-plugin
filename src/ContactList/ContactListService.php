@@ -6,8 +6,8 @@ use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationBod
 use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationBodyCollection;
 use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationSubject;
 use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationSubjectCollection;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 
 /**
  * Class ContactListService
@@ -105,6 +105,7 @@ class ContactListService
     }
 
     /**
+     * @param null|string $campaignId
      * @return AutorespondersCollection
      * @throws GetresponseApiException
      */

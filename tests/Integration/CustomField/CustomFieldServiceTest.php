@@ -1,9 +1,9 @@
 <?php
 namespace GrShareCode\Tests\Integration\CustomField;
 
-use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\CustomField\CustomFieldService;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Integration\BaseCaseTest;
 
 class CustomFieldServiceTest extends BaseCaseTest

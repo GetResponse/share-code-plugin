@@ -1,8 +1,8 @@
 <?php
 namespace GrShareCode\Shop;
 
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Shop\Command\AddShopCommand;
 use GrShareCode\Shop\Command\DeleteShopCommand;
 

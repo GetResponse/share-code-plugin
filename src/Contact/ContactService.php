@@ -9,10 +9,10 @@ use GrShareCode\Contact\ContactCustomField\ContactCustomField;
 use GrShareCode\Contact\ContactCustomField\ContactCustomFieldBuilder;
 use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomFieldService;
-use GrShareCode\CustomFieldNotFoundException;
+use GrShareCode\Api\Exception\CustomFieldNotFoundException;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 
 /**
  * Class ContactService

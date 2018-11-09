@@ -1,8 +1,8 @@
 <?php
 namespace GrShareCode\TrackingCode;
 
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 
 /**
  * Class TrackingCodeService

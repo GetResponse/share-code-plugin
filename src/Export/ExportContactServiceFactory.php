@@ -7,7 +7,7 @@ use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\CustomField\CustomFieldService;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\GetresponseApiClient;
 use GrShareCode\Order\OrderPayloadFactory;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Product\ProductService;

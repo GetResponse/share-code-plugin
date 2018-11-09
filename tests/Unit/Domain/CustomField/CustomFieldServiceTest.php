@@ -5,8 +5,8 @@ use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomField;
 use GrShareCode\CustomField\CustomFieldCollection;
 use GrShareCode\CustomField\CustomFieldService;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**

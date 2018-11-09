@@ -3,8 +3,8 @@
 namespace GrShareCode\Tests\Unit\Domain\Account;
 
 use GrShareCode\Account\AccountService;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
@@ -26,7 +26,7 @@ class AccountServiceTest extends BaseTestCase
 
     /**
      * @test
-     * @throws \GrShareCode\GetresponseApiException
+     * @throws GetresponseApiException
      */
     public function shouldGetAccount()
     {

@@ -1,10 +1,9 @@
 <?php
-
-namespace GrShareCode;
+namespace GrShareCode\Api\Exception;
 
 /**
  * Class CustomFieldNotFoundException
- * @package GrShareCode
+ * @package GrShareCode\Api\Exception
  */
 class CustomFieldNotFoundException extends GetresponseApiException
 {

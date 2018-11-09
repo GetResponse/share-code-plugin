@@ -1,9 +1,9 @@
 <?php
-namespace GrShareCode\Api;
+namespace GrShareCode\Api\Authorization;
 
 /**
  * Class Authorization
- * @package GrShareCode\Api
+ * @package GrShareCode\Api\Authorization
  */
 abstract class Authorization
 {

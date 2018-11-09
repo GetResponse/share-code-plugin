@@ -1,8 +1,8 @@
 <?php
 namespace GrShareCode\WebForm;
 
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\WebForm\Command\GetWebFormCommand;
 
 /**

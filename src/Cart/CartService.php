@@ -4,8 +4,8 @@ namespace GrShareCode\Cart;
 use GrShareCode\Cache\CacheInterface;
 use GrShareCode\Cart\Command\AddCartCommand;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Product\ProductService;
 
 /**

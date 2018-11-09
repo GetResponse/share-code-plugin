@@ -1,11 +1,11 @@
 <?php
-namespace GrShareCode;
+namespace GrShareCode\Api\Exception;
 
-use Exception;
+use GrShareCode\GrShareCodeException;
 
 /**
  * Class GetresponseApiException
- * @package GrShareCode
+ * @package GrShareCode\Api\Exception
  */
 class GetresponseApiException extends GrShareCodeException
 {
@@ -37,10 +37,10 @@ class GetresponseApiException extends GrShareCodeException
     }
 
     /**
-     * @param Exception $e
+     * @param \Exception $e
      * @return GetresponseApiException
      */
-    public static function createFromPreviousException(Exception $e)
+    public static function createFromPreviousException(\Exception $e)
     {
         return new self($e->getMessage(), $e->getCode(), $e);
     }

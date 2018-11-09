@@ -2,8 +2,8 @@
 namespace GrShareCode\Order;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Order\Command\AddOrderCommand;
 use GrShareCode\Order\Command\EditOrderCommand;
 use GrShareCode\Product\ProductService;

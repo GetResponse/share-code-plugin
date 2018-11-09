@@ -1,9 +1,9 @@
 <?php
 namespace GrShareCode\Tests\Integration\ContactList;
 
-use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\ContactList\ContactListService;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Integration\BaseCaseTest;
 
 /**

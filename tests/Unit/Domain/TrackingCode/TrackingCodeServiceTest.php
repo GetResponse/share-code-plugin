@@ -1,10 +1,9 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\TrackingCode;
 
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
-use GrShareCode\TrackingCode\TrackingCode;
 use GrShareCode\TrackingCode\TrackingCodeService;
 
 /**

@@ -1,10 +1,9 @@
 <?php
-
-namespace GrShareCode\Api;
+namespace GrShareCode\Api\Authorization;
 
 /**
- * Class OauthAuthorizationMethod
- * @package GrShareCode\Api
+ * Class OauthAuthorization
+ * @package GrShareCode\Api\Authorization
  */
 class OauthAuthorization extends Authorization
 {

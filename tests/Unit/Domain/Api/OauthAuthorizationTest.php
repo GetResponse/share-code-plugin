@@ -1,9 +1,9 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Api;
 
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\Api\Authorization;
-use GrShareCode\Api\OauthAuthorization;
+use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Api\Authorization\Authorization;
+use GrShareCode\Api\Authorization\OauthAuthorization;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**

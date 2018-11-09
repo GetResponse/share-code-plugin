@@ -1,12 +1,15 @@
 <?php
-
-namespace GrShareCode;
+namespace GrShareCode\Api;
 
 use DateTime;
+use GrShareCode\Api\Exception\AccountNotExistsException;
+use GrShareCode\Api\Exception\CustomFieldNotFoundException;
+use GrShareCode\Api\Exception\GetresponseApiException;
+use GrShareCode\DbRepositoryInterface;
 
 /**
  * Class GetresponseApiClient
- * @package ShareCode
+ * @package GrShareCode\Api
  */
 class GetresponseApiClient
 {
@@ -425,6 +428,7 @@ class GetresponseApiClient
     }
 
     /**
+     * @param string|null $campaignId
      * @return array
      * @throws GetresponseApiException
      */

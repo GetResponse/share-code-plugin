@@ -1,12 +1,13 @@
 <?php
-namespace GrShareCode;
+namespace GrShareCode\Api;
 
-use GrShareCode\Api\Authorization;
-use GrShareCode\Api\UserAgentHeader;
+use GrShareCode\Api\Authorization\Authorization;
+use GrShareCode\Api\Authorization\Exception\AccountNotExistsException;
+use GrShareCode\Api\Authorization\Exception\GetresponseApiException;
 
 /**
  * Class GetresponseApi
- * @package ShareCode
+ * @package GrShareCode\Api
  */
 class GetresponseApi
 {
@@ -286,9 +287,6 @@ class GetresponseApi
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      * @throws AccountNotExistsException

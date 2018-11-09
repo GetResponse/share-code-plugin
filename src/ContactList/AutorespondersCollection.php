@@ -11,6 +11,6 @@ class AutorespondersCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\ContactList\Autoresponder');
+        $this->setItemType(Autoresponder::class);
     }
 }

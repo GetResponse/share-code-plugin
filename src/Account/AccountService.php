@@ -1,8 +1,9 @@
 <?php
 namespace GrShareCode\Account;
 
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+
 
 /**
  * Class AccountService

@@ -1,5 +1,6 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Address;
+
 use GrShareCode\Address\Address;
 use GrShareCode\Address\AddressFactory;
 use GrShareCode\Tests\Unit\BaseTestCase;

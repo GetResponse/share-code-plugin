@@ -2,7 +2,7 @@
 namespace GrShareCode\Tests\Unit\Domain\Cart;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\GetresponseApiClient;
 use GrShareCode\Product\Product;
 use GrShareCode\Product\ProductsCollection;
 use GrShareCode\Product\ProductService;
@@ -34,7 +34,7 @@ class ProductServiceTest extends BaseTestCase
 
     /**
      * @test
-     * @throws \GrShareCode\GetresponseApiException
+     * @throws \GrShareCode\Api\Exception\GetresponseApiException
      */
     public function shouldCreateProductAndVariant()
     {

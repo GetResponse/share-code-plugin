@@ -8,8 +8,8 @@ use GrShareCode\ContactList\ContactListService;
 use GrShareCode\ContactList\FromFields;
 use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationBody;
 use GrShareCode\ContactList\SubscriptionConfirmation\SubscriptionConfirmationSubject;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
