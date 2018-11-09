@@ -11,7 +11,7 @@ class CategoryCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\Product\Category\Category');
+        $this->setItemType(Category::class);
     }
 
     /**

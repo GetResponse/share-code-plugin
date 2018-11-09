@@ -2,7 +2,7 @@
 namespace GrShareCode\Api;
 
 /**
- * Interface AuthorizationMethod
+ * Class Authorization
  * @package GrShareCode\Api
  */
 abstract class Authorization

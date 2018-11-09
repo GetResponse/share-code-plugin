@@ -400,7 +400,7 @@ class GetresponseApi
      */
     public function getForms()
     {
-        $this->fetchDataWithPagination('forms');
+        return $this->fetchDataWithPagination('forms');
     }
 
     /**
