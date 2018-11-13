@@ -2,8 +2,8 @@
 namespace GrShareCode\Api;
 
 use GrShareCode\Api\Authorization\Authorization;
-use GrShareCode\Api\Authorization\Exception\AccountNotExistsException;
-use GrShareCode\Api\Authorization\Exception\GetresponseApiException;
+use GrShareCode\Api\Exception\AccountNotExistsException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 
 /**
  * Class GetresponseApi
