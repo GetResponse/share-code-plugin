@@ -35,8 +35,26 @@ class ContactCustomFieldBuilder
         $customFields = $this->collectionToArray($this->contactCustomFieldCollection);
         $newCustomFields = $this->collectionToArray($this->newContactCustomFieldCollection);
 
-        foreach (array_merge($customFields, $newCustomFields) as $customField) {
-            $contactFieldCollection->add($customField);
+        $customFieldIds = array_keys(array_merge($customFields, $newCustomFields));
+
+        foreach ($customFieldIds as $customFieldId) {
+
+            $contactCustomFieldValues = [];
+
+            if (array_key_exists($customFieldId, $customFields)) {
+                $customField = $customFields[$customFieldId];
+                $contactCustomFieldValues = $customField->getValues();
+            }
+
+            if (array_key_exists($customFieldId, $newCustomFields)) {
+                $newCustomField = $newCustomFields[$customFieldId];
+                $contactCustomFieldValues = array_unique(array_merge($contactCustomFieldValues,
+                    $newCustomField->getValues()));
+            }
+
+            $contactFieldCollection->add(
+                new ContactCustomField($customFieldId, $contactCustomFieldValues)
+            );
         }
 
         return $contactFieldCollection;

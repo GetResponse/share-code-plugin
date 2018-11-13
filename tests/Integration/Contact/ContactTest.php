@@ -84,7 +84,7 @@ class ContactTest extends BaseCaseTest
             ->method('clearOriginCustomField');
 
         $this->dbRepositoryMock
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('setOriginCustomFieldId');
 
         $addContactCommand = new AddContactCommand(

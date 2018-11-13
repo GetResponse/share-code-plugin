@@ -32,7 +32,7 @@ class ContactPayloadFactory
         foreach ($addContactCommand->getContactCustomFieldsCollection() as $customField) {
             $payload['customFieldValues'][] = [
                 'customFieldId' => $customField->getId(),
-                'value' => $customField->getValue()
+                'value' => $customField->getValues()
             ];
         }
 
