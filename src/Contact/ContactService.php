@@ -28,12 +28,12 @@ class ContactService
     private $contactPayloadFactory;
     /** @var ContactFactory */
     private $contactFactory;
-    /** @var string */
-    private $originValue;
     /** @var CustomFieldService */
     private $customFieldService;
     /** @var DbRepositoryInterface */
     private $dbRepository;
+    /** @var string */
+    private $originValue;
 
     /**
      * @param GetresponseApiClient $getresponseApiClient
