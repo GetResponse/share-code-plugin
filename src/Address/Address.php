@@ -76,7 +76,7 @@ class Address
     {
         $countryCode = CountryCodeConverter::getCountryCodeInISO3166Alpha3($countryCode);
 
-        $message = 'Country code in Address should be a not blank string (3 chars)';
+        $message = 'Country code in Address cannot be a blank string (use minimum 3 chars)';
         Assert::that($countryCode, $message)->notBlank()->string()->length(3);
         $this->countryCode = $countryCode;
     }
@@ -86,7 +86,7 @@ class Address
      */
     private function setName($name)
     {
-        $message = 'Name in Address should be a not blank string';
+        $message = 'Name in Address cannot be a blank string';
         Assert::that($name, $message)->notBlank()->string();
         $this->name = $name;
     }
@@ -121,7 +121,7 @@ class Address
      */
     public function setFirstName($firstName)
     {
-        $message = 'First name in Address should be not longer than ' . self::FIRSTNAME_MAX_LENGTH . ' chars';
+        $message = 'First name in Address can be a maximum of ' . self::FIRSTNAME_MAX_LENGTH . ' chars';
         Assert::that($firstName, $message)->maxLength(self::FIRSTNAME_MAX_LENGTH);
         $this->firstName = $firstName;
 
@@ -142,7 +142,7 @@ class Address
      */
     public function setLastName($lastName)
     {
-        $message = 'Last name in Address should be not longer than ' . self::LASTNAME_MAX_LENGTH . ' chars';
+        $message = 'Last name in Address can be a maximum of ' . self::LASTNAME_MAX_LENGTH . ' chars';
         Assert::that($lastName, $message)->maxLength(self::LASTNAME_MAX_LENGTH);
         $this->lastName = $lastName;
 
@@ -163,7 +163,7 @@ class Address
      */
     public function setAddress1($address1)
     {
-        $message = 'Address1 in Address should be not longer than ' . self::ADDRESS1_MAX_LENGTH . ' chars';
+        $message = 'Address1 in Address can be a maximum of ' . self::ADDRESS1_MAX_LENGTH . ' chars';
         Assert::that($address1, $message)->maxLength(self::ADDRESS1_MAX_LENGTH);
         $this->address1 = $address1;
         return $this;
@@ -183,7 +183,7 @@ class Address
      */
     public function setAddress2($address2)
     {
-        $message = 'Address2 in Address should be not longer than ' . self::ADDRESS2_MAX_LENGTH . ' chars';
+        $message = 'Address2 in Address can be a maximum of ' . self::ADDRESS2_MAX_LENGTH . ' chars';
         Assert::that($address2, $message)->maxLength(self::ADDRESS2_MAX_LENGTH);
         $this->address2 = $address2;
 
@@ -204,7 +204,7 @@ class Address
      */
     public function setCity($city)
     {
-        $message = 'City in Address should be not longer than ' . self::CITY_MAX_LENGTH . ' chars';
+        $message = 'City in Address can be a maximum of ' . self::CITY_MAX_LENGTH . ' chars';
         Assert::that($city, $message)->maxLength(self::CITY_MAX_LENGTH);
         $this->city = $city;
 
@@ -225,7 +225,7 @@ class Address
      */
     public function setZip($zip)
     {
-        $message = 'Zip in Address should be not longer than ' . self::ZIP_MAX_LENGTH . ' chars';
+        $message = 'Zip in Address can be a maximum of ' . self::ZIP_MAX_LENGTH . ' chars';
         Assert::that($zip, $message)->maxLength(self::ZIP_MAX_LENGTH);
         $this->zip = $zip;
 
@@ -246,7 +246,7 @@ class Address
      */
     public function setProvince($province)
     {
-        $message = 'Province in Address should be not longer than ' . self::PROVINCE_MAX_LENGTH . ' chars';
+        $message = 'Province in Address can be a maximum of ' . self::PROVINCE_MAX_LENGTH . ' chars';
         Assert::that($province, $message)->maxLength(self::PROVINCE_MAX_LENGTH);
         $this->province = $province;
 
@@ -267,7 +267,7 @@ class Address
      */
     public function setProvinceCode($provinceCode)
     {
-        $message = 'Province code in Address should be not longer than ' . self::PROVINCE_CODE_MAX_LENGTH . ' chars';
+        $message = 'Province code in Address can be a maximum of ' . self::PROVINCE_CODE_MAX_LENGTH . ' chars';
         Assert::that($provinceCode, $message)->maxLength(self::PROVINCE_CODE_MAX_LENGTH);
         $this->provinceCode = $provinceCode;
 
@@ -288,7 +288,7 @@ class Address
      */
     public function setPhone($phone)
     {
-        $message = 'Phone in Address should be not longer than ' . self::PHONE_MAX_LENGTH . ' chars';
+        $message = 'Phone in Address can be a maximum of ' . self::PHONE_MAX_LENGTH . ' chars';
         Assert::that($phone, $message)->maxLength(self::PHONE_MAX_LENGTH);
         $this->phone = $phone;
 
@@ -309,7 +309,7 @@ class Address
      */
     public function setCompany($company)
     {
-        $message = 'Company in Address should be not longer than ' . self::COMPANY_MAX_LENGTH . ' chars';
+        $message = 'Company in Address can be a maximum of ' . self::COMPANY_MAX_LENGTH . ' chars';
         Assert::that($company, $message)->maxLength(self::COMPANY_MAX_LENGTH);
         $this->company = $company;
 

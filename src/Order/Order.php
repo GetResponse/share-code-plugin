@@ -78,7 +78,7 @@ class Order
      */
     private function setExternalOrderId($orderId)
     {
-        $message = 'External order ID in Order should be a not blank string';
+        $message = 'External order ID in Order cannot be a blank string';
         Assert::that($orderId, $message)->notBlank()->string();
         $this->externalOrderId = $orderId;
         return $this;
@@ -100,7 +100,7 @@ class Order
      */
     private function setTotalPrice($totalPrice)
     {
-        $message = 'Total price in Order should be a not null float';
+        $message = 'Total price in Order cannot be null. It has to be float.';
         Assert::that($totalPrice, $message)->notNull()->float();
         $this->totalPrice = $totalPrice;
         return $this;
@@ -112,7 +112,7 @@ class Order
      */
     private function setCurrency($currency)
     {
-        $message = 'Currency in Order should be a not blank string (3 chars)';
+        $message = 'Currency in Order cannot be a blank string (use minimum 3 chars)';
         Assert::that($currency, $message)->notBlank()->string()->length(3);
         $this->currency = $currency;
         return $this;
@@ -148,7 +148,7 @@ class Order
      */
     public function setStatus($status)
     {
-        $message = 'Status in Order should be string';
+        $message = 'Status in Order should be text type';
         Assert::that($status, $message)->notEmpty()->notNull()->string();
         $this->status = $status;
         return $this;
@@ -160,7 +160,7 @@ class Order
      */
     public function setExternalCartId($cartId)
     {
-        $message = 'External cart ID in Order should be a not blank string';
+        $message = 'External cart ID in Order cannot be a blank string';
         Assert::that($cartId, $message)->notBlank()->string();
         $this->externalCartId = $cartId;
         return $this;
@@ -172,7 +172,7 @@ class Order
      */
     public function setDescription($description)
     {
-        $message = 'Description in Order should be string';
+        $message = 'Description in Order should be text type';
         Assert::that($description, $message)->notEmpty()->notNull()->string();
         $this->description = $description;
         return $this;
@@ -196,7 +196,7 @@ class Order
      */
     public function setBillingStatus($billingStatus)
     {
-        $message = 'Billing status in Order should be string';
+        $message = 'Billing status in Order should be text type';
         Assert::that($billingStatus, $message)->notEmpty()->notNull()->string();
         $this->billingStatus = $billingStatus;
         return $this;
@@ -208,7 +208,7 @@ class Order
      */
     public function setProcessedAt($processedAt)
     {
-        $message = 'Processed at in Order should be a ISO8601 date time';
+        $message = 'Processed at in Order should use ISO8601 date time format';
         Assert::that($processedAt, $message)->date(\DateTime::ISO8601);
         $this->processedAt = $processedAt;
         return $this;
