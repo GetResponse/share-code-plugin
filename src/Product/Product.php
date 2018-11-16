@@ -51,7 +51,7 @@ class Product
      */
     private function setExternalId($externalId)
     {
-        $message = 'External ID in Product should be a not null integer';
+        $message = 'External ID in Product cannot be a null integer';
         Assert::that($externalId, $message)->notNull()->integer();
         $this->externalId = $externalId;
     }
@@ -61,7 +61,7 @@ class Product
      */
     private function setName($name)
     {
-        $message = 'Name in Product should be a not blank string';
+        $message = 'Name in Product cannot be a blank string';
         Assert::that($name, $message)->notBlank()->string();
         $this->name = $name;
     }
@@ -133,7 +133,7 @@ class Product
      */
     public function setType($type)
     {
-        $message = 'Type in Product should be null or string';
+        $message = 'Type in Product should be null or text type';
         Assert::that($type, $message)->nullOr()->string();
         $this->type = $type;
 
@@ -154,7 +154,7 @@ class Product
      */
     public function setVendor($vendor)
     {
-        $message = 'Vendor in Product should be null or string';
+        $message = 'Vendor in Product should be null or text type';
         Assert::that($vendor, $message)->nullOr()->string();
         $this->vendor = $vendor;
 

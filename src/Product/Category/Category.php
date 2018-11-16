@@ -37,7 +37,7 @@ class Category
      */
     private function setName($name)
     {
-        $message = 'Name in Category should be a not blank string';
+        $message = 'Name in Category cannot be a blank string';
         Assert::that($name, $message)->notBlank()->string();
         $this->name = $name;
     }
@@ -85,7 +85,7 @@ class Category
      */
     public function setParentId($parentId)
     {
-        $message = 'Parent ID in Category should be null or string';
+        $message = 'Parent ID in Category should be null or text type';
         Assert::that($parentId, $message)->nullOr()->string();
         $this->parentId = $parentId;
 
@@ -106,7 +106,7 @@ class Category
      */
     public function setExternalId($externalId)
     {
-        $message = 'External ID in Category should be null or string';
+        $message = 'External ID in Category should be null or text type';
         Assert::that($externalId, $message)->nullOr()->string();
         $this->externalId = $externalId;
 

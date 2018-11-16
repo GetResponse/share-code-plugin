@@ -30,7 +30,7 @@ class Image
      */
     private function setSrc($src)
     {
-        $message = 'Src in Image should be a not blank string';
+        $message = 'Src in Image cannot be a blank string';
         Assert::that($src, $message)->notBlank()->string();
         $this->src = $src;
     }
@@ -40,7 +40,7 @@ class Image
      */
     private function setPosition($position)
     {
-        $message = 'Position in Image should be a not null integer';
+        $message = 'Position in Image cannot be null. It has to be integer.';
         Assert::that($position, $message)->notNull()->integer();
         $this->position = $position;
     }
