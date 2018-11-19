@@ -1,13 +1,13 @@
 <?php
 namespace GrShareCode\Tests\Integration;
 
-use GrShareCode\Api\ApiKeyAuthorization;
-use GrShareCode\Api\Authorization;
-use GrShareCode\Api\ApiTypeException;
+use GrShareCode\Api\Authorization\ApiKeyAuthorization;
+use GrShareCode\Api\Authorization\Authorization;
+use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Api\UserAgentHeader;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
-use GrShareCode\GetresponseApiClient;
+use GrShareCode\Api\GetresponseApi;
+use GrShareCode\Api\GetresponseApiClient;
 use PHPUnit\Framework\TestCase;
 
 /**

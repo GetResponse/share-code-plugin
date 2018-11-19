@@ -1,8 +1,8 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\WebForm;
 
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\WebForm\Command\GetWebFormCommand;
 use GrShareCode\WebForm\WebForm;
 use GrShareCode\WebForm\WebFormCollection;
@@ -12,14 +12,14 @@ use GrShareCode\Tests\Unit\BaseTestCase;
 class WebFormServiceTest extends BaseTestCase
 {
     /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
-    private $grApiClientMock;
+    private $getResponseApiClientMock;
     /** @var WebFormService */
-    private $webFormService;
+    private $sut;
 
     public function setUp()
     {
-        $this->grApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
-        $this->webFormService = new WebFormService($this->grApiClientMock);
+        $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
+        $this->sut = new WebFormService($this->getResponseApiClientMock);
     }
 
     /**
@@ -28,78 +28,45 @@ class WebFormServiceTest extends BaseTestCase
      */
     public function shouldReturnWebFormCollection()
     {
-        $this->grApiClientMock
-            ->expects($this->exactly(3))
+        $this->getResponseApiClientMock
+            ->expects(self::once())
             ->method('getWebForms')
-            ->withConsecutive([1, 100], [2, 100], [3, 100])
-            ->willReturnOnConsecutiveCalls(
+            ->willReturn([
                 [
-                    [
-                        'webformId' => 'WebFormId_1',
-                        'name' => 'webFormName_1',
-                        'scriptUrl' => 'scriptUrl_1',
-                        'campaign' => ['name' => 'campaignName_1'],
-                        'status' => 'enabled'
-                    ]
+                    'webformId' => 'WebFormId_1',
+                    'name' => 'webFormName_1',
+                    'scriptUrl' => 'scriptUrl_1',
+                    'campaign' => ['name' => 'campaignName_1'],
+                    'status' => 'enabled'
                 ],
                 [
-                    [
-                        'webformId' => 'WebFormId_2',
-                        'name' => 'webFormName_2',
-                        'scriptUrl' => 'scriptUrl_2',
-                        'campaign' => ['name' => 'campaignName_2'],
-                        'status' => 'disabled'
-                    ]
-                ],
-                [
-                    [
-                        'webformId' => 'WebFormId_3',
-                        'name' => 'webFormName_3',
-                        'scriptUrl' => 'scriptUrl_3',
-                        'campaign' => ['name' => 'campaignName_3'],
-                        'status' => 'enabled'
-                    ]
+                    'webformId' => 'WebFormId_2',
+                    'name' => 'webFormName_2',
+                    'scriptUrl' => 'scriptUrl_2',
+                    'campaign' => ['name' => 'campaignName_2'],
+                    'status' => 'disabled'
                 ]
-            );
+            ]);
 
-        $this->grApiClientMock
-            ->expects($this->exactly(3))
+        $this->getResponseApiClientMock
+            ->expects(self::once())
             ->method('getForms')
-            ->withConsecutive([1, 100], [2, 100], [3, 100])
-            ->willReturnOnConsecutiveCalls(
+            ->willReturn([
                 [
-                    [
-                        'webformId' => 'WebFormId_4',
-                        'name' => 'webFormName_4',
-                        'scriptUrl' => 'scriptUrl_4',
-                        'campaign' => ['name' => 'campaignName_4'],
-                        'status' => 'published'
-                    ]
+                    'webformId' => 'WebFormId_3',
+                    'name' => 'webFormName_3',
+                    'scriptUrl' => 'scriptUrl_3',
+                    'campaign' => ['name' => 'campaignName_3'],
+                    'status' => 'published'
                 ],
                 [
-                    [
-                        'webformId' => 'WebFormId_5',
-                        'name' => 'webFormName_5',
-                        'scriptUrl' => 'scriptUrl_5',
-                        'campaign' => ['name' => 'campaignName_5'],
-                        'status' => 'disabled'
-                    ]
-                ],
-                [
-                    [
-                        'webformId' => 'WebFormId_6',
-                        'name' => 'webFormName_6',
-                        'scriptUrl' => 'scriptUrl_6',
-                        'campaign' => ['name' => 'campaignName_6'],
-                        'status' => 'published'
-                    ]
+                    'webformId' => 'WebFormId_4',
+                    'name' => 'webFormName_4',
+                    'scriptUrl' => 'scriptUrl_4',
+                    'campaign' => ['name' => 'campaignName_4'],
+                    'status' => 'disabled'
                 ]
-            );
-
-        $this->grApiClientMock
-            ->expects($this->exactly(2))
-            ->method('getHeaders')
-            ->willReturn(['TotalPages' => '3']);
+            ]);
 
         $webFormCollection = new WebFormCollection();
         $webFormCollection->add(
@@ -122,47 +89,27 @@ class WebFormServiceTest extends BaseTestCase
                 WebForm::VERSION_V1
             )
         );
-        $webFormCollection->add(
-            new WebForm(
+        $webFormCollection->add(new WebForm(
                 'WebFormId_3',
                 'webFormName_3',
                 'scriptUrl_3',
                 'campaignName_3',
                 'enabled',
-                WebForm::VERSION_V1
+                WebForm::VERSION_V2
             )
         );
-        $webFormCollection->add(new WebForm(
+        $webFormCollection->add(
+            new WebForm(
                 'WebFormId_4',
                 'webFormName_4',
                 'scriptUrl_4',
                 'campaignName_4',
-                'enabled',
-                WebForm::VERSION_V2
-            )
-        );
-        $webFormCollection->add(
-            new WebForm(
-                'WebFormId_5',
-                'webFormName_5',
-                'scriptUrl_5',
-                'campaignName_5',
                 'disabled',
                 WebForm::VERSION_V2
             )
         );
-        $webFormCollection->add(
-            new WebForm(
-                'WebFormId_6',
-                'webFormName_6',
-                'scriptUrl_6',
-                'campaignName_6',
-                'enabled',
-                WebForm::VERSION_V2
-            )
-        );
 
-        $this->assertEquals($webFormCollection, $this->webFormService->getAllWebForms());
+        $this->assertEquals($webFormCollection, $this->sut->getAllWebForms());
     }
 
     /**
@@ -173,7 +120,7 @@ class WebFormServiceTest extends BaseTestCase
     {
         $getWebFormCommand = new GetWebFormCommand('id', WebForm::VERSION_V1);
 
-        $this->grApiClientMock
+        $this->getResponseApiClientMock
             ->expects(self::once())
             ->method('getWebFormById')
             ->with('id')
@@ -185,7 +132,7 @@ class WebFormServiceTest extends BaseTestCase
                 'campaign' => ['name' => 'campaign_name']
             ]);
 
-        $form = $this->webFormService->getWebFormById($getWebFormCommand);
+        $form = $this->sut->getWebFormById($getWebFormCommand);
 
         self::assertEquals('id', $form->getWebFormId());
         self::assertEquals(WebForm::VERSION_V1, $form->getVersion());
@@ -199,7 +146,7 @@ class WebFormServiceTest extends BaseTestCase
     {
         $getWebFormCommand = new GetWebFormCommand('id', WebForm::VERSION_V2);
 
-        $this->grApiClientMock
+        $this->getResponseApiClientMock
             ->expects(self::once())
             ->method('getFormById')
             ->with('id')
@@ -211,7 +158,7 @@ class WebFormServiceTest extends BaseTestCase
                 'campaign' => ['name' => 'campaign_name']
             ]);
 
-        $form = $this->webFormService->getWebFormById($getWebFormCommand);
+        $form = $this->sut->getWebFormById($getWebFormCommand);
 
         self::assertEquals('id', $form->getWebFormId());
         self::assertEquals(WebForm::VERSION_V2, $form->getVersion());

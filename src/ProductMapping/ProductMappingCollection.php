@@ -11,7 +11,7 @@ class ProductMappingCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\ProductMapping\ProductMapping');
+        $this->setItemType(ProductMapping::class);
     }
 
     /**

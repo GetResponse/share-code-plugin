@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Export\Command;
 
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\Order\OrderCollection;
 

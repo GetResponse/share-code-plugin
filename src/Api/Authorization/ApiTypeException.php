@@ -1,13 +1,14 @@
 <?php
-namespace GrShareCode\Api;
+namespace GrShareCode\Api\Authorization;
 
-use GrShareCode\GrShareCodeException;
+use GrShareCode\Api\Exception\GetresponseApiException;
+
 
 /**
  * Class ApiTypeException
- * @package GrShareCode\Api
+ * @package GrShareCode\Api\Authorization
  */
-class ApiTypeException extends GrShareCodeException
+class ApiTypeException extends GetresponseApiException
 {
     /**
      * @return ApiTypeException

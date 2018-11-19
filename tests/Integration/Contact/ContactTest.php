@@ -1,16 +1,16 @@
 <?php
 namespace GrShareCode\Tests\Integration\Contact;
 
+use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Contact\Command\AddContactCommand;
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldCollectionFactory;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldCollectionFactory;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Contact\ContactFactory;
 use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\CustomField\CustomFieldService;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Integration\BaseCaseTest;
 
 /**
@@ -30,6 +30,10 @@ class ContactTest extends BaseCaseTest
     /** @var string */
     private $originCustomName = 'origin2';
 
+    /**
+     * @throws ApiTypeException
+     * @throws \ReflectionException
+     */
     public function setUp()
     {
         $this->getResponseApiClient = $this->getApiClient();
@@ -52,6 +56,9 @@ class ContactTest extends BaseCaseTest
         $this->email = 'tester' . md5(time()) . '@getresponse.com';
     }
 
+    /**
+     * @throws GetresponseApiException
+     */
     public function tearDown()
     {
         $this->customFieldsService->deleteCustomFieldById(
@@ -61,6 +68,7 @@ class ContactTest extends BaseCaseTest
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldAddContact()
     {
@@ -76,7 +84,7 @@ class ContactTest extends BaseCaseTest
             ->method('clearOriginCustomField');
 
         $this->dbRepositoryMock
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('setOriginCustomFieldId');
 
         $addContactCommand = new AddContactCommand(

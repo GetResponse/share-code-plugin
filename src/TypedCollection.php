@@ -102,4 +102,29 @@ class TypedCollection implements IteratorAggregate
         return in_array($item, $this->items);
     }
 
+    /**
+     * @param Matcher $filter
+     * @return mixed
+     */
+    public function filter(Matcher $filter)
+    {
+        $result = clone $this;
+        $result->items = array_values(\array_filter($this->items, [$filter, 'matches']));
+
+        return $result;
+    }
+
+    /**
+     * @param int $index
+     * @return mixed
+     */
+    public function get($index)
+    {
+        if (!isset($this->items[$index])) {
+            return null;
+        }
+
+        return $this->items[$index];
+    }
+
 }

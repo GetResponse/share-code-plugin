@@ -1,7 +1,7 @@
 <?php
 namespace GrShareCode\Contact\Command;
 
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Validation\Assert\Assert;
 
 /**
@@ -38,12 +38,12 @@ class AddContactCommand
      */
     public function __construct($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $updateIfAlreadyExists = false)
     {
-        Assert::that($email, 'Email in ' . AddContactCommand::class . ' should be a not null string')
+        Assert::that($email, 'Email in ' . AddContactCommand::class . ' cannot be a blank string')
             ->notNull()
             ->notEmpty()
             ->string();
 
-        Assert::that($contactListId, 'Contact list in ' . AddContactCommand::class . ' should be a not null string')
+        Assert::that($contactListId, 'Contact list in ' . AddContactCommand::class . ' cannot be a blank string')
             ->notNull()
             ->notEmpty()
             ->string();
@@ -78,6 +78,11 @@ class AddContactCommand
     public function getDayOfCycle()
     {
         return $this->dayOfCycle;
+    }
+
+    public function clearDayOfCycle()
+    {
+        $this->dayOfCycle = null;
     }
 
     /**

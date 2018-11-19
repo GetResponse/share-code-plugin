@@ -1,12 +1,15 @@
 <?php
-
-namespace GrShareCode;
+namespace GrShareCode\Api;
 
 use DateTime;
+use GrShareCode\Api\Exception\AccountNotExistsException;
+use GrShareCode\Api\Exception\CustomFieldNotFoundException;
+use GrShareCode\Api\Exception\GetresponseApiException;
+use GrShareCode\DbRepositoryInterface;
 
 /**
  * Class GetresponseApiClient
- * @package ShareCode
+ * @package GrShareCode\Api
  */
 class GetresponseApiClient
 {
@@ -109,12 +112,22 @@ class GetresponseApiClient
      * @param array $params
      * @return array
      * @throws GetresponseApiException
+     * @throws CustomFieldNotFoundException
      */
     public function createContact($params)
     {
-        return $this->execute(function () use ($params) {
-            return $this->grApi->createContact($params);
-        });
+        try {
+            return $this->execute(function () use ($params) {
+                return $this->grApi->createContact($params);
+            });
+        } catch (GetresponseApiException $exception) {
+
+            if (1 === preg_match('#Custom field by id: (?<customId>\w+) not found#', $exception->getMessage(), $matched)) {
+                throw CustomFieldNotFoundException::createWithCustomFieldId($matched['customId']);
+            } else {
+                throw $exception;
+            }
+        }
     }
 
     /**
@@ -250,16 +263,13 @@ class GetresponseApiClient
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      */
-    public function getCustomFields($page, $perPage)
+    public function getCustomFields()
     {
-        return $this->execute(function () use ($page, $perPage) {
-            return $this->grApi->getCustomFields($page, $perPage);
+        return $this->execute(function () {
+            return $this->grApi->getCustomFields();
         });
     }
 
@@ -288,15 +298,13 @@ class GetresponseApiClient
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
      * @return array|mixed
      * @throws GetresponseApiException
      */
-    public function getWebForms($page, $perPage)
+    public function getWebForms()
     {
-        return $this->execute(function () use ($page, $perPage) {
-            return $this->grApi->getWebForms($page, $perPage);
+        return $this->execute(function () {
+            return $this->grApi->getWebForms();
         });
     }
 
@@ -337,29 +345,24 @@ class GetresponseApiClient
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      */
-    public function getFromFields($page, $perPage)
+    public function getFromFields()
     {
-        return $this->execute(function () use ($page, $perPage) {
-            return $this->grApi->getFromFields($page, $perPage);
+        return $this->execute(function () {
+            return $this->grApi->getFromFields();
         });
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
      * @return array
      * @throws GetresponseApiException
      */
-    public function getForms($page, $perPage)
+    public function getForms()
     {
-        return $this->execute(function () use ($page, $perPage) {
-            return $this->grApi->getForms($page, $perPage);
+        return $this->execute(function () {
+            return $this->grApi->getForms();
         });
     }
 
@@ -389,16 +392,13 @@ class GetresponseApiClient
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array
      * @throws GetresponseApiException
      */
-    public function getContactList($page, $perPage)
+    public function getContactList()
     {
-        return $this->execute(function () use ($page, $perPage) {
-            return $this->grApi->getContactList($page, $perPage);
+        return $this->execute(function () {
+            return $this->grApi->getContactList();
         });
     }
 
@@ -428,29 +428,14 @@ class GetresponseApiClient
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
+     * @param string|null $campaignId
      * @return array
      * @throws GetresponseApiException
      */
-    public function getAutoresponders($page, $perPage)
+    public function getAutoresponders($campaignId = null)
     {
-        return $this->execute(function () use ($page, $perPage) {
-            return $this->grApi->getAutoresponders($page, $perPage);
-        });
-    }
-
-    /**
-     * @param string $campaignId
-     * @param int $page
-     * @param int $perPage
-     * @return array
-     * @throws GetresponseApiException
-     */
-    public function getCampaignAutoresponders($campaignId, $page, $perPage)
-    {
-        return $this->execute(function () use ($campaignId, $page, $perPage) {
-            return $this->grApi->getCampaignAutoresponders($campaignId, $page, $perPage);
+        return $this->execute(function () use ($campaignId) {
+            return $this->grApi->getAutoresponders($campaignId);
         });
     }
 
@@ -491,16 +476,13 @@ class GetresponseApiClient
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array
      * @throws GetresponseApiException
      */
-    public function getShops($page, $perPage)
+    public function getShops()
     {
-        return $this->execute(function () use ($page, $perPage) {
-            return $this->grApi->getShops($page, $perPage);
+        return $this->execute(function () {
+            return $this->grApi->getShops();
         });
     }
 

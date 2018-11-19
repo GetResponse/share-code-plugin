@@ -20,4 +20,5 @@ class GrShareCodeException extends Exception
     const INVALID_ACCESS_TOKEN = 10009;
     const INVALID_REFRESH_TOKEN = 10010;
     const INVALID_API_KEY = 10011;
+    const CUSTOM_FIELD_NOT_FOUND = 10012;
 }

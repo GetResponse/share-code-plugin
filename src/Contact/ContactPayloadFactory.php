@@ -2,6 +2,7 @@
 namespace GrShareCode\Contact;
 
 use GrShareCode\Contact\Command\AddContactCommand;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
 
 class ContactPayloadFactory
 {
@@ -23,7 +24,7 @@ class ContactPayloadFactory
             unset($payload['name']);
         }
 
-        if (!is_null($addContactCommand->getDayOfCycle())) {
+        if (!is_null($addContactCommand->getDayOfCycle()) && '' !== $addContactCommand->getDayOfCycle()) {
             $payload['dayOfCycle'] = $addContactCommand->getDayOfCycle();
         }
 
@@ -31,7 +32,7 @@ class ContactPayloadFactory
         foreach ($addContactCommand->getContactCustomFieldsCollection() as $customField) {
             $payload['customFieldValues'][] = [
                 'customFieldId' => $customField->getId(),
-                'value' => $customField->getValue()
+                'value' => $customField->getValues()
             ];
         }
 

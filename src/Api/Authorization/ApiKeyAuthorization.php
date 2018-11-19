@@ -1,9 +1,9 @@
 <?php
-namespace GrShareCode\Api;
+namespace GrShareCode\Api\Authorization;
 
 /**
- * Class ApiKeyAuthorizationMethod
- * @package GrShareCode\Api
+ * Class ApiKeyAuthorization
+ * @package GrShareCode\Api\Authorization
  */
 class ApiKeyAuthorization extends Authorization
 {

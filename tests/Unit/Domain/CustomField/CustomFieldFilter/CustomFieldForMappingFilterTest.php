@@ -3,9 +3,9 @@ namespace GrShareCode\Tests\Unit\Domain\CustomField\CustomFieldFilter;
 
 use GrShareCode\CustomField\CustomField;
 use GrShareCode\CustomField\CustomFieldFilter\CustomFieldForMappingFilter;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
-class CustomFieldForMappingFilterTest extends TestCase
+class CustomFieldForMappingFilterTest extends BaseTestCase
 {
     /**
      * @test
@@ -20,7 +20,7 @@ class CustomFieldForMappingFilterTest extends TestCase
         );
 
         $filter = new CustomFieldForMappingFilter();
-        $this->assertFalse($filter->isEligible($customField));
+        $this->assertFalse($filter->matches($customField));
     }
 
     /**
@@ -36,7 +36,7 @@ class CustomFieldForMappingFilterTest extends TestCase
         );
 
         $filter = new CustomFieldForMappingFilter();
-        $this->assertTrue($filter->isEligible($customField));
+        $this->assertTrue($filter->matches($customField));
     }
 
 }

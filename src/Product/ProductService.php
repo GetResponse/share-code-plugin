@@ -1,9 +1,9 @@
 <?php
 namespace GrShareCode\Product;
 
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
 use GrShareCode\Product\Variant\Variant;
 use GrShareCode\ProductMapping\ProductMapping;
 

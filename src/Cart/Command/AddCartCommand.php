@@ -59,7 +59,7 @@ class AddCartCommand
      */
     private function setContactListId($contactListId)
     {
-        $message = 'Contact list ID in AddCartCommand should be a not blank string';
+        $message = 'Contact list ID in AddCartCommand cannot be a blank string';
         Assert::that($contactListId, $message)->notBlank()->string();
         $this->contactListId = $contactListId;
     }
@@ -69,7 +69,7 @@ class AddCartCommand
      */
     private function setShopId($shopId)
     {
-        $message = 'Shop ID in AddCartCommand should be a not blank string';
+        $message = 'Shop ID in AddCartCommand cannot be a blank string';
         Assert::that($shopId, $message)->notBlank()->string();
         $this->shopId = $shopId;
     }

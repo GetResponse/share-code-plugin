@@ -1,18 +1,16 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Api;
 
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\Api\Authorization;
-use GrShareCode\Api\OauthAuthorization;
-use GrShareCode\Api\UserAgentHeader;
-use GrShareCode\GetresponseApi;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Api\Authorization\ApiTypeException;
+use GrShareCode\Api\Authorization\Authorization;
+use GrShareCode\Api\Authorization\OauthAuthorization;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
  * Class OauthAuthorizationTest
  * @package GrShareCode\Tests\Unit\Domain\Cart
  */
-class OauthAuthorizationTest extends TestCase
+class OauthAuthorizationTest extends BaseTestCase
 {
     /**
      * @test
@@ -26,7 +24,6 @@ class OauthAuthorizationTest extends TestCase
     public function shouldThrowExceptionWhenIncorrectParam($accessToken, $refreshToken, $type, $domain)
     {
         $this->expectException(ApiTypeException::class);
-
         new OauthAuthorization($accessToken, $refreshToken, $type, $domain);
     }
 
@@ -45,6 +42,7 @@ class OauthAuthorizationTest extends TestCase
 
     /**
      * @test
+     * @throws ApiTypeException
      */
     public static function shouldCreateValidAuthorizationInstance()
     {
@@ -63,6 +61,7 @@ class OauthAuthorizationTest extends TestCase
 
     /**
      * @test
+     * @throws ApiTypeException
      */
     public static function shouldReturnValidAuthorizationHeader()
     {
@@ -78,11 +77,12 @@ class OauthAuthorizationTest extends TestCase
      * @test
      * @dataProvider GetInvalidApiTypeProvider
      * @param $type
+     * @throws ApiTypeException
      */
     public function shouldThrowExceptionWhenInvalidApiType($type)
     {
         $this->expectException(ApiTypeException::class);
-        $authorization = new OauthAuthorization('xyz', 'rsd', $type, 'domain.com');
+        new OauthAuthorization('xyz', 'rsd', $type, 'domain.com');
     }
 
     /**
@@ -104,6 +104,7 @@ class OauthAuthorizationTest extends TestCase
      * @param string $type
      * @param null|string $domain
      * @param string $url
+     * @throws ApiTypeException
      */
     public function shouldReturnValidApiUrl($type, $domain, $url)
     {

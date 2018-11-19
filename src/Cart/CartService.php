@@ -4,8 +4,8 @@ namespace GrShareCode\Cart;
 use GrShareCode\Cache\CacheInterface;
 use GrShareCode\Cart\Command\AddCartCommand;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Product\ProductService;
 
 /**
@@ -53,7 +53,7 @@ class CartService
      */
     public function sendCart(AddCartCommand $addCartCommand)
     {
-        if ($this->cartAlreadySent($addCartCommand->getCart())) {
+        if (!$this->hasCartPayloadChangedSinceLastRequest($addCartCommand->getCart())) {
             return;
         }
 
@@ -200,9 +200,9 @@ class CartService
      * @param Cart $cart
      * @return bool
      */
-    private function cartAlreadySent(Cart $cart)
+    private function hasCartPayloadChangedSinceLastRequest(Cart $cart)
     {
-        return $this->getCartHash($cart) === $this->cache->get($this->getCartCacheKey($cart));
+        return $this->getCartHash($cart) !== $this->cache->get($this->getCartCacheKey($cart));
     }
 
 }

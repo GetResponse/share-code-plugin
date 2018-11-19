@@ -1,15 +1,18 @@
 <?php
-namespace GrShareCode;
+namespace GrShareCode\Api;
 
-use GrShareCode\Api\Authorization;
-use GrShareCode\Api\UserAgentHeader;
+use GrShareCode\Api\Authorization\Authorization;
+use GrShareCode\Api\Exception\AccountNotExistsException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 
 /**
  * Class GetresponseApi
- * @package ShareCode
+ * @package GrShareCode\Api
  */
 class GetresponseApi
 {
+    const PAGINATION_PER_PAGE = 100;
+
     const TIMEOUT = 8;
 
     /** @var string */
@@ -284,16 +287,33 @@ class GetresponseApi
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      * @throws AccountNotExistsException
      */
-    public function getCustomFields($page, $perPage)
+    public function getCustomFields()
     {
-        return $this->sendRequest('custom-fields?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->fetchDataWithPagination('custom-fields');
+    }
+
+    /**
+     * @param string $method
+     * @param array $params
+     * @return mixed
+     * @throws AccountNotExistsException
+     * @throws GetresponseApiException
+     */
+    public function fetchDataWithPagination($method, $params = [])
+    {
+        $params['page'] = 1;
+        $params['perPage'] = self::PAGINATION_PER_PAGE;
+
+        do {
+            $data[] = $this->sendRequest($method . '?' . $this->setParams($params), 'GET', [], true);
+            $params['page']++;
+        } while ($params['page'] <= $this->getHeaders()['TotalPages']);
+
+        return call_user_func_array('array_merge', $data);
     }
 
     /**
@@ -319,16 +339,13 @@ class GetresponseApi
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      * @throws AccountNotExistsException
      */
-    public function getWebForms($page, $perPage)
+    public function getWebForms()
     {
-        return $this->sendRequest('webforms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->fetchDataWithPagination('webforms');
     }
 
     /**
@@ -365,29 +382,23 @@ class GetresponseApi
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      * @throws AccountNotExistsException
      */
-    public function getFromFields($page, $perPage)
+    public function getFromFields()
     {
-        return $this->sendRequest('from-fields?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->fetchDataWithPagination('from-fields');
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array|mixed
      * @throws GetresponseApiException
      * @throws AccountNotExistsException
      */
-    public function getForms($page, $perPage)
+    public function getForms()
     {
-        return $this->sendRequest('forms?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->fetchDataWithPagination('forms');
     }
 
     /**
@@ -423,16 +434,13 @@ class GetresponseApi
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array
      * @throws GetresponseApiException
      * @throws AccountNotExistsException
      */
-    public function getContactList($page, $perPage)
+    public function getContactList()
     {
-        return $this->sendRequest('campaigns?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->fetchDataWithPagination('campaigns');
     }
 
     /**
@@ -459,28 +467,19 @@ class GetresponseApi
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
+     * @param null $campaignId
      * @return array
-     * @throws GetresponseApiException
      * @throws AccountNotExistsException
+     * @throws GetresponseApiException
      */
-    public function getAutoresponders($page, $perPage)
+    public function getAutoresponders($campaignId = null)
     {
-        return $this->sendRequest('autoresponders?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
-    }
+        $params = [];
+        if (!empty($campaignId)) {
+            $params = ['query' => ['campaignId' => $campaignId]];
+        }
 
-    /**
-     * @param string $campaignId
-     * @param int $page
-     * @param int $perPage
-     * @return array
-     * @throws GetresponseApiException
-     * @throws AccountNotExistsException
-     */
-    public function getCampaignAutoresponders($campaignId, $page, $perPage)
-    {
-        return $this->sendRequest('autoresponders?' . $this->setParams(['query' => ['campaignId' => $campaignId], 'page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->fetchDataWithPagination('autoresponders', $params);
     }
 
     /**
@@ -518,16 +517,13 @@ class GetresponseApi
     }
 
     /**
-     * @param int $page
-     * @param int $perPage
-     *
      * @return array
      * @throws GetresponseApiException
      * @throws AccountNotExistsException
      */
-    public function getShops($page, $perPage)
+    public function getShops()
     {
-        return $this->sendRequest('shops?' . $this->setParams(['page' => $page, 'perPage' => $perPage]), 'GET', [], true);
+        return $this->fetchDataWithPagination('shops');
     }
 
     /**

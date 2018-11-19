@@ -4,8 +4,8 @@ namespace GrShareCode\Tests;
 use GrShareCode\Address\Address;
 use GrShareCode\Cart\Command\AddCartCommand;
 use GrShareCode\Cart\Cart;
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Export\Command\ExportContactCommand;
 use GrShareCode\Export\Settings\ExportSettings;
 use GrShareCode\Order\Command\AddOrderCommand;
@@ -163,16 +163,17 @@ class Generator
             self::createProductsCollection()
         );
 
-        $order->setTotalPriceTax(25.0);
-        $order->setOrderUrl('http://getresponse.com');
-        $order->setStatus('pending');
-        $order->setExternalCartId('431');
-        $order->setDescription('This is description');
-        $order->setShippingPrice(3.0);
-        $order->setBillingStatus('awaiting');
-        $order->setProcessedAt('2018-05-17T16:15:33+0200');
-        $order->setShippingAddress(self::createAddress());
-        $order->setBillingAddress(self::createAddress());
+        $order
+            ->setTotalPriceTax(25.0)
+            ->setOrderUrl('http://getresponse.com')
+            ->setStatus('pending')
+            ->setExternalCartId('431')
+            ->setDescription('This is description')
+            ->setShippingPrice(3.0)
+            ->setBillingStatus('awaiting')
+            ->setProcessedAt('2018-05-17T16:15:33+0200')
+            ->setShippingAddress(self::createAddress())
+            ->setBillingAddress(self::createAddress());
 
         return $order;
     }

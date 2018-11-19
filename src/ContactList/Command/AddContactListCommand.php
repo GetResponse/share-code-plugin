@@ -1,11 +1,11 @@
 <?php
-namespace GrShareCode\ContactList;
+namespace GrShareCode\ContactList\Command;
 
 use GrShareCode\Validation\Assert\Assert;
 
 /**
  * Class AddContactListCommand
- * @package GrShareCode\ContactList
+ * @package GrShareCode\ContactList\Command
  */
 class AddContactListCommand
 {
@@ -13,10 +13,10 @@ class AddContactListCommand
     private $contactListName;
 
     /** @var string */
-    private $fromField;
+    private $fromFieldId;
 
     /** @var string */
-    private $replyTo;
+    private $replyToId;
 
     /** @var string */
     private $subscriptionConfirmationBodyId;
@@ -29,23 +29,24 @@ class AddContactListCommand
 
     /**
      * @param string $contactListName
-     * @param string $fromField
-     * @param string $replyTo
+     * @param string $fromFieldId
+     * @param string $replyToId
      * @param string $subscriptionConfirmationBodyId
      * @param string $subscriptionConfirmationSubjectId
      * @param string $languageCode
+     *
      */
     public function __construct(
         $contactListName,
-        $fromField,
-        $replyTo,
+        $fromFieldId,
+        $replyToId,
         $subscriptionConfirmationBodyId,
         $subscriptionConfirmationSubjectId,
         $languageCode
     ) {
         $this->setContactListName($contactListName);
-        $this->fromField = $fromField;
-        $this->replyTo = $replyTo;
+        $this->fromFieldId = $fromFieldId;
+        $this->replyToId = $replyToId;
         $this->subscriptionConfirmationBodyId = $subscriptionConfirmationBodyId;
         $this->subscriptionConfirmationSubjectId = $subscriptionConfirmationSubjectId;
         $this->languageCode = $languageCode;
@@ -72,17 +73,17 @@ class AddContactListCommand
     /**
      * @return string
      */
-    public function getFromField()
+    public function getFromFieldId()
     {
-        return $this->fromField;
+        return $this->fromFieldId;
     }
 
     /**
      * @return string
      */
-    public function getReplyTo()
+    public function getReplyToId()
     {
-        return $this->replyTo;
+        return $this->replyToId;
     }
 
     /**

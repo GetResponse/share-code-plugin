@@ -11,6 +11,6 @@ class ProductsCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\Product\Product');
+        $this->setItemType(Product::class);
     }
 }

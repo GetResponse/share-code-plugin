@@ -2,8 +2,8 @@
 namespace GrShareCode\Tests\Unit\Domain\Order;
 
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Order\OrderPayloadFactory;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Product\ProductService;

@@ -1,7 +1,6 @@
 <?php
 namespace GrShareCode\CustomField;
 
-use GrShareCode\CustomField\CustomFieldFilter\CustomFieldFilterInterface;
 use GrShareCode\TypedCollection;
 
 /**
@@ -37,21 +36,4 @@ class CustomFieldCollection extends TypedCollection
 
         return $collection;
     }
-
-    /**
-     * @param CustomFieldFilterInterface $customFieldFilter
-     * @return CustomFieldCollection
-     */
-    public function filterBy(CustomFieldFilterInterface $customFieldFilter)
-    {
-        $collection = new self();
-        foreach ($this->getIterator() as $customField) {
-            if ($customFieldFilter->isEligible($customField)) {
-                $collection->add($customField);
-            }
-        }
-
-        return $collection;
-    }
-
 }

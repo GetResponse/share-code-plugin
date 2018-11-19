@@ -42,7 +42,7 @@ class WebFormTest extends BaseTestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $webForm = new WebForm(
+        new WebForm(
             'id',
             'name',
             'url',

@@ -5,11 +5,14 @@ use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\Command\FindContactCommand;
 use GrShareCode\Contact\Command\GetContactCommand;
 use GrShareCode\Contact\Command\UnsubscribeContactsCommand;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldBuilder;
 use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomFieldService;
+use GrShareCode\Api\Exception\CustomFieldNotFoundException;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 
 /**
  * Class ContactService
@@ -17,7 +20,6 @@ use GrShareCode\GetresponseApiException;
  */
 class ContactService
 {
-    const PER_PAGE = 100;
     private $originCustomName = 'origin';
 
     /** @var GetresponseApiClient */
@@ -26,12 +28,12 @@ class ContactService
     private $contactPayloadFactory;
     /** @var ContactFactory */
     private $contactFactory;
-    /** @var string */
-    private $originValue;
     /** @var CustomFieldService */
     private $customFieldService;
     /** @var DbRepositoryInterface */
     private $dbRepository;
+    /** @var string */
+    private $originValue;
 
     /**
      * @param GetresponseApiClient $getresponseApiClient
@@ -127,24 +129,20 @@ class ContactService
      */
     private function createContact(AddContactCommand $addContactCommand)
     {
-        $originCustomField = new ContactCustomField($this->getOriginContactCustomField(), [$this->originValue]);
+        $originCustomField = new ContactCustomField($this->getOriginContactCustomFieldId(), [$this->originValue]);
         $addContactCommand->getContactCustomFieldsCollection()->add($originCustomField);
 
         try {
             $this->getresponseApiClient->createContact(
                 $this->contactPayloadFactory->createFromAddContactCommand($addContactCommand)
             );
-        } catch (GetresponseApiException $exception) {
+        } catch (CustomFieldNotFoundException $exception) {
 
-            preg_match('#Custom field by id: (?<customId>\w+) not found#', $exception->getMessage(), $matched);
-
-            if ($matched['customId'] == $originCustomField->getId()) {
-                $this->dbRepository->clearOriginCustomField();
+            if ($exception->getCustomFieldId() == $originCustomField->getId()) {
 
                 $addContactCommand->getContactCustomFieldsCollection()->remove($originCustomField);
-
                 $addContactCommand->getContactCustomFieldsCollection()->add(
-                    new ContactCustomField($this->getOriginContactCustomField(), [$this->originValue])
+                    $this->recreateOriginContactCustomField()
                 );
 
                 $this->getresponseApiClient->createContact(
@@ -155,19 +153,32 @@ class ContactService
     }
 
     /**
+     * @return ContactCustomField
+     * @throws GetresponseApiException
+     */
+    private function recreateOriginContactCustomField()
+    {
+        $this->dbRepository->clearOriginCustomField();
+        return new ContactCustomField($this->getOriginContactCustomFieldId(), [$this->originValue]);
+    }
+
+    /**
      * @param Contact $contact
      * @param AddContactCommand $addContactCommand
      * @throws GetresponseApiException
      */
     private function updateContact(Contact $contact, AddContactCommand $addContactCommand)
     {
-        $addContactCommand->setCustomFieldsCollection(
-            (new ContactCustomFieldBuilder(
-                $contact->getContactCustomFieldCollection(),
-                $addContactCommand->getContactCustomFieldsCollection()
-            ))
-                ->getMergedCustomFieldsCollection()
+        $contactCustomFieldCollectionBuilder = new ContactCustomFieldBuilder(
+            $contact->getContactCustomFieldCollection(),
+            $addContactCommand->getContactCustomFieldsCollection()
         );
+
+        $addContactCommand->setCustomFieldsCollection(
+            $contactCustomFieldCollectionBuilder->getMergedCustomFieldsCollection()
+        );
+
+        $addContactCommand->clearDayOfCycle();
 
         $this->getresponseApiClient->updateContact(
             $contact->getContactId(),
@@ -181,7 +192,7 @@ class ContactService
      */
     public function unsubscribeContacts(UnsubscribeContactsCommand $unsubscribeCommand)
     {
-        $originContactCustomField = new ContactCustomField($this->getOriginContactCustomField(), [$this->originValue]);
+        $originContactCustomField = new ContactCustomField($this->getOriginContactCustomFieldId(), [$this->originValue]);
         $rawContacts = $this->getresponseApiClient->searchContacts($unsubscribeCommand->getEmail(), true);
 
         foreach ($rawContacts as $rowContact) {
@@ -196,7 +207,7 @@ class ContactService
      * @throws GetresponseApiException
      * @return string
      */
-    private function getOriginContactCustomField()
+    private function getOriginContactCustomFieldId()
     {
         $originCustomFieldId = $this->dbRepository->getOriginCustomFieldId();
 

@@ -5,8 +5,8 @@ use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomField;
 use GrShareCode\CustomField\CustomFieldCollection;
 use GrShareCode\CustomField\CustomFieldService;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
@@ -33,26 +33,22 @@ class CustomFieldServiceTest extends BaseTestCase
     public function shouldReturnAllCustomFields()
     {
         $this->getResponseApiClientMock
-            ->expects($this->exactly(3))
+            ->expects($this->once())
             ->method('getCustomFields')
-            ->willReturnOnConsecutiveCalls(
+            ->willReturn(
                 [
                     [
                         'name' => 'customFieldName1',
                         'customFieldId' => 'grCustomFieldId1',
                         'fieldType' => 'customFieldType1',
                         'valueType' => 'customFieldValue1'
-                    ]
-                ],
-                [
+                    ],
                     [
                         'name' => 'customFieldName2',
                         'customFieldId' => 'grCustomFieldId2',
                         'fieldType' => 'customFieldType2',
                         'valueType' => 'customFieldValue2'
-                    ]
-                ],
-                [
+                    ],
                     [
                         'name' => 'customFieldName3',
                         'customFieldId' => 'grCustomFieldId3',
@@ -61,12 +57,6 @@ class CustomFieldServiceTest extends BaseTestCase
                     ]
                 ]
             );
-
-        $this->getResponseApiClientMock
-            ->expects($this->exactly(3))
-            ->method('getHeaders')
-            ->willReturn(['TotalPages' => '3']);
-
 
         $customFieldCollection = new CustomFieldCollection();
         $customFieldCollection->add(
@@ -154,30 +144,27 @@ class CustomFieldServiceTest extends BaseTestCase
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
     public function shouldReturnTextFieldCustomFields()
     {
         $this->getResponseApiClientMock
-            ->expects($this->exactly(3))
+            ->expects(self::once())
             ->method('getCustomFields')
-            ->willReturnOnConsecutiveCalls(
+            ->willReturn(
                 [
                     [
                         'name' => 'customFieldName1',
                         'customFieldId' => 'grCustomFieldId1',
                         'fieldType' => 'text',
                         'valueType' => 'string'
-                    ]
-                ],
-                [
+                    ],
                     [
                         'name' => 'customFieldName2',
                         'customFieldId' => 'grCustomFieldId2',
                         'fieldType' => 'customFieldType2',
                         'valueType' => 'customFieldValue2'
-                    ]
-                ],
-                [
+                    ],
                     [
                         'name' => 'customFieldName3',
                         'customFieldId' => 'grCustomFieldId3',
@@ -186,12 +173,6 @@ class CustomFieldServiceTest extends BaseTestCase
                     ]
                 ]
             );
-
-        $this->getResponseApiClientMock
-            ->expects($this->exactly(3))
-            ->method('getHeaders')
-            ->willReturn(['TotalPages' => '3']);
-
 
         $customFieldCollection = new CustomFieldCollection();
         $customFieldCollection->add(new CustomField('grCustomFieldId1', 'customFieldName1', 'text', 'string'));

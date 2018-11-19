@@ -11,7 +11,7 @@ class VariantsCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\Product\Variant\Variant');
+        $this->setItemType(Variant::class);
     }
 
     /**

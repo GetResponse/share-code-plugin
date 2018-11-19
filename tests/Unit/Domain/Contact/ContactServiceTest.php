@@ -6,18 +6,19 @@ use GrShareCode\Contact\Command\FindContactCommand;
 use GrShareCode\Contact\Command\GetContactCommand;
 use GrShareCode\Contact\Command\UnsubscribeContactsCommand;
 use GrShareCode\Contact\Contact;
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldCollectionFactory;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldCollectionFactory;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Contact\ContactFactory;
 use GrShareCode\Contact\ContactNotFoundException;
 use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
 use GrShareCode\CustomField\CustomFieldService;
+use GrShareCode\Api\Exception\CustomFieldNotFoundException;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
@@ -310,7 +311,7 @@ class ContactServiceTest extends BaseTestCase
         $callback = function () use (&$createContactCall) {
             $createContactCall++;
             if (1 == $createContactCall) {
-                throw new GetresponseApiException('Custom field by id: oid not found');
+                throw CustomFieldNotFoundException::createWithCustomFieldId('oid');
             } else {return true; }
         };
 
@@ -370,8 +371,9 @@ class ContactServiceTest extends BaseTestCase
         );
 
         $this->sut->addContact($addContactCommand);
-    }
 
+        self::assertNull($addContactCommand->getDayOfCycle());
+    }
 
     /**
      * @test

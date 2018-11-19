@@ -4,7 +4,7 @@ namespace GrShareCode\Tests\Unit\Domain\Export;
 use GrShareCode\Contact\ContactService;
 use GrShareCode\Export\ExportContactService;
 use GrShareCode\Export\Settings\ExportSettingsFactory;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Order\OrderService;
 use GrShareCode\Tests\Generator;
 use GrShareCode\Tests\Unit\BaseTestCase;

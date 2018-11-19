@@ -4,7 +4,7 @@ namespace GrShareCode\Export;
 use GrShareCode\Export\Command\ExportContactCommand;
 use GrShareCode\Contact\Command\AddContactCommand;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Order\Command\AddOrderCommand;
 use GrShareCode\Order\Order;
 use GrShareCode\Order\OrderService;
