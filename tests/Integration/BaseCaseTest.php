@@ -1,20 +1,20 @@
 <?php
 namespace GrShareCode\Tests\Integration;
 
-use GrShareCode\Api\Authorization;
-use GrShareCode\Api\ApiTypeException;
-use GrShareCode\Api\OauthAuthorization;
+use GrShareCode\Api\Authorization\ApiKeyAuthorization;
+use GrShareCode\Api\Authorization\Authorization;
+use GrShareCode\Api\Authorization\ApiTypeException;
 use GrShareCode\Api\UserAgentHeader;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApi;
-use GrShareCode\GetresponseApiClient;
-use PHPUnit_Framework_TestCase;
+use GrShareCode\Api\GetresponseApi;
+use GrShareCode\Api\GetresponseApiClient;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class BaseCaseTest
  * @package SalesforceSync\Tests\Integration
  */
-abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
+abstract class BaseCaseTest extends TestCase
 {
     /** @var array */
     private $config;
@@ -25,9 +25,7 @@ abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
 
     public function __construct()
     {
-        define('ROOT_DIR', __DIR__ . '/../../');
-        require_once ROOT_DIR . 'vendor/autoload.php';
-//        $this->config = include 'config.php';
+        $this->config = include 'config.php';
         $this->dbRepositoryMock = $this->getMockBuilder(DbRepositoryInterface::class)->getMock();
         parent::__construct();
     }
@@ -46,7 +44,7 @@ abstract class BaseCaseTest extends PHPUnit_Framework_TestCase
      */
     public function getApiClient()
     {
-        $authorization = new OauthAuthorization('accessToken', 'refreshToken', Authorization::SMB, '');
+        $authorization = new ApiKeyAuthorization($this->config['apiKey'], Authorization::SMB);
         $userAgentHeader = new UserAgentHeader('ShareCode', 'ShareCode', 'ShareCode');
 
         return new GetresponseApiClient(

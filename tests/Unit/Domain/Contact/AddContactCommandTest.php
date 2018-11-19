@@ -1,8 +1,8 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Contact;
 
-use GrShareCode\Contact\AddContactCommand;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\Command\AddContactCommand;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
 use GrShareCode\Tests\Unit\BaseTestCase;
 use GrShareCode\Validation\Assert\InvalidArgumentException;
 
@@ -21,9 +21,9 @@ class AddContactCommandTest extends BaseTestCase
      * @param string $contactListId
      * @param int $dayOfCycle
      * @param ContactCustomFieldsCollection $customFieldsCollection
-     * @param string $originValue
+     * @param bool $updateIfAlreadyExists
      */
-    public function shouldCreateValidInstance($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $originValue)
+    public function shouldCreateValidInstance($email, $name, $contactListId, $dayOfCycle, $customFieldsCollection, $updateIfAlreadyExists)
     {
         self::assertInstanceOf(
             AddContactCommand::class,
@@ -33,7 +33,7 @@ class AddContactCommandTest extends BaseTestCase
                 $contactListId,
                 $dayOfCycle,
                 $customFieldsCollection,
-                $originValue
+                $updateIfAlreadyExists
             )
         );
     }
@@ -50,7 +50,7 @@ class AddContactCommandTest extends BaseTestCase
                 'contact_list_id' => 'va1',
                 'day_of_cycle' => 0,
                 new ContactCustomFieldsCollection(),
-                'origin'
+                true,
             ],
             [
                 'email' => 'noone@example.com',
@@ -58,7 +58,7 @@ class AddContactCommandTest extends BaseTestCase
                 'contact_list_id' => 'va1',
                 'day_of_cycle' => 0,
                 new ContactCustomFieldsCollection(),
-                'origin'
+                false,
             ],
 
         ];
@@ -97,7 +97,7 @@ class AddContactCommandTest extends BaseTestCase
                 'contact_list_id' => 'va1',
                 'day_of_cycle' => 0,
                 new ContactCustomFieldsCollection(),
-                'origin'
+                true,
             ],
             [
                 'email' => '',
@@ -105,7 +105,7 @@ class AddContactCommandTest extends BaseTestCase
                 'contact_list_id' => 'va1',
                 'day_of_cycle' => 0,
                 new ContactCustomFieldsCollection(),
-                'origin'
+                true,
             ],
             [
                 'email' => 'nonoe@example.com',
@@ -113,7 +113,7 @@ class AddContactCommandTest extends BaseTestCase
                 'contact_list_id' => '',
                 'day_of_cycle' => 0,
                 new ContactCustomFieldsCollection(),
-                'origin'
+                true,
             ],
             [
                 'email' => 'nonoe@example.com',
@@ -121,7 +121,7 @@ class AddContactCommandTest extends BaseTestCase
                 'contact_list_id' => null,
                 'day_of_cycle' => 0,
                 new ContactCustomFieldsCollection(),
-                'origin'
+                true,
             ],
             [
                 'email' => 'nonoe@example.com',
@@ -129,7 +129,7 @@ class AddContactCommandTest extends BaseTestCase
                 'contact_list_id' => false,
                 'day_of_cycle' => 0,
                 new ContactCustomFieldsCollection(),
-                'origin'
+                true,
             ],
         ];
     }

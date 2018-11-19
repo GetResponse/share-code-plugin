@@ -1,8 +1,10 @@
 <?php
 namespace GrShareCode\Shop;
 
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
+use GrShareCode\Shop\Command\AddShopCommand;
+use GrShareCode\Shop\Command\DeleteShopCommand;
 
 /**
  * Class ShopService
@@ -10,8 +12,6 @@ use GrShareCode\GetresponseApiException;
  */
 class ShopService
 {
-    const PER_PAGE = 100;
-
     /** @var GetresponseApiClient */
     private $getresponseApiClient;
 
@@ -29,14 +29,7 @@ class ShopService
      */
     public function getAllShops()
     {
-        $shops = $this->getresponseApiClient->getShops(1, self::PER_PAGE);
-
-        $headers = $this->getresponseApiClient->getHeaders();
-
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $shops = array_merge($shops,  $this->getresponseApiClient->getShops($page, self::PER_PAGE));
-        }
-
+        $shops = $this->getresponseApiClient->getShops();
         $collection = new ShopsCollection();
 
         foreach ($shops as $field) {
@@ -64,11 +57,11 @@ class ShopService
     }
 
     /**
-     * @param string $shopId
+     * @param DeleteShopCommand $deleteShopCommand
      * @throws GetresponseApiException
      */
-    public function deleteShop($shopId)
+    public function deleteShop(DeleteShopCommand $deleteShopCommand)
     {
-        $this->getresponseApiClient->deleteShop($shopId);
+        $this->getresponseApiClient->deleteShop($deleteShopCommand->getShopId());
     }
 }

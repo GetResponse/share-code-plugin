@@ -61,7 +61,7 @@ class Variant
      */
     private function setExternalId($externalId)
     {
-        $message = 'External ID in Variant should be a not null integer';
+        $message = 'External ID in Variant cannot be a null integer';
         Assert::that($externalId, $message)->notNull()->integer();
         $this->externalId = $externalId;
     }
@@ -71,7 +71,7 @@ class Variant
      */
     private function setName($name)
     {
-        $message = 'Name in Variant should be a not blank string';
+        $message = 'Name in Variant cannot be a blank string';
         Assert::that($name, $message)->notBlank()->string();
         $this->name = $name;
     }
@@ -81,7 +81,7 @@ class Variant
      */
     private function setPrice($price)
     {
-        $message = 'Price in Variant should be a not null float';
+        $message = 'Price in Variant cannot be null. It has to be float.';
         Assert::that($price, $message)->notNull()->float();
         $this->price = $price;
     }
@@ -91,7 +91,7 @@ class Variant
      */
     private function setPriceTax($priceTax)
     {
-        $message = 'Price tax in Variant should be a not null float';
+        $message = 'Price tax in Variant cannot be null. It has to be float.';
         Assert::that($priceTax, $message)->notNull()->float();
         $this->priceTax = $priceTax;
     }
@@ -124,7 +124,7 @@ class Variant
      */
     public function setUrl($url)
     {
-        $message = 'Url in Variant should be null or string';
+        $message = 'URL in Variant should be null or string';
         Assert::that($url, $message)->nullOr()->string();
         $this->url = $url;
 
@@ -278,7 +278,7 @@ class Variant
      */
     public function setQuantity($quantity)
     {
-        $message = 'Quantity in Variant should be a not null integer';
+        $message = 'Quantity in Variant cannot be null. It has to be integer.';
         Assert::that($quantity, $message)->notNull()->integer();
         $this->quantity = $quantity;
 

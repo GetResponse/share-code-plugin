@@ -1,28 +1,38 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Contact;
 
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldBuilder;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
-use PHPUnit\Framework\TestCase;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldBuilder;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
+use GrShareCode\Tests\Unit\BaseTestCase;
 
-class ContactCustomFieldBuilderTest extends TestCase
+/**
+ * Class ContactCustomFieldBuilderTest
+ * @package GrShareCode\Tests\Unit\Domain\Contact
+ */
+class ContactCustomFieldBuilderTest extends BaseTestCase
 {
     /**
      * @test
      */
     public function shouldReturnMergedCustomFieldCollection()
     {
-        $contactCustomFieldsCollection = $this->getCustomFieldCollectionFromArray([
-            ['id' => 'grId1', 'value' => 'grValue1'],
-            ['id' => 'grId2', 'value' => 'grValue2'],
-            ['id' => 'grId3', 'value' => 'grValue3']
+        $contactCustomFieldsCollection = $this->getContactCustomFieldCollectionFromArray([
+            ['id' => 'grId1', 'value' => ['grValue1']],
+            ['id' => 'grId2', 'value' => ['grValue2']],
+            ['id' => 'grId3', 'value' => ['grValue3']],
+            ['id' => 'grId6', 'value' => ['grValue6_a', 'grValue6_b', 'grValue6_c']],
+            ['id' => 'grId7', 'value' => ['grValue7_c', 'grValue7_d']],
+            ['id' => 'grId8', 'value' => ['grValue8']]
         ]);
 
-        $newContactCustomFieldsCollection = $this->getCustomFieldCollectionFromArray([
-            ['id' => 'grId4', 'value' => 'grValue4'],
-            ['id' => 'grId2', 'value' => 'grValueNewValueId'],
-            ['id' => 'grId5', 'value' => 'grValue5']
+        $newContactCustomFieldsCollection = $this->getContactCustomFieldCollectionFromArray([
+            ['id' => 'grId4', 'value' => ['grValue4']],
+            ['id' => 'grId2', 'value' => ['grValueNewValueId']],
+            ['id' => 'grId5', 'value' => ['grValue5']],
+            ['id' => 'grId6', 'value' => ['grValue6_c', 'grValue6_d']],
+            ['id' => 'grId7', 'value' => ['grValue7_a', 'grValue7_b', 'grValue7_c']],
+            ['id' => 'grId9', 'value' => ['grValue9']]
         ]);
 
         $customFieldMerger = new ContactCustomFieldBuilder(
@@ -31,11 +41,15 @@ class ContactCustomFieldBuilderTest extends TestCase
         );
 
         $expectedCustomFieldCollection = new ContactCustomFieldsCollection();
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId1', 'grValue1'));
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId2', 'grValueNewValueId'));
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId3', 'grValue3'));
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId4', 'grValue4'));
-        $expectedCustomFieldCollection->add(new ContactCustomField('grId5', 'grValue5'));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId1', ['grValue1']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId2', ['grValue2', 'grValueNewValueId']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId3', ['grValue3']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId6', ['grValue6_a', 'grValue6_b', 'grValue6_c', 4 => 'grValue6_d']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId7', ['grValue7_c', 'grValue7_d', 'grValue7_a', 'grValue7_b']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId8', ['grValue8']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId4', ['grValue4']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId5', ['grValue5']));
+        $expectedCustomFieldCollection->add(new ContactCustomField('grId9', ['grValue9']));
 
         $this->assertEquals($expectedCustomFieldCollection, $customFieldMerger->getMergedCustomFieldsCollection());
     }
@@ -44,7 +58,7 @@ class ContactCustomFieldBuilderTest extends TestCase
      * @param array $customFields
      * @return ContactCustomFieldsCollection
      */
-    private function getCustomFieldCollectionFromArray(array $customFields)
+    private function getContactCustomFieldCollectionFromArray(array $customFields)
     {
         $contactCustomFieldsCollection = new ContactCustomFieldsCollection();
 

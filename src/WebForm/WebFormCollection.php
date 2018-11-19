@@ -11,7 +11,7 @@ class WebFormCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\WebForm\WebForm');
+        $this->setItemType(WebForm::class);
     }
 
     /**
@@ -28,6 +28,6 @@ class WebFormCollection extends TypedCollection
             }
         }
 
-        throw new FormNotFoundException(sprintf('Form with id %s not found in getResponse.' , $webFormId));
+        throw FormNotFoundException::createWithId($webFormId);
     }
 }

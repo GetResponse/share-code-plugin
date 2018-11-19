@@ -1,13 +1,10 @@
 <?php
 namespace GrShareCode\Export;
 
-use GrShareCode\Cache\CacheNull;
-use GrShareCode\Cart\CartService;
-use GrShareCode\Contact\ContactService;
+use GrShareCode\Contact\ContactServiceFactory;
 use GrShareCode\DbRepositoryInterface;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\Order\OrderService;
-use GrShareCode\Product\ProductService;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Order\OrderServiceFactory;
 
 /**
  * Class ExportContactServiceFactory
@@ -18,16 +15,21 @@ class ExportContactServiceFactory
     /**
      * @param GetresponseApiClient $getresponseApiClient
      * @param DbRepositoryInterface $dbRepository
+     * @param $originValue
      * @return ExportContactService
      */
-    public static function create(GetresponseApiClient $getresponseApiClient, DbRepositoryInterface $dbRepository)
+    public function create(GetresponseApiClient $getresponseApiClient, DbRepositoryInterface $dbRepository, $originValue)
     {
-        $productService = new ProductService($getresponseApiClient, $dbRepository);
-
         return new ExportContactService(
-            new ContactService($getresponseApiClient),
-            new CartService($getresponseApiClient, $dbRepository, $productService, new CacheNull()),
-            new OrderService($getresponseApiClient, $dbRepository, $productService)
+            (new ContactServiceFactory())->create(
+                $getresponseApiClient,
+                $dbRepository,
+                $originValue
+            ),
+            (new OrderServiceFactory())->create(
+                $getresponseApiClient,
+                $dbRepository
+            )
         );
     }
 }

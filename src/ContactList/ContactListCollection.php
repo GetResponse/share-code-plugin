@@ -11,6 +11,6 @@ class ContactListCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\ContactList\ContactList');
+        $this->setItemType(ContactList::class);
     }
 }

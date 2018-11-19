@@ -1,15 +1,24 @@
 <?php
 namespace GrShareCode\Tests\Unit\Domain\Contact;
 
-use GrShareCode\Contact\AddContactCommand;
+use GrShareCode\Contact\Command\AddContactCommand;
+use GrShareCode\Contact\Command\FindContactCommand;
+use GrShareCode\Contact\Command\GetContactCommand;
+use GrShareCode\Contact\Command\UnsubscribeContactsCommand;
 use GrShareCode\Contact\Contact;
-use GrShareCode\Contact\ContactCustomField;
-use GrShareCode\Contact\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactCustomField\ContactCustomField;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldCollectionFactory;
+use GrShareCode\Contact\ContactCustomField\ContactCustomFieldsCollection;
+use GrShareCode\Contact\ContactFactory;
 use GrShareCode\Contact\ContactNotFoundException;
+use GrShareCode\Contact\ContactPayloadFactory;
 use GrShareCode\Contact\ContactService;
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
-use GrShareCode\Tests\Generator;
+use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
+use GrShareCode\CustomField\CustomFieldService;
+use GrShareCode\Api\Exception\CustomFieldNotFoundException;
+use GrShareCode\DbRepositoryInterface;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 use GrShareCode\Tests\Unit\BaseTestCase;
 
 /**
@@ -20,438 +29,444 @@ class ContactServiceTest extends BaseTestCase
 {
     /** @var GetresponseApiClient|\PHPUnit_Framework_MockObject_MockObject */
     private $getResponseApiClientMock;
+    /** @var ContactPayloadFactory|\PHPUnit_Framework_MockObject_MockObject */
+    private $contactPayloadFactoryMock;
+    /** @var DbRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject */
+    private $dbRepositoryMock;
+    /** @var CustomFieldService|\PHPUnit_Framework_MockObject_MockObject */
+    private $customFieldServiceMock;
+    /** @var string */
+    private $originCustomName;
+
+    /** @var ContactService */
+    private $sut;
 
     public function setUp()
     {
         $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
+        $this->contactPayloadFactoryMock = $this->getMockWithoutConstructing(ContactPayloadFactory::class);
+        $this->dbRepositoryMock = $this->getMockWithoutConstructing(DbRepositoryInterface::class);
+        $this->customFieldServiceMock = $this->getMockWithoutConstructing(CustomFieldService::class);
+
+        $this->originCustomName = 'originValue';
+
+        $this->sut = new ContactService(
+            $this->getResponseApiClientMock,
+            $this->contactPayloadFactoryMock,
+            new ContactFactory(new ContactCustomFieldCollectionFactory()),
+            $this->customFieldServiceMock,
+            $this->dbRepositoryMock,
+            $this->originCustomName
+        );
     }
 
     /**
      * @test
+     * @throws ContactNotFoundException
+     * @throws GetresponseApiException
      */
-    public function shouldGetContactByEmail()
+    public function shouldGetContact()
     {
+        $id = 'grContactId';
+        $name = 'Adam Kowalski';
         $email = 'adam.kowalski@getresponse.com';
-        $contactListId = 'grListId';
 
-        $contact = new Contact('grContactId', 'Adam Kowalski', $email, new ContactCustomFieldsCollection());
+        $getContactCommand = new GetContactCommand($id, true);
+
+        $contactCustomFieldsCollection = new ContactCustomFieldsCollection();
+        $contactCustomFieldsCollection->add(
+            new ContactCustomField('n', ['white', 'black'])
+        );
+
+        $contact = new Contact($id, $name, $email, $contactCustomFieldsCollection);
+
+        $response = [
+            'contactId' => $id,
+            'name' => $name,
+            'email' => $email,
+            'customFieldValues' => [
+                [
+                    'customFieldId' => 'n',
+                    'value' => [
+                        'white',
+                        'black'
+                    ]
+                ]
+            ]
+        ];
 
         $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('getContactByEmail')
-            ->with($email, $contactListId)
-            ->willReturn([
-                'contactId' => 'grContactId',
-                'name' => 'Adam Kowalski',
-                'email' => $email
-            ]);
+            ->expects(self::once())
+            ->method('getContactById')
+            ->with($id, true)
+            ->willReturn($response);
 
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $this->assertEquals($contact, $contactService->getContactByEmail($email, $contactListId));
+        $this->assertEquals(
+            $contact,
+            $this->sut->getContact($getContactCommand)
+        );
     }
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
-    public function shouldThrowExceptionWhenClientNotExists()
+    public function shouldFindContact()
     {
+        $id = 'grContactId';
+        $name = 'Adam Kowalski';
         $email = 'adam.kowalski@getresponse.com';
         $contactListId = 'grListId';
 
+        $findContactCommand = new FindContactCommand($email, $contactListId, true);
+
+        $contactCustomFieldsCollection = new ContactCustomFieldsCollection();
+        $contactCustomFieldsCollection->add(
+            new ContactCustomField('n', ['white'])
+        );
+        $contact = new Contact($id, $name, $email, $contactCustomFieldsCollection);
+
+        $response = [
+            'contactId' => $id,
+            'name' => $name,
+            'email' => $email,
+            'customFieldValues' => [
+                [
+                    'customFieldId' => 'n',
+                    'value' => [
+                        'white'
+                    ]
+                ]
+            ]
+        ];
+
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('findContactByEmailAndListId')
+            ->with($email, $contactListId, true)
+            ->willReturn($response);
+
+        $this->assertEquals(
+            $contact,
+            $this->sut->findContact($findContactCommand)
+        );
+    }
+
+    /**
+     * @test
+     * @throws ContactNotFoundException
+     * @throws GetresponseApiException
+     */
+    public function shouldThrowExceptionWhenContactDoesntExist()
+    {
         $this->getResponseApiClientMock
             ->expects($this->once())
-            ->method('getContactByEmail')
-            ->with($email, $contactListId)
+            ->method('getContactById')
             ->willReturn([]);
 
         $this->expectException(ContactNotFoundException::class);
-
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->getContactByEmail($email, $contactListId);
+        $this->sut->getContact(new GetContactCommand('id'));
     }
 
     /**
      * @test
-     * @dataProvider validAddContactProvider
-     * @param $addContactCommand
-     * @param $params
      * @throws GetresponseApiException
      */
-    public function shouldCreateContact($addContactCommand, $params)
+    public function shouldAddContactAndCreateCustomField()
     {
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createContact')
-            ->with($params);
-
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->createContact($addContactCommand);
-    }
-
-    /**
-     * @return array
-     */
-    public function validAddContactProvider()
-    {
-        $addContactCommand = Generator::createAddContactCommand();
-        $expectedParams = [
-            'name' => 'Adam Kowalski',
-            'email' => 'adam.kowalski@getresponse.com',
-            'campaign' => [
-                'campaignId' => 'contactListId'
-            ],
-            'dayOfCycle' => 3,
-            'customFieldValues' => [
-                ['customFieldId' => 'id_1', 'value' => ['value_1']],
-                ['customFieldId' => 'id_2', 'value' => ['value_2']],
-                ['customFieldId' => '', 'value' => ['origin']]
-            ]
-        ];
-
-        $addContactCommand1 = Generator::createAddContactCommand('');
-        $expectedParams1 = $expectedParams;
-        unset($expectedParams1['name']);
-
-        $addContactCommand2 = Generator::createAddContactCommand(null);
-        $expectedParams2 = $expectedParams;
-        unset($expectedParams2['name']);
-
-        return [
-            [
-                'add_contact_command' => $addContactCommand,
-                'expected_params' => $expectedParams,
-            ],
-            [
-                'add_contact_command' => $addContactCommand1,
-                'expected_params' => $expectedParams1,
-            ],
-            [
-                'add_contact_command' => $addContactCommand2,
-                'expected_params' => $expectedParams2
-            ]
-        ];
-    }
-
-    /**
-     * @test
-     */
-    public function shouldCreateContactOnUpsertAndCreateCustomField()
-    {
-        $email = 'adam.kowalski@getresponse.com';
-        $listId = 'X3d9';
-        $originCustomFieldId = '4jdk';
-        $originCustomFieldValue = 'magento2';
-
-        $params = [
-            'name' => 'Adam Kowalski',
-            'email' => $email,
-            'campaign' => [
-                'campaignId' => $listId
-            ],
-            'dayOfCycle' => 3,
-            'customFieldValues' => [
-                ['customFieldId' => 'id_1', 'value' => ['value_1']],
-                ['customFieldId' => 'id_2', 'value' => ['value_2']],
-                ['customFieldId' => $originCustomFieldId, 'value' => [$originCustomFieldValue]]
-            ]
-        ];
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('getContactWithCustomFieldsByEmail')
-            ->with($email, $listId)->willReturn(null);
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('getCustomFieldByName')
-            ->with('origin')->willReturn(null);
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createCustomField')
-            ->willReturn(['customFieldId' => $originCustomFieldId]);
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createContact')
-            ->with($params);
-
-        $customFieldCollection = new ContactCustomFieldsCollection();
-        $customFieldCollection->add(new ContactCustomField('id_1',  'value_1'));
-        $customFieldCollection->add(new ContactCustomField('id_2', 'value_2'));
-
         $addContactCommand = new AddContactCommand(
-            $email,
-            'Adam Kowalski',
-            $listId,
-            3,
-            $customFieldCollection,
-            $originCustomFieldValue
+            'example@exmple.com',
+            'name',
+            'listId',
+            null,
+            new ContactCustomFieldsCollection()
         );
 
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->upsertContact($addContactCommand);
-    }
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getOriginCustomFieldId')
+            ->willReturn(null);
 
-    /**
-     * @test
-     */
-    public function shouldCreateContactOnUpsertAndNotCreateCustomField()
-    {
-        $email = 'adam.kowalski@getresponse.com';
-        $listId = 'X3d9';
-        $originCustomFieldId = '4jdk';
-        $originCustomFieldValue = 'magento2';
-
-        $params = [
-            'name' => 'Adam Kowalski',
-            'email' => $email,
-            'campaign' => [
-                'campaignId' => $listId
-            ],
-            'dayOfCycle' => 3,
-            'customFieldValues' => [
-                ['customFieldId' => 'id_1', 'value' => ['value_1']],
-                ['customFieldId' => 'id_2', 'value' => ['value_2']],
-                ['customFieldId' => $originCustomFieldId, 'value' => [$originCustomFieldValue]]
-            ]
-        ];
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('getContactWithCustomFieldsByEmail')
-            ->with($email, $listId)->willReturn(null);
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('getCustomFieldByName')
-            ->with('origin')->willReturn(['customFieldId' => $originCustomFieldId]);
-
-        $this->getResponseApiClientMock
-            ->expects($this->never())
-            ->method('createCustomField');
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createContact')
-            ->with($params);
-
-        $customFieldCollection = new ContactCustomFieldsCollection();
-        $customFieldCollection->add(new ContactCustomField('id_1',  'value_1'));
-        $customFieldCollection->add(new ContactCustomField('id_2', 'value_2'));
-
-        $addContactCommand = new AddContactCommand(
-            $email,
-            'Adam Kowalski',
-            $listId,
-            3,
-            $customFieldCollection,
-            $originCustomFieldValue
-        );
-
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->upsertContact($addContactCommand);
-    }
-
-    /**
-     * @test
-     */
-    public function shouldCreateContactWithOriginIfCustomFieldNotExists()
-    {
-        $params = [
-            'name' => 'Adam Kowalski',
-            'email' => 'adam.kowalski@getresponse.com',
-            'campaign' => [
-                'campaignId' => 'contactListId'
-            ],
-            'dayOfCycle' => 3,
-            'customFieldValues' => [
-                ['customFieldId' => 'id_1', 'value' => ['value_1']],
-                ['customFieldId' => 'id_2', 'value' => ['value_2']],
-                ['customFieldId' => '', 'value' => ['origin']]
-            ]
-        ];
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createContact')
-            ->with($params);
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
+        $this->customFieldServiceMock
+            ->expects(self::once())
             ->method('getCustomFieldByName')
             ->with('origin')
             ->willReturn(null);
 
-        $addContactCommand = Generator::createAddContactCommand();
+        $this->customFieldServiceMock
+            ->expects(self::once())
+            ->method('createCustomField')
+            ->with(new CreateCustomFieldCommand('origin', [$this->originCustomName]))
+            ->willReturn(['customFieldId' => 'oid']);
 
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->createContact($addContactCommand);
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('setOriginCustomFieldId')
+            ->with('oid');
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('findContactByEmailAndListId')
+            ->willReturn(false);
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('createContact');
+
+        $this->sut->addContact($addContactCommand);
+
+        self::assertEquals(1, $addContactCommand->getContactCustomFieldsCollection()->count());
     }
 
     /**
      * @test
+     * @throws GetresponseApiException
      */
-    public function shouldCreateContactWithDayOfCycleZero()
+    public function shouldAddContact()
     {
-        $customerName = 'Adam Kowalski';
-        $dayOfCycle = 0;
+        $addContactCommand = new AddContactCommand(
+            'example@exmple.com',
+            'name',
+            'listId',
+            null,
+            new ContactCustomFieldsCollection()
+        );
 
-        $params = [
-            'name' => $customerName,
-            'email' => 'adam.kowalski@getresponse.com',
-            'campaign' => [
-                'campaignId' => 'contactListId'
-            ],
-            'dayOfCycle' => $dayOfCycle,
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getOriginCustomFieldId')
+            ->willReturn('oid');
+
+        $this->customFieldServiceMock
+            ->expects(self::never())
+            ->method('getCustomFieldByName');
+
+        $this->customFieldServiceMock
+            ->expects(self::never())
+            ->method('createCustomField');
+
+        $this->dbRepositoryMock
+            ->expects(self::never())
+            ->method('setOriginCustomFieldId');
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('findContactByEmailAndListId')
+            ->willReturn(false);
+
+        $this->getResponseApiClientMock
+            ->expects($this->once())
+            ->method('createContact');
+
+        $this->sut->addContact($addContactCommand);
+
+        self::assertEquals(1, $addContactCommand->getContactCustomFieldsCollection()->count());
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldAddContactWhenWrongOriginId()
+    {
+        $addContactCommand = new AddContactCommand(
+            'example@exmple.com',
+            'name',
+            'listId',
+            null,
+            new ContactCustomFieldsCollection()
+        );
+
+        $this->dbRepositoryMock
+            ->expects(self::exactly(2))
+            ->method('getOriginCustomFieldId')
+            ->willReturnOnConsecutiveCalls('oid', '');
+
+        $this->customFieldServiceMock
+            ->expects(self::once())
+            ->method('getCustomFieldByName')
+            ->willReturn(null);
+
+
+        $this->customFieldServiceMock
+            ->expects(self::once())
+            ->method('createCustomField')
+            ->willReturn(['customFieldId' => 'newoid']);
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('setOriginCustomFieldId')
+            ->with('newoid');
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('clearOriginCustomField');
+
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('findContactByEmailAndListId')
+            ->willReturn(false);
+
+        $createContactCall = 0;
+        $callback = function () use (&$createContactCall) {
+            $createContactCall++;
+            if (1 == $createContactCall) {
+                throw CustomFieldNotFoundException::createWithCustomFieldId('oid');
+            } else {return true; }
+        };
+
+        $this->getResponseApiClientMock
+            ->expects(self::exactly(2))
+            ->method('createContact')
+            ->will($this->returnCallback($callback));
+
+        $this->sut->addContact($addContactCommand);
+
+        self::assertEquals(1, $addContactCommand->getContactCustomFieldsCollection()->count());
+    }
+
+    /**
+     * @test
+     * @throws GetresponseApiException
+     */
+    public function shouldUpdateContactIfAlreadyExists()
+    {
+        $email = 'mail@example.com';
+
+        $contact = [
+            'contactId' => 'xyd1',
+            'name' => 'John',
+            'email' => $email,
             'customFieldValues' => [
-                ['customFieldId' => 'id_1', 'value' => ['value_1']],
-                ['customFieldId' => 'id_2', 'value' => ['value_2']],
-                ['customFieldId' => 'cx4R', 'value' => ['origin']]
+                [
+                    'customFieldId' => 'x1',
+                    'name' => 'origin',
+                    'value' => ['value'],
+                    'values' => ['value'],
+                    'type' => 'text',
+                    'fieldType' => 'text',
+                    'valueType' => 'string',
+                ]
             ]
         ];
 
         $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createContact')
-            ->with($params);
+            ->expects(self::once())
+            ->method('findContactByEmailAndListId')
+            ->with($email, 'lid')
+            ->willReturn($contact);
 
         $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('getCustomFieldByName')
-            ->with('origin')
-            ->willReturn(['customFieldId' => 'cx4R']);
+            ->expects(self::once())
+            ->method('updateContact')
+            ->with('xyd1');
 
-        $addContactCommand = Generator::createAddContactCommand($customerName, $dayOfCycle);
+        $contactCustomFieldsCollection = new ContactCustomFieldsCollection();
+        $contactCustomFieldsCollection->add(
+            new ContactCustomField('x2', ['value2'])
+        );
 
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->createContact($addContactCommand);
+        $addContactCommand = new AddContactCommand(
+            $email, 'Janko', 'lid', 1, new ContactCustomFieldsCollection(), true
+        );
+
+        $this->sut->addContact($addContactCommand);
+
+        self::assertNull($addContactCommand->getDayOfCycle());
     }
 
     /**
      * @test
-     */
-    public function shouldCreateContactWithNoDayOfCycle()
-    {
-        $customerName = 'Adam Kowalski';
-        $dayOfCycle = null;
-
-        $params = [
-            'name' => $customerName,
-            'email' => 'adam.kowalski@getresponse.com',
-            'campaign' => [
-                'campaignId' => 'contactListId'
-            ],
-            'customFieldValues' => [
-                ['customFieldId' => 'id_1', 'value' => ['value_1']],
-                ['customFieldId' => 'id_2', 'value' => ['value_2']],
-                ['customFieldId' => 'cx4R', 'value' => ['origin']]
-            ]
-        ];
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createContact')
-            ->with($params);
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('getCustomFieldByName')
-            ->with('origin')
-            ->willReturn(['customFieldId' => 'cx4R']);
-
-        $addContactCommand = Generator::createAddContactCommand($customerName, $dayOfCycle);
-
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->createContact($addContactCommand);
-    }
-
-    /**
-     * @test
-     */
-    public function shouldCreateContactWithOriginIfCustomFieldExists()
-    {
-        $params = [
-            'name' => 'Adam Kowalski',
-            'email' => 'adam.kowalski@getresponse.com',
-            'campaign' => [
-                'campaignId' => 'contactListId'
-            ],
-            'dayOfCycle' => 3,
-            'customFieldValues' => [
-                ['customFieldId' => 'id_1', 'value' => ['value_1']],
-                ['customFieldId' => 'id_2', 'value' => ['value_2']],
-                ['customFieldId' => 'cx4R', 'value' => ['origin']]
-            ]
-        ];
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('createContact')
-            ->with($params);
-
-        $this->getResponseApiClientMock
-            ->expects($this->once())
-            ->method('getCustomFieldByName')
-            ->with('origin')
-            ->willReturn(['customFieldId' => 'cx4R']);
-
-        $addContactCommand = Generator::createAddContactCommand();
-
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->createContact($addContactCommand);
-    }
-
-    /**
-     * @test
+     * @throws GetresponseApiException
      */
     public function shouldUnsubscribeContact()
     {
         $email = 'test@test.com';
-        $origin = 'shopify';
+        $originCustomFieldId = 'oid';
 
-        $this->getResponseApiClientMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([
-            [
-                'contactId' => 'xyd',
-                'origin' => $origin
+        $contact1 = [
+            'contactId' => 'xyd1',
+            'name' => 'John',
+            'email' => $email,
+            'customFieldValues' => [
+                [
+                    'customFieldId' => $originCustomFieldId,
+                    'name' => 'origin',
+                    'value' => [$this->originCustomName],
+                    'values' => [$this->originCustomName],
+                    'type' => 'text',
+                    'fieldType' => 'text',
+                    'valueType' => 'string',
+                ]
             ]
-        ]);
-        $this->getResponseApiClientMock->expects(self::once())->method('deleteContact');
-
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->unsubscribe($email, $origin);
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidSubscriberParams
-     * @param string $email
-     * @param string $origin
-     * @param string $invalidOrigin
-     * @throws GetresponseApiException
-     */
-    public function shouldNotUnsubscribeContact($email, $origin, $invalidOrigin)
-    {
-        $this->getResponseApiClientMock->expects(self::once())->method('searchContacts')->with($email)->willReturn([
-            [
-                'contactId' => 'xyd',
-                'origin' => $origin
-            ]
-        ]);
-        $this->getResponseApiClientMock->expects(self::never())->method('deleteContact');
-
-        $contactService = new ContactService($this->getResponseApiClientMock);
-        $contactService->unsubscribe($email, $invalidOrigin);
-    }
-
-    /**
-     * @return array
-     */
-    public function invalidSubscriberParams()
-    {
-        return [
-            ['test@test.com', 'shopify', 'woocommerce'],
-            ['test@test.com', 'shopify', '']
         ];
+
+        $contact2 = [
+            'contactId' => 'xyd2',
+            'name' => 'John',
+            'email' => $email,
+            'customFieldValues' => [
+                [
+                    'customFieldId' => $originCustomFieldId,
+                    'name' => 'origin',
+                    'value' => [$this->originCustomName],
+                    'values' => [$this->originCustomName],
+                    'type' => 'text',
+                    'fieldType' => 'text',
+                    'valueType' => 'string',
+                ],
+                [
+                    'customFieldId' => 'aaa',
+                    'name' => 'origin',
+                    'value' => ['value'],
+                    'values' => ['value'],
+                    'type' => 'text',
+                    'fieldType' => 'text',
+                    'valueType' => 'string',
+                ]
+            ]
+        ];
+
+        $contact3 = [
+            'contactId' => 'xyd2',
+            'name' => 'John',
+            'email' => $email,
+            'customFieldValues' => [
+                [
+                    'customFieldId' => 'bbb',
+                    'name' => 'origin',
+                    'value' => ['value'],
+                    'values' => ['value'],
+                    'type' => 'text',
+                    'fieldType' => 'text',
+                    'valueType' => 'string',
+                ]
+            ]
+        ];
+
+        $contact4 = [
+            'contactId' => 'xyd3',
+            'name' => 'John',
+            'email' => $email,
+        ];
+
+        $this->dbRepositoryMock
+            ->expects(self::once())
+            ->method('getOriginCustomFieldId')
+            ->willReturn($originCustomFieldId);
+
+        $this->getResponseApiClientMock
+            ->expects(self::once())
+            ->method('searchContacts')
+            ->with($email, true)
+            ->willReturn([$contact1, $contact2, $contact3, $contact4]);
+
+        $this->getResponseApiClientMock
+            ->expects(self::exactly(2))
+            ->method('deleteContact')
+            ->withConsecutive(['xyd1'], ['xyd2']);
+
+        $this->sut->unsubscribeContacts(new UnsubscribeContactsCommand($email));
     }
+
 }

@@ -1,8 +1,10 @@
 <?php
 namespace GrShareCode\CustomField;
 
-use GrShareCode\GetresponseApiClient;
-use GrShareCode\GetresponseApiException;
+use GrShareCode\CustomField\Command\CreateCustomFieldCommand;
+use GrShareCode\CustomField\CustomFieldFilter\CustomFieldForMappingFilter;
+use GrShareCode\Api\GetresponseApiClient;
+use GrShareCode\Api\Exception\GetresponseApiException;
 
 /**
  * Class CustomFieldService
@@ -10,8 +12,6 @@ use GrShareCode\GetresponseApiException;
  */
 class CustomFieldService
 {
-    const PER_PAGE = 100;
-
     /** @var GetresponseApiClient */
     private $getresponseApiClient;
 
@@ -29,41 +29,31 @@ class CustomFieldService
      */
     public function getAllCustomFields()
     {
-        $customFields = $this->getresponseApiClient->getCustomFields(1, self::PER_PAGE);
-
-        $headers = $this->getresponseApiClient->getHeaders();
-
-        for ($page = 2; $page <= $headers['TotalPages']; $page++) {
-            $customFields = array_merge($customFields, $this->getresponseApiClient->getCustomFields($page, self::PER_PAGE));
-        }
-
-        $collection = new CustomFieldCollection();
-
-        foreach ($customFields as $field) {
-            $collection->add(new CustomField(
-                $field['customFieldId'],
-                $field['name']
-            ));
-        }
-
-        return $collection;
+        return CustomFieldCollection::fromApiResponse($this->getresponseApiClient->getCustomFields());
     }
 
     /**
-     * @param string $name
-     * @param string $value
-     * @param string $type
-     * @param bool $hidden
+     * @return CustomFieldCollection
+     * @throws GetresponseApiException
+     */
+    public function getCustomFieldsForMapping()
+    {
+        $customFieldCollection = CustomFieldCollection::fromApiResponse($this->getresponseApiClient->getCustomFields());
+        return $customFieldCollection->filter(new CustomFieldForMappingFilter());
+    }
+
+    /**
+     * @param CreateCustomFieldCommand $createCustomFieldCommand
      * @return array
      * @throws GetresponseApiException
      */
-    public function createCustomField($name, $value, $type = 'text', $hidden = false)
+    public function createCustomField(CreateCustomFieldCommand $createCustomFieldCommand)
     {
         return $this->getresponseApiClient->createCustomField([
-            'name' => $name,
-            'type' => $type,
-            'hidden' => $hidden,
-            'values' => [$value]
+            'name' => $createCustomFieldCommand->getName(),
+            'type' => $createCustomFieldCommand->getType(),
+            'hidden' => $createCustomFieldCommand->isHidden(),
+            'values' => $createCustomFieldCommand->getValues()
         ]);
     }
 

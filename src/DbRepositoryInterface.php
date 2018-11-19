@@ -1,9 +1,7 @@
 <?php
 namespace GrShareCode;
 
-use DateTime;
-use GrShareCode\Job\Job;
-use GrShareCode\Job\JobCollection;
+use GrShareCode\Contact\ContactCustomField;
 use GrShareCode\ProductMapping\ProductMapping;
 
 /**
@@ -49,6 +47,7 @@ interface DbRepositoryInterface
     /**
      * @param string $grShopId
      * @param int $externalOrderId
+     * @return string
      */
     public function getPayloadMd5FromOrderMapping($grShopId, $externalOrderId);
 
@@ -74,21 +73,6 @@ interface DbRepositoryInterface
     public function saveProductMapping(ProductMapping $productMapping);
 
     /**
-     * @param Job $job
-     */
-    public function addJob(Job $job);
-
-    /**
-     * @return JobCollection
-     */
-    public function getJobsToProcess();
-
-    /**
-     * @param Job $job
-     */
-    public function deleteJob(Job $job);
-
-    /**
      * @param int $accountId
      */
     public function markAccountAsInvalid($accountId);
@@ -107,4 +91,17 @@ interface DbRepositoryInterface
      * @param int $accountId
      */
     public function disconnectAccount($accountId);
+
+    /**
+     * @return string
+     */
+    public function getOriginCustomFieldId();
+
+    /**
+     * @param string $id
+     */
+    public function setOriginCustomFieldId($id);
+
+    public function clearOriginCustomField();
+
 }

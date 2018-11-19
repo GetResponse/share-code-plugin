@@ -11,6 +11,6 @@ class ShopsCollection extends TypedCollection
 {
     public function __construct()
     {
-        $this->setItemType('\GrShareCode\Shop\Shop');
+        $this->setItemType(Shop::class);
     }
 }
