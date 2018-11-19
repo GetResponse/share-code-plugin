@@ -74,7 +74,11 @@ class Contact
     {
         /** @var ContactCustomField $custom */
         foreach ($this->contactCustomFieldCollection as $custom) {
-            if ($custom->getId() == $originCustomField->getId() && 1 == count($custom->getValue()) && 1 == count($originCustomField->getValue()) && $custom->getValue()[0] == $originCustomField->getValue()[0]) {
+            if ($custom->getId() == $originCustomField->getId()
+                && 1 == count($custom->getValues())
+                && 1 == count($originCustomField->getValues())
+                && $custom->getValues()[0] == $originCustomField->getValues()[0]
+            ) {
                 return true;
             }
         }
