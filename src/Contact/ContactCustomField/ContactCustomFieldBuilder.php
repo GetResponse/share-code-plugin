@@ -26,35 +26,18 @@ class ContactCustomFieldBuilder
     }
 
     /**
+     * Assumption: All custom field is TextType and StringValue
      * @return ContactCustomFieldsCollection
      */
     public function getMergedCustomFieldsCollection()
     {
         $contactFieldCollection = new ContactCustomFieldsCollection();
 
-        $customFields = $this->collectionToArray($this->contactCustomFieldCollection);
+        $currentCustomFields = $this->collectionToArray($this->contactCustomFieldCollection);
         $newCustomFields = $this->collectionToArray($this->newContactCustomFieldCollection);
 
-        $customFieldIds = array_keys(array_merge($customFields, $newCustomFields));
-
-        foreach ($customFieldIds as $customFieldId) {
-
-            $contactCustomFieldValues = [];
-
-            if (array_key_exists($customFieldId, $customFields)) {
-                $customField = $customFields[$customFieldId];
-                $contactCustomFieldValues = $customField->getValues();
-            }
-
-            if (array_key_exists($customFieldId, $newCustomFields)) {
-                $newCustomField = $newCustomFields[$customFieldId];
-                $contactCustomFieldValues = array_unique(array_merge($contactCustomFieldValues,
-                    $newCustomField->getValues()));
-            }
-
-            $contactFieldCollection->add(
-                new ContactCustomField($customFieldId, $contactCustomFieldValues)
-            );
+        foreach (array_merge($currentCustomFields, $newCustomFields) as $customField) {
+            $contactFieldCollection->add($customField);
         }
 
         return $contactFieldCollection;
