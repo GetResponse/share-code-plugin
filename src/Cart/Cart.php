@@ -25,6 +25,9 @@ class Cart
     /** @var string */
     private $totalTaxPrice;
 
+    /** @var string */
+    private $cartUrl;
+
     /**
      * @param string $cartId
      * @param ProductsCollection $products
@@ -32,13 +35,14 @@ class Cart
      * @param string $totalPrice
      * @param string $totalTaxPrice
      */
-    public function __construct($cartId, ProductsCollection $products, $currency, $totalPrice, $totalTaxPrice)
+    public function __construct($cartId, ProductsCollection $products, $currency, $totalPrice, $totalTaxPrice, $cartUrl)
     {
         $this->setCartId($cartId);
         $this->setProducts($products);
         $this->setCurrency($currency);
         $this->setTotalPrice($totalPrice);
         $this->setTotalTaxPrice($totalTaxPrice);
+        $this->setCartUrl($cartUrl);
     }
 
     /**
@@ -90,6 +94,16 @@ class Cart
     }
 
     /**
+     * @param string $cartUrl
+     */
+    private function setCartUrl($cartUrl)
+    {
+        $message = 'Cart url in Cart cannot be a null string';
+        Assert::that($cartUrl, $message)->notNull()->string();
+        $this->cartUrl = $cartUrl;
+    }
+
+    /**
      * @return string
      */
     public function getCartId()
@@ -129,4 +143,11 @@ class Cart
         return $this->totalTaxPrice;
     }
 
+    /**
+     * @return string
+     */
+    public function getCartUrl()
+    {
+        return $this->cartUrl;
+    }
 }
