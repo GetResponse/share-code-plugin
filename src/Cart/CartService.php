@@ -154,6 +154,7 @@ class CartService
             'selectedVariants' => $variants,
             'externalId' => $cart->getCartId(),
             'totalTaxPrice' => $cart->getTotalTaxPrice(),
+            'cartUrl' => $cart->getCartUrl(),
         ];
     }
 

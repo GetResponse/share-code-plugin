@@ -34,7 +34,7 @@ class Generator
     public static function createAddCartCommand()
     {
         $products = self::createProductsCollection();
-        $cart = new Cart('100001', $products, 'PLN', 10.00, 123.3);
+        $cart = new Cart('100001', $products, 'PLN', 10.00, 123.3, 'http://shop.app/cart');
 
         return new AddCartCommand(
             $cart,
@@ -50,7 +50,7 @@ class Generator
     public static function createAddCartCommandWithNoVariants()
     {
         $products = self::createProductsCollection(1,0);
-        $cart = new Cart('100001', $products, 'PLN', 10.00, 123.3);
+        $cart = new Cart('100001', $products, 'PLN', 10.00, 123.3, 'http://shop.app/cart');
 
         return new AddCartCommand(
             $cart,
