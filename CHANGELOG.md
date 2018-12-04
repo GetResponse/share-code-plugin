@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.0.0
+*(2018-12-04)*
+
+### Feature
+Cart URL is a mandatory field
+
 ## 6.0.0
 *(2018-11-19)*
 

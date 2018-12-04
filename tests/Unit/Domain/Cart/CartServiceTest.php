@@ -104,6 +104,7 @@ class CartServiceTest extends BaseTestCase
             'selectedVariants' => $variants,
             'externalId' => $command->getCart()->getCartId(),
             'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
+            'cartUrl' => $command->getCart()->getCartUrl()
         ];
 
         $this->cacheMock
@@ -176,6 +177,7 @@ class CartServiceTest extends BaseTestCase
             'selectedVariants' => $variants,
             'externalId' => $command->getCart()->getCartId(),
             'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
+            'cartUrl' => $command->getCart()->getCartUrl()
         ];
 
         $this->cacheMock
@@ -248,6 +250,7 @@ class CartServiceTest extends BaseTestCase
             'selectedVariants' => $variants,
             'externalId' => $command->getCart()->getCartId(),
             'totalTaxPrice' => $command->getCart()->getTotalTaxPrice(),
+            'cartUrl' => $command->getCart()->getCartUrl()
         ];
 
         $this->cacheMock
