@@ -34,6 +34,7 @@ class Cart
      * @param string $currency
      * @param string $totalPrice
      * @param string $totalTaxPrice
+     * @param string $cartUrl
      */
     public function __construct($cartId, ProductsCollection $products, $currency, $totalPrice, $totalTaxPrice, $cartUrl)
     {
@@ -50,8 +51,8 @@ class Cart
      */
     private function setCartId($cartId)
     {
-        $message = 'Cart ID in Cart cannot be a null string';
-        Assert::that($cartId, $message)->notNull()->string();
+        $message = 'Cart ID in Cart cannot be the empty string';
+        Assert::that($cartId, $message)->notBlank()->string();
         $this->cartId = $cartId;
     }
 
@@ -99,7 +100,7 @@ class Cart
     private function setCartUrl($cartUrl)
     {
         $message = 'Cart url in Cart cannot be a null string';
-        Assert::that($cartUrl, $message)->notNull()->string();
+        Assert::that($cartUrl, $message)->notBlank()->string();
         $this->cartUrl = $cartUrl;
     }
 
