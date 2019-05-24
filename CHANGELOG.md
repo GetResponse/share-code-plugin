@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.0.1
+*(2019-05-24)*
+
+* Fixed bugs:
+    * Issue with updating order 
+ 
 ## 7.0.0
 *(2018-12-04)*
 
