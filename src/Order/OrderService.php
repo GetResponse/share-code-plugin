@@ -107,17 +107,21 @@ class OrderService
     {
         $order = $editOrderCommand->getOrder();
 
+        $grOrderId = $this->dbRepository->getGrOrderIdFromMapping(
+            $editOrderCommand->getShopId(),
+            $order->getExternalOrderId()
+        );
+
+        if (!$grOrderId) {
+            return;
+        }
+
         $orderPayload = $this->orderPayloadFactory->create(
             $order,
             $this->productService->getProductsVariants(
                 $order->getProducts(),
                 $editOrderCommand->getShopId()
             )
-        );
-
-        $grOrderId = $this->dbRepository->getGrOrderIdFromMapping(
-            $editOrderCommand->getShopId(),
-            $order->getExternalOrderId()
         );
 
         if ($this->hasPayloadChanged($orderPayload, $editOrderCommand->getShopId(), $order->getExternalOrderId())) {
