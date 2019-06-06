@@ -3,6 +3,7 @@
     "license": "MIT",
     "description": "Share code plugin",
     "type": "library",
+    "version": "7.0.1",
     "authors": [
         {
             "name": "GetResponse",
