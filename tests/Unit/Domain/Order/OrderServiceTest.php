@@ -87,7 +87,7 @@ class OrderServiceTest extends BaseTestCase
                 $addOrderCommand->getShopId(),
                 $addOrderCommand->getOrder()->getExternalOrderId(),
                 'oid',
-                '2e70b47f22a278c6b3d787f606eb1491'
+                'e59102ea0ab7ae61286718a1e3c6d1b1'
             );
 
         $this->sut->addOrder($addOrderCommand);
@@ -180,7 +180,7 @@ class OrderServiceTest extends BaseTestCase
             ->expects(self::once())
             ->method('getPayloadMd5FromOrderMapping')
             ->with($editOrderCommand->getShopId(), $editOrderCommand->getOrder()->getExternalOrderId())
-            ->willReturn('2e70b47f22a278c6b3d787f606eb1491');
+            ->willReturn('e59102ea0ab7ae61286718a1e3c6d1b1');
 
         $this->grApiClientMock
             ->expects(self::never())

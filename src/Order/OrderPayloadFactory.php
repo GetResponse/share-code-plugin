@@ -43,7 +43,7 @@ class OrderPayloadFactory
         }
 
         if (null !== $order->getShippingPrice()) {
-            $orderPayload['shippingPrice'] = $order->getDescription();
+            $orderPayload['shippingPrice'] = $order->getShippingPrice();
         }
 
         if (null !== $order->getBillingStatus()) {
