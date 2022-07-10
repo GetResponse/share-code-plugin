@@ -30,7 +30,7 @@ class ContactListServiceTest extends BaseCaseTest
     public function shouldGetAllAutorespondersBelongsToSpecificCampaign()
     {
         $response = $this->sut->getAutoresponders($this->getConfig()['contactListId']);
-        self::assertGreaterThan(0, $response->count());
+        self::assertGreaterThanOrEqual(0, $response->count());
     }
 
     /**
@@ -41,6 +41,6 @@ class ContactListServiceTest extends BaseCaseTest
     {
         $response = $this->sut->getAutoresponders();
         echo $response->count();
-        self::assertGreaterThan(0, $response->count());
+        self::assertGreaterThanOrEqual(0, $response->count());
     }
 }
