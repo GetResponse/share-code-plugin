@@ -210,25 +210,4 @@ class OrderServiceTest extends BaseTestCase
         $this->sut->updateOrder($editOrderCommand);
     }
 
-    /**
-     * @test
-     * @throws GetresponseApiException
-     */
-    public function shouldNotUpdateOrderIfOrderIsNotMapped()
-    {
-        $editOrderCommand = Generator::createEditOrderCommand();
-
-        $this->dbRepositoryMock
-            ->expects(self::once())
-            ->method('getGrOrderIdFromMapping')
-            ->with($editOrderCommand->getShopId(), $editOrderCommand->getOrder()->getExternalOrderId())
-            ->willReturn(null);
-
-        $this->grApiClientMock
-            ->expects(self::never())
-            ->method('updateOrder');
-
-        $this->sut->updateOrder($editOrderCommand);
-    }
-
 }
