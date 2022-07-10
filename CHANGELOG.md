@@ -1,5 +1,17 @@
 # Changelog
 
+## 7.0.3
+*(2022-07-10)*
+
+* Fixed bugs:
+    * Added doctype for php8.1 compatibility
+
+## 7.0.2
+*(2021-08-23)*
+
+* Fixed bugs:
+    * Fix for Shipping Price
+
 ## 7.0.1
 *(2019-05-24)*
 
