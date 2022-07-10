@@ -30,6 +30,7 @@ class TypedCollection implements IteratorAggregate
     /**
      * @return ArrayIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->items);
@@ -88,6 +89,7 @@ class TypedCollection implements IteratorAggregate
     /**
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->items);
