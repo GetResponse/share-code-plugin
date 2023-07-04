@@ -2,8 +2,8 @@ stages:
   - install_dependencies
   - test
 
-composer install:php56:
-  image: php:5.6-cli
+composer install:php72:
+  image: php:7.2-cli
   stage: install_dependencies
   before_script:
     - apt-get update
@@ -20,8 +20,8 @@ composer install:php56:
   except:
     - develop
 
-test:app-php56:
-  image: php:5.6-cli
+test:app-php72:
+  image: php:7.2-cli
   stage: test
   tags:
     - kubernetes-ci
@@ -30,4 +30,4 @@ test:app-php56:
   except:
     - develop
   dependencies:
-    - composer install:php56
+    - composer install:php72
