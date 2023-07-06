@@ -675,10 +675,12 @@ class GetresponseApi
         $headers = explode("\n", $headers);
         foreach ($headers as $header) {
             $params = explode(':', $header, 2);
-            $key = isset($params[0]) ? $params[0] : null;
-            $value = isset($params[1]) ? $params[1] : null;
-            $headers[trim($key)] = trim($value);
+
+            if (count($params) === 2 && !empty($params[0]) && !empty($params[1])) {
+                $headers[trim($params[0])] = trim($params[1]);
+            }
         }
+        
         return $headers;
     }
 
