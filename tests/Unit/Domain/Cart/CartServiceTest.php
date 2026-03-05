@@ -27,7 +27,7 @@ class CartServiceTest extends BaseTestCase
     /** @var CartService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->dbRepositoryMock = $this->getMockWithoutConstructing(DbRepositoryInterface::class);
         $this->grApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
@@ -39,7 +39,6 @@ class CartServiceTest extends BaseTestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @throws GetresponseApiException
      */
     public function shouldNotSentCartIfAlreadySentWithSameData()
@@ -83,7 +82,6 @@ class CartServiceTest extends BaseTestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @throws GetresponseApiException
      */
     public function shouldCreateCartWithProductInGetResponseAndRetrieveContactFromCache()
@@ -156,7 +154,6 @@ class CartServiceTest extends BaseTestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @throws GetresponseApiException
      */
     public function shouldCreateCartWithProductInGetResponse()
@@ -230,7 +227,6 @@ class CartServiceTest extends BaseTestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @throws GetresponseApiException
      */
     public function shouldUpdateCartInGetResponse()

@@ -2,8 +2,8 @@ stages:
   - install_dependencies
   - test
 
-composer install:php72:
-  image: php:7.2-cli
+composer install:php74:
+  image: php:7.4-cli-bullseye
   stage: install_dependencies
   before_script:
     - apt-get update
@@ -20,8 +20,8 @@ composer install:php72:
   except:
     - develop
 
-test:app-php72:
-  image: php:7.2-cli
+test:app-php74:
+  image: php:7.4-cli-bullseye
   stage: test
   tags:
     - kubernetes-ci
@@ -30,4 +30,4 @@ test:app-php72:
   except:
     - develop
   dependencies:
-    - composer install:php72
+    - composer install:php74

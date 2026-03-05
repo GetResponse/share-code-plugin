@@ -17,7 +17,7 @@ class TrackingCodeServiceTest extends BaseTestCase
     /** @var TrackingCodeService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->sut = new TrackingCodeService($this->getResponseApiClientMock);

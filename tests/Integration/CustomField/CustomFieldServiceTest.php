@@ -14,7 +14,7 @@ class CustomFieldServiceTest extends BaseCaseTest
     /**
      * @throws ApiTypeException
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->sut = new CustomFieldService($this->getApiClient());
     }

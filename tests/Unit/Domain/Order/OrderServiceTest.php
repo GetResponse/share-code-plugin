@@ -25,7 +25,7 @@ class OrderServiceTest extends BaseTestCase
     /** @var OrderService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->dbRepositoryMock = $this->getMockWithoutConstructing(DbRepositoryInterface::class);
         $this->grApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);

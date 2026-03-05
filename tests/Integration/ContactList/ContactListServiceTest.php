@@ -18,7 +18,7 @@ class ContactListServiceTest extends BaseCaseTest
     /**
      * @throws ApiTypeException
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->sut = new ContactListService($this->getApiClient());
     }

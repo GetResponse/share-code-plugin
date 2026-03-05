@@ -34,7 +34,7 @@ class ContactTest extends BaseCaseTest
      * @throws ApiTypeException
      * @throws \ReflectionException
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->getResponseApiClient = $this->getApiClient();
         $this->customFieldsService = new CustomFieldService($this->getResponseApiClient);
