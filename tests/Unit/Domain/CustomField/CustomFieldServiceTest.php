@@ -20,7 +20,7 @@ class CustomFieldServiceTest extends BaseTestCase
     /** @var CustomFieldService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->sut = new CustomFieldService($this->getResponseApiClientMock);

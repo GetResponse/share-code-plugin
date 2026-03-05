@@ -15,7 +15,7 @@ class WebFormCollectionTest extends BaseTestCase
     /** @var WebForm */
     private $webform2;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->webFormCollection = new WebFormCollection();
 

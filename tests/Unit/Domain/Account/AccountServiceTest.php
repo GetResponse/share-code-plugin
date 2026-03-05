@@ -18,7 +18,7 @@ class AccountServiceTest extends BaseTestCase
     /** @var AccountService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->sut = new AccountService($this->getResponseApiClientMock);

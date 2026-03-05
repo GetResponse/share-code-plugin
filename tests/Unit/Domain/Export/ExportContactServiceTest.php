@@ -19,7 +19,7 @@ class ExportContactServiceTest extends BaseTestCase
     /** @var ExportContactService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->contactServiceMock = $this->getMockWithoutConstructing(ContactService::class);
         $this->orderServiceMock = $this->getMockWithoutConstructing(OrderService::class);

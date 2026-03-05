@@ -25,7 +25,7 @@ class ProductServiceTest extends BaseTestCase
     /** @var ProductService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->dbRepositoryMock = $this->getMockWithoutConstructing(DbRepositoryInterface::class);
         $this->grApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
@@ -94,9 +94,9 @@ class ProductServiceTest extends BaseTestCase
             ->expects(self::exactly(3))
             ->method('saveProductMapping')
             ->withConsecutive(
-                new ProductMapping(1, 1, $shopId, 'p1', 'v11'),
-                new ProductMapping(1, 2, $shopId, 'p1', 'v12'),
-                new ProductMapping(2, 2, $shopId, 'p2', 'v22')
+                [new ProductMapping(1, 1, $shopId, 'p1', 'v11')],
+                [new ProductMapping(1, 2, $shopId, 'p1', 'v12')],
+                [new ProductMapping(2, 2, $shopId, 'p2', 'v22')]
             );
 
         $this->dbRepositoryMock

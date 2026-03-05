@@ -41,7 +41,7 @@ class ContactServiceTest extends BaseTestCase
     /** @var ContactService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->contactPayloadFactoryMock = $this->getMockWithoutConstructing(ContactPayloadFactory::class);

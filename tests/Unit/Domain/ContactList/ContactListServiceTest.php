@@ -23,7 +23,7 @@ class ContactListServiceTest extends BaseTestCase
     /** @var ContactListService */
     private $sut;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->getResponseApiClientMock = $this->getMockWithoutConstructing(GetresponseApiClient::class);
         $this->sut = new ContactListService($this->getResponseApiClientMock);
