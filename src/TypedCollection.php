@@ -4,12 +4,13 @@ namespace GrShareCode;
 use ArrayIterator;
 use InvalidArgumentException;
 use IteratorAggregate;
+use Countable;
 
 /**
  * Class TypedCollection
  * @package GrShareCode
  */
-class TypedCollection implements IteratorAggregate
+class TypedCollection implements IteratorAggregate, Countable
 {
     /** @var array */
     private $items = [];
